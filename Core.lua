@@ -15,6 +15,11 @@ function ns.Money(c)
     return table.concat(t, " ")
 end
 
+local function LinkOr(id)
+    local n = (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or (GetItemInfo and (GetItemInfo(id)))
+    return n or ("item " .. id)
+end
+
 function ns.Print(msg) print("|cff33ccffOutfitter:|r " .. tostring(msg)) end
 
 function ns.Class() local _, c = UnitClass("player") return c end
@@ -138,6 +143,29 @@ SlashCmdList.OUTFITTER = function(msg)
         if sv and sv.items then for _ in pairs(sv.items) do saved = saved + 1 end end
         ns.Print(("auction: saved listings=%d running=%s ready=%s done=%s/%s errors=%s found=%d shown=%d"):format(saved, tostring(a.running), tostring(a.ready), tostring(a.done), tostring(a.total), tostring(a.errors), (function() local n = 0 for _ in pairs(a.found or {}) do n = n + 1 end return n end)(), #(a.list or {})))
         if a.lastError then ns.Print("auction last error: " .. a.lastError) end
+    elseif msg == "weapons" then
+        -- every known weapon for your level, with why it does or doesn't beat what you hold
+        local Q = ns.QIndex
+        if not (Q and Q.ready) then ns.Print("quest index still loading, try again in a moment") return end
+        local level = UnitLevel("player") or 1
+        local rows = {}
+        for id, it in pairs(Q.items) do
+            local link = "item:" .. id
+            local loc = ns.EquipLoc(link)
+            if loc and loc:find("WEAPON", 1, true) or loc == "INVTYPE_RANGEDRIGHT" or loc == "INVTYPE_RANGED" then
+                if it.lvl <= level + 5 and it.lvl >= level - 15 then
+                    local r = ns.Compare(link)
+                    if r then rows[#rows + 1] = { id = id, r = r } end
+                end
+            end
+        end
+        table.sort(rows, function(a, b) return (a.r.score or 0) > (b.r.score or 0) end)
+        ns.Print(#rows .. " weapons in range (best score first):")
+        for i = 1, math.min(#rows, 12) do
+            local r = rows[i].r
+            ns.Print(("%s score %d vs worn %d, gain %d%%%s%s"):format(LinkOr(rows[i].id), math.floor(r.score or 0), math.floor(r.wornScore or 0), math.floor(r.gain or 0),
+                r.unusable and (" - can't use: " .. tostring(r.unusable)) or "", r.tooHigh and (" - needs level " .. r.tooHigh) or ""))
+        end
     elseif msg == "unread" then
         -- stat lines on your worn gear that Outfitter does not understand (so they count as zero)
         local n = 0
@@ -150,7 +178,7 @@ SlashCmdList.OUTFITTER = function(msg)
         end
         ns.Print(n == 0 and "Every stat line on your worn gear is understood." or (n .. " stat line(s) are not counted."))
     elseif msg == "help" then
-        ns.Print("/outfit  window | spec  next spec | weights | tip  tooltip line | minimap  show/hide button | alert  upgrade alerts | gain N  minimum % better | unread  unknown stat lines | debug")
+        ns.Print("/outfit  window | spec  next spec | weights | tip  tooltip line | minimap  show/hide button | alert  upgrade alerts | gain N  minimum % better | unread  unknown stat lines | weapons  weapon candidates | debug")
     else
         if ns.ToggleUI then ns.ToggleUI() end
     end

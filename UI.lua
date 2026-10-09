@@ -80,8 +80,14 @@ local function Fill(i, link, note, sub, label)
     r.sub:SetText(sub or "")
     local h = stride
     if wrapSub and sub then
-        local sh = r.sub.GetStringHeight and r.sub:GetStringHeight() or 0
-        if type(sh) == "number" and sh > 0 then h = math.max(stride, 16 + sh + 6) end
+        -- count lines ourselves (the game only knows the real height after it has laid the text out)
+        local plain = sub:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        local lines = 0
+        for seg in (plain .. "\n"):gmatch("(.-)\n") do lines = lines + math.max(1, math.ceil(#seg / 62)) end
+        h = 26 + lines * 12
+        local sh = r.sub.GetStringHeight and r.sub:GetStringHeight()
+        if type(sh) == "number" and sh > 0 then h = math.max(h, 18 + sh + 8) end
+        h = math.max(h, stride)
     end
     if i == 1 then usedH = 0 end
     r:SetPoint("TOPLEFT", 16, -TOP - (wrapSub and usedH or (i - 1) * stride))

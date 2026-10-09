@@ -1,6 +1,8 @@
 # Outfitter
 
 ## v0.6.2
+- New `/outfit weapons` lists the weapons in your level range with their score against what you hold.
+- Where to get rows are roomier so wrapped text and costs no longer crowd the next item.
 - Where to get shows every result instead of cutting off with "+N more".
 - Long source lines (several vendors, long zone names) now wrap inside the window instead of running off the edge.
 - Vendor items show what they cost: gold, honor, arena points or trade items. Prices are remembered once you open that vendor (honor, tokens and reputation-discounted prices); until then it falls back to a bundled list of vendor gold prices (Classic database), and says unknown only if the item isn't on it.
