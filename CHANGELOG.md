@@ -1,5 +1,8 @@
 # Outfitter
 
+## v0.5.4
+- Where to get now names the Scarlet Monastery wing (Graveyard, Library, Cathedral) and the Dire Maul wing for the drops that come from there, e.g. "Scarlet Monastery Graveyard - Bloodmage Thalnos".
+
 ## v0.5.3
 - Gear you cannot use yet no longer gets suggested: level, profession rank ("Requires Blacksmithing (125)"), class ("Classes: ..."), and armor type your class cannot wear yet (plate/mail before level 40, shields for non-shield classes) are now checked from the item text itself, not only from the tooltip's red color. The item's minimum level from the game is used as a backup.
 
