@@ -1,5 +1,9 @@
 # Outfitter
 
+## v0.5.2
+- The Auction tab can no longer get stuck on "Checking auction items... 0 of N": every batch is error-protected, a stalled check restarts itself, and new auction data replaces a check that was running on old data.
+- `/outfit debug` now prints the auction state (saved listings, progress, errors) so a problem can be reported precisely.
+
 ## v0.5.1
 - Auction tab no longer sticks at "Checking auction items... 0 of N". It now reads the live Auction House listing itself (every item with its real random suffix, e.g. "of Frozen Wrath"), so stats are scored correctly, and one unreadable item can no longer stop the whole check.
 - Shows up to 12 buys instead of 8, and says how many items could not be read.

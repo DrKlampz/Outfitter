@@ -142,11 +142,11 @@ function ns.RefreshUI()
             frame.more:SetText("")
             return
         end
-        if not st.ready and not st.running then ns.AuctionStart() end
+        if not st.ready then ns.AuctionStart() end
         stride = 34
         if st.running then
             Resize(6)
-            frame.empty:SetText(("Checking auction items... %d of %d"):format(st.done, st.total))
+            frame.empty:SetText(("Checking auction items... %d of %d"):format(st.done, st.total) .. ((st.errors or 0) > 0 and ("\n(%d unreadable, last: %s)"):format(st.errors, tostring(st.lastError):sub(1, 90)) or ""))
             frame.empty:Show()
             frame.more:SetText("")
             return

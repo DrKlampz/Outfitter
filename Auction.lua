@@ -74,6 +74,8 @@ end)
 -- call when anything that changes the answer happens (gear, level, spec)
 function ns.AuctionDirty()
     state.ready = false
+    state.running = false                 -- abandons any check in progress; the tab starts a fresh one
+    state.gen = (state.gen or 0) + 1
 end
 
 local BATCH = 60
@@ -90,8 +92,7 @@ local function Finish()
     if ns.RefreshUI then ns.RefreshUI() end
 end
 
-local function Step()
-    if not state.running then return end
+local function StepBody()
     local ids, level = state.ids, UnitLevel() or 1
     local last = math.min(state.i + BATCH - 1, #ids)
     for k = state.i, last do
@@ -122,18 +123,45 @@ local function Step()
         if #state.pend > 0 and state.pass < 3 then
             state.pass = state.pass + 1
             state.ids, state.i, state.pend = state.pend, 1, {}
-            C_Timer.After(1.2, Step)                      -- give the game time to send item data
+            state.wait = true                             -- give the game time to send item data
         else
             Finish()
         end
         return
     end
-    if ns.RefreshUI then ns.RefreshUI() end
-    C_Timer.After(0.03, Step)
+end
+
+local Step
+local function Tick()
+    state.tick = GetTime and GetTime() or 0
+    local gen = state.gen
+    local ok, err = pcall(StepBody)
+    if not ok then
+        -- never let one failure freeze the check: note it and move on to the next batch
+        state.errors = (state.errors or 0) + 1
+        state.lastError = tostring(err)
+        state.i = (state.i or 1) + BATCH
+        state.done = math.min(state.i - 1, #state.ids)
+        if state.i > #state.ids then
+            if state.running then Finish() end
+            return
+        end
+    end
+    if not state.running or state.gen ~= gen then return end
+    if state.ready then return end
+    pcall(function() if ns.RefreshUI then ns.RefreshUI() end end)
+    local delay = 0.03
+    if state.wait then state.wait, delay = nil, 1.2 end
+    C_Timer.After(delay, function() if state.gen == gen then Step() end end)
+end
+Step = function()
+    if not state.running then return end
+    Tick()
 end
 
 function ns.AuctionStart()
-    if state.running then return end
+    if state.running and GetTime and (GetTime() - (state.tick or 0)) < 5 then return end
+    state.gen = (state.gen or 0) + 1
     local ids, newest = {}, nil
     local prices
     local saved = Saved()
