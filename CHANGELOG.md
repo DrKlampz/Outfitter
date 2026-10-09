@@ -1,5 +1,9 @@
 # Outfitter
 
+## v0.5.5
+- Single-school spell damage ("+10 Frost damage") is now only worth what your spec actually casts from that school: Frost pants are no longer an upgrade for an Affliction Warlock, but are for a Frost Mage. Each spec has its own school weights (Affliction: Shadow, some Fire; Destruction: Fire, some Shadow; and so on).
+- "Restores N Mana per 5 sec" is now read (the game capitalizes Mana), so mana regeneration is counted. Before this, a gear piece with MP5 was under-valued and weak swaps looked like upgrades.
+
 ## v0.5.4
 - Where to get now names the Scarlet Monastery wing (Graveyard, Library, Cathedral) and the Dire Maul wing for the drops that come from there, e.g. "Scarlet Monastery Graveyard - Bloodmage Thalnos".
 

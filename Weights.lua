@@ -65,3 +65,23 @@ ns.Armor = {
     WARLOCK = { Cloth = true },
     DRUID   = { Leather = true, Cloth = true, Idol = true },
 }
+
+
+-- Single-school spell damage ("+10 Frost damage") is only worth what your spec casts from that school.
+-- Each number is how much of a point of spell power one point of that school is worth for the spec.
+local SCHOOLS = {
+    WARLOCK = { Affliction = { SHADOW = 1, FIRE = 0.3 }, Demonology = { SHADOW = 0.8, FIRE = 0.6 }, Destruction = { FIRE = 1, SHADOW = 0.5 } },
+    MAGE = { Arcane = { ARCANE = 1, FIRE = 0.2, FROST = 0.2 }, Fire = { FIRE = 1, FROST = 0.3, ARCANE = 0.1 }, Frost = { FROST = 1, FIRE = 0.3, ARCANE = 0.1 } },
+    PRIEST = { Shadow = { SHADOW = 1, HOLY = 0.3 }, Discipline = { HOLY = 0.3 }, Holy = { HOLY = 0.3 } },
+    SHAMAN = { Elemental = { NATURE = 1, FIRE = 0.7, FROST = 0.6 }, Restoration = { NATURE = 0.3 } },
+    DRUID = { Balance = { NATURE = 1, ARCANE = 1 }, Restoration = { NATURE = 0.3 } },
+    PALADIN = { Holy = { HOLY = 0.3 }, Retribution = { HOLY = 0.3 }, Protection = { HOLY = 0.3 } },
+}
+for class, specs in pairs(SCHOOLS) do
+    for _, sp in ipairs(W[class] or {}) do
+        local sch = specs[sp.name]
+        if sch and sp.w.SP then
+            for school, mult in pairs(sch) do sp.w["SP_" .. school] = sp.w.SP * mult end
+        end
+    end
+end

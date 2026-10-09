@@ -77,9 +77,10 @@ local function ParseLine(t, text)
     if v then Add(t, "SP", tonumber(v)) Add(t, "HEAL", tonumber(v)) return end
     v = body:match("Increases healing done by spells and effects by up to (%d+)")
     if v then Add(t, "HEAL", tonumber(v)) return end
-    v = body:match("Increases damage done by [%a ]+ spells and effects by up to (%d+)")
-    if v then Add(t, "SP", tonumber(v) * 0.6) return end            -- one school only: worth less
-    v = body:match("Restores (%d+) mana per 5 sec")
+    local school
+    school, v = body:match("Increases damage done by (%a+) spells and effects by up to (%d+)")
+    if v then Add(t, "SP_" .. school:upper(), tonumber(v)) return end   -- one school only: worth what your spec casts from it
+    v = body:match("Restores (%d+) [Mm]ana per 5 sec")
     if v then Add(t, "MP5", tonumber(v)) return end
     v = body:match("Improves your chance to get a critical strike by (%d+)%%")
     if v then Add(t, "CRIT", tonumber(v)) return end
