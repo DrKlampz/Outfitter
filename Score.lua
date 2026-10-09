@@ -351,7 +351,14 @@ function ns.Compare(link)
     res.worn, res.wornScore, res.slot = worn, wornScore, wornSlot or slots[1]
     if wornScore <= 0 then res.gain = score > 0 and 100 or 0
     else res.gain = (score - wornScore) / wornScore * 100 end
-    res.empty = (worn == nil)
+    -- an empty slot only counts when the item would actually give you something
+    res.empty = (worn == nil) and score > 0
+    if worn == nil and score <= 0 then res.gain = 0 end
+    -- nothing goes in the off hand while a two-handed weapon is in the main hand
+    if (equipLoc == "INVTYPE_SHIELD" or equipLoc == "INVTYPE_HOLDABLE" or equipLoc == "INVTYPE_WEAPONOFFHAND") then
+        local mh = GetInventoryItemLink("player", 16)
+        if mh and ns.EquipLoc(mh) == "INVTYPE_2HWEAPON" then res.unusable = res.unusable or "two-handed weapon equipped" end
+    end
     for sl = 1, 19 do
         if GetInventoryItemLink("player", sl) == link then res.isWorn = true end
     end
@@ -487,7 +494,7 @@ function ns.FindSources()
     for _, e in ipairs(DynamicSources(have, known)) do list[#list + 1] = e end
     -- quests, vendors and dungeon bosses for every class, from the quest database
     if ns.QuestSources then
-        if ns.QuestDBAvailable() and not ns.QIndex.ready then
+        if not ns.QIndex.ready then
             ns.QuestIndexStart()
             pending = pending + 1                 -- still reading the database; the tab refreshes when done
         end

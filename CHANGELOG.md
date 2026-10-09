@@ -1,5 +1,11 @@
 # Outfitter
 
+## v0.6.1
+- Quest rewards are back for every class: a bundled list of Classic quest rewards (armor and weapons, with each quest's level, race and class limits and zone) is combined with the Questie vendor and dungeon data. Quest rewards show as "Quest: name - zone".
+- Items that would give you nothing (fishing hats and buckets, anything with no stats you use) are no longer suggested for empty slots.
+- Off-hand pieces are not suggested while you are using a two-handed weapon.
+- Where to get shows the real colored item names once the game knows them.
+
 ## v0.6.0
 - Where to get now works for every class with real quest, vendor and dungeon sources. It reads the quest database that Questie installs (QuestieDB) and lists, for your class, race and level, armor and weapons from quest rewards ("Quest: name - zone"), vendors ("Vendor: name, zone") and dungeon bosses ("Drop: boss, dungeon"), each checked against what you wear. The built-in Mage/Warlock/Priest lists still add their own notes.
 - The database is read once per session in small slices a few seconds after login, so there is no hitch; opening Where to get before it finishes shows "Loading..." and fills in by itself.

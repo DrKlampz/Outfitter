@@ -213,7 +213,8 @@ function ns.RefreshUI()
             note = note .. (e.tooHigh and (" |cffffaa00lvl %d|r"):format(e.tooHigh) or "")
             local src = ("%s: %s"):format(e.how:sub(1, 1):upper() .. e.how:sub(2), e.where)
             if e.note ~= "" then src = src .. " (" .. e.note .. ")" end
-            Fill(i, e.link, note, src, ("|cff%s%s|r"):format("1eff00", e.name))
+            local real = LinkText(e.link)
+            Fill(i, e.link, note, src, (real and real ~= e.link) and real or ("|cff%s%s|r"):format("1eff00", e.name))
         end
         Resize(math.max(shown, 5))
         frame.more:SetText(#list > shown and ("+%d more"):format(#list - shown) or "")

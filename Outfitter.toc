@@ -12,6 +12,7 @@ Weights.lua
 Core.lua
 Score.lua
 Sources.lua
+QuestData.lua
 QuestSources.lua
 Auction.lua
 Tooltip.lua

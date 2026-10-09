@@ -38,8 +38,12 @@ local function Slice()
                 if (q and #q > 0) or (v and #v > 0) or (d and #d > 0) then
                     local loc = ns.EquipLoc and ns.EquipLoc("item:" .. id)
                     if loc and ns.SlotsFor and ns.SlotsFor(loc) then
-                        Q.items[id] = { lvl = lvl, q = q, v = v, d = d }
-                        Q.count = Q.count + 1
+                        local it = Q.items[id]
+                        if it then it.lvl, it.q, it.v, it.d = lvl, q, v, d
+                        else
+                            Q.items[id] = { lvl = lvl, q = q, v = v, d = d }
+                            Q.count = Q.count + 1
+                        end
                     end
                 end
             end
@@ -54,12 +58,36 @@ local function Slice()
     end
 end
 
+-- quest rewards from the bundled data (the quest database from Questie does not list them)
+local function AddRewards()
+    for id, quests in pairs(ns.QuestRewards or {}) do
+        local loc = ns.EquipLoc and ns.EquipLoc("item:" .. id)
+        if loc and ns.SlotsFor and ns.SlotsFor(loc) then
+            local lvl = 0
+            for _, qd in ipairs(quests) do if lvl == 0 or qd[3] < lvl then lvl = qd[3] end end
+            local it = Q.items[id]
+            if not it then
+                it = { lvl = lvl }
+                Q.items[id] = it
+                Q.count = Q.count + 1
+            end
+            it.rewards = quests
+        end
+    end
+end
+
 function ns.QuestIndexStart()
-    if Q.ready or Q.building or not ns.QuestDBAvailable() then return end
-    local ok, all = pcall(Lib().Item.GetAllIds)
-    if not ok or type(all) ~= "table" then return end
-    ids, pos = all, 1
+    if Q.ready or Q.building then return end
+    local all
+    if ns.QuestDBAvailable() then
+        local ok, a = pcall(Lib().Item.GetAllIds)
+        if ok and type(a) == "table" then all = a end
+    end
+    if not all and not ns.QuestRewards then return end
     Q.building = true
+    ids, pos = all or {}, 1
+    AddRewards()
+    if not all then Q.ready, Q.building = true, false return end
     C_Timer.After(0.02, Slice)
 end
 
@@ -93,8 +121,8 @@ local function DungeonName(areaId)
 end
 
 local function PlayerBits()
-    local raceId = select(3, UnitRace("player")) or 0
-    local classId = select(3, UnitClass("player")) or 0
+    local raceId = UnitRace and select(3, UnitRace("player")) or 0
+    local classId = UnitClass and select(3, UnitClass("player")) or 0
     local faction = UnitFactionGroup and UnitFactionGroup("player")
     return raceId > 0 and 2 ^ (raceId - 1) or 0, classId > 0 and 2 ^ (classId - 1) or 0, faction
 end
@@ -129,23 +157,36 @@ local function NpcFriendly(f, faction)
 end
 
 -- Returns a list of { id, name, req, how, where, note } for items you could get at this level.
+local function RewardSource(quests, level, raceBit, classBit)
+    for _, qd in ipairs(quests) do
+        local qid, title, minl, races, classes, zone = qd[1], qd[2], qd[3], qd[4], qd[5], qd[6]
+        if minl <= level and HasBit(races, raceBit) and HasBit(classes, classBit) then
+            local z = AreaName(zone)
+            return z and (title .. " - " .. z) or title
+        end
+    end
+end
+
 function ns.QuestSources(level, have, known)
     local out = {}
     if not Q.ready then return out end
     local L = Lib()
-    if not L then return out end
     local raceBit, classBit, faction = PlayerBits()
     local lo = math.max(1, level - 15)
     for id, it in pairs(Q.items) do
         if not have[id] and not known[id] and it.lvl <= level and it.lvl >= lo then
             local how, where
-            if it.q then
+            if it.rewards then
+                local w = RewardSource(it.rewards, level, raceBit, classBit)
+                if w then how, where = "quest", w end
+            end
+            if not how and it.q and L then
                 for k = 1, math.min(#it.q, 6) do
                     local w = QuestSource(L, it.q[k], level, raceBit, classBit)
                     if w then how, where = "quest", w break end
                 end
             end
-            if not how and it.v then
+            if not how and it.v and L then
                 for k = 1, math.min(#it.v, 6) do
                     local npc = it.v[k]
                     if NpcFriendly(Get(L.Npc, npc, "friendlyToFaction"), faction) then
@@ -155,7 +196,7 @@ function ns.QuestSources(level, have, known)
                     end
                 end
             end
-            if not how and it.d then
+            if not how and it.d and L then
                 for k = 1, math.min(#it.d, 30) do
                     local npc = it.d[k]
                     local dn = DungeonName(Get(L.Npc, npc, "zoneID"))
@@ -165,7 +206,7 @@ function ns.QuestSources(level, have, known)
             end
             if how then
                 known[id] = true
-                local nm = (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or Get(L.Item, id, "name") or ("item " .. id)
+                local nm = (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or (L and Get(L.Item, id, "name")) or ("item " .. id)
                 out[#out + 1] = { id, nm, it.lvl, how, where, "" }
             end
         end
