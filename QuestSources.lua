@@ -262,6 +262,8 @@ end
 function ns.VendorCost(id)
     local c = ns.db and ns.db.vendorCost and ns.db.vendorCost[id]
     if c then return c end
+    local b = ns.VendorPrices and ns.VendorPrices[id]
+    if b then return ns.Money(b) end
     local p = ProfiteerDB and ProfiteerDB.vendor and ProfiteerDB.vendor[id]
     if p and p > 0 then return ns.Money(p) end
 end
