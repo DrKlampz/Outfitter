@@ -1,0 +1,4 @@
+package-as: Outfitter
+
+ignore:
+  - README.md

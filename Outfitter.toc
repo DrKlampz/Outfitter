@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: |cff33ccffOutfitter|r
+## Notes: Gear advisor for WoW Forever: pick your class and spec, see which items in your bags beat what you wear, where to get better gear for your level, and the best buys in the Auction House.
+## Author: David
+## Version: @project-version@
+## Category: Inventory
+## IconTexture: Interface\AddOns\Outfitter\Media\Icon
+## SavedVariables: OutfitterDB
+## X-License: MIT
+
+Weights.lua
+Core.lua
+Score.lua
+Sources.lua
+Auction.lua
+Tooltip.lua
+UI.lua
+Minimap.lua
