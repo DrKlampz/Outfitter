@@ -1,6 +1,7 @@
 # Outfitter
 
 ## v0.6.2
+- Weapons whose skill you still have to learn from a trainer (for example one-handed swords for a Warlock) are no longer suggested; they show as "train Swords" in /outfit weapons.
 - New `/outfit weapons` lists the weapons in your level range with their score against what you hold.
 - Where to get rows are roomier so wrapped text and costs no longer crowd the next item.
 - Where to get shows every result instead of cutting off with "+N more".

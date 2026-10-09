@@ -146,6 +146,29 @@ local function HasSkill(name, need)
     return false
 end
 
+-- Weapon skills you must have learned (trainer) before a weapon is any use.
+local SKILL_OF = { Sword = "Swords", Dagger = "Daggers", Staff = "Staves", Mace = "Maces", Axe = "Axes", Polearm = "Polearms",
+    Bow = "Bows", Crossbow = "Crossbows", Gun = "Guns", Wand = "Wands", Thrown = "Thrown", ["Fist Weapon"] = "Fist Weapons" }
+local TWO_H = { Sword = "Two-Handed Swords", Axe = "Two-Handed Axes", Mace = "Two-Handed Maces" }
+local ALL_WEAPON_SKILLS = {}
+for _, v in pairs(SKILL_OF) do ALL_WEAPON_SKILLS[v:lower()] = true end
+for _, v in pairs(TWO_H) do ALL_WEAPON_SKILLS[v:lower()] = true end
+-- returns the skill name when the character has other weapon skills but not this one (so it must be trained), else nil
+local function UntrainedWeapon(rt, twoHand)
+    local skill = (twoHand and TWO_H[rt]) or SKILL_OF[rt]
+    if not skill or not _G.GetNumSkillLines or not _G.GetSkillLineInfo then return nil end
+    local any, has = false, false
+    for i = 1, GetNumSkillLines() or 0 do
+        local sname, header = GetSkillLineInfo(i)
+        if not header and sname then
+            local l = sname:lower()
+            if ALL_WEAPON_SKILLS[l] then any = true end
+            if l == skill:lower() then has = true end
+        end
+    end
+    if any and not has then return skill end
+end
+
 -- Armor types by class: the highest the class can wear from this level on.
 local ARMOR_FROM = {
     MAGE = { Cloth = 1 }, WARLOCK = { Cloth = 1 }, PRIEST = { Cloth = 1 },
@@ -253,6 +276,10 @@ function ns.ReadItem(link)
                 if IsRed(rr, rg, rb) and not rt:find("Requires") then res.unusable = res.unusable or rt end
                 local wp = WEAPONS[class]
                 if wp and WEAPON_TYPES[rt] and not wp[rt] then res.unusable = res.unusable or rt end
+                if wp and wp[rt] and not res.unusable then
+                    local sk = UntrainedWeapon(rt, text == "Two-Hand")
+                    if sk then res.unusable = "train " .. sk end
+                end
                 local allowed = ARMOR_FROM[class]
                 if allowed and (rt == "Cloth" or rt == "Leather" or rt == "Mail" or rt == "Plate" or rt == "Shield") then
                     local from = allowed[rt]
