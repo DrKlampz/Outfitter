@@ -93,7 +93,7 @@ local function Finish()
 end
 
 local function StepBody()
-    local ids, level = state.ids, UnitLevel() or 1
+    local ids, level = state.ids, UnitLevel("player") or 1
     local last = math.min(state.i + BATCH - 1, #ids)
     for k = state.i, last do
         local id = ids[k]

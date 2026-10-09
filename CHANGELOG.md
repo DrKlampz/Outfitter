@@ -1,6 +1,7 @@
 # Outfitter
 
 ## v0.5.2
+- Fixed the actual cause of the Auction tab freezing: the game rejected a level lookup (UnitLevel needs "player"), so no item was ever checked.
 - The Auction tab can no longer get stuck on "Checking auction items... 0 of N": every batch is error-protected, a stalled check restarts itself, and new auction data replaces a check that was running on old data.
 - `/outfit debug` now prints the auction state (saved listings, progress, errors) so a problem can be reported precisely.
 
