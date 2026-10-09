@@ -54,13 +54,35 @@ local PRIMARY = { Strength = "STR", Agility = "AGI", Stamina = "STA", Intellect 
 local function Add(t, k, v) t[k] = (t[k] or 0) + v end
 
 local function ParseLine(t, text)
+    -- the game already adds enchants and gems into the item's stat lines (the "Enchanted: ..." line
+    -- only describes them), so counting them again would double the value
+    if text:match("^Enchanted: ") or text:match("^Socket Bonus: ") then return end
+    -- plain suffix/enchant forms
+    do
+        local n3, sch = text:match("^%+(%d+) (%a+) Spell Damage$")
+        if n3 and sch ~= "Healing" then Add(t, "SP_" .. sch:upper(), tonumber(n3)) return end
+        n3 = text:match("^%+(%d+) Spell Damage$") or text:match("^%+(%d+) Spell Power$")
+        if n3 then Add(t, "SP", tonumber(n3)) Add(t, "HEAL", tonumber(n3)) return end
+        n3, sch = text:match("^%+(%d+) (%a+) Damage$")
+        if n3 and (sch == "Fire" or sch == "Frost" or sch == "Shadow" or sch == "Nature" or sch == "Arcane" or sch == "Holy") then
+            Add(t, "SP_" .. sch:upper(), tonumber(n3)) return
+        end
+        n3 = text:match("^%+(%d+) Healing Spells$") or text:match("^%+(%d+) Healing$")
+        if n3 then Add(t, "HEAL", tonumber(n3)) return end
+        n3 = text:match("^%+(%d+) Damage and Healing Spells$")
+        if n3 then Add(t, "SP", tonumber(n3)) Add(t, "HEAL", tonumber(n3)) return end
+        n3 = text:match("^%+(%d+) [Mm]ana every 5 sec") or text:match("^Mana Regen %+(%d+)")
+        if n3 then Add(t, "MP5", tonumber(n3)) return end
+        n3 = text:match("^%+(%d+) Attack Power$")
+        if n3 then Add(t, "AP", tonumber(n3)) return end
+    end
     -- "+8 Strength"
     local n, stat = text:match("^%+(%d+) (%a+)$")
     if n and PRIMARY[stat] then Add(t, PRIMARY[stat], tonumber(n)) return end
     -- "+4 All Stats" style bonuses
     n = text:match("^%+(%d+) All Stats$")
     if n then for _, k in pairs(PRIMARY) do Add(t, k, tonumber(n)) end return end
-    n = text:match("^(%d+) Armor$")
+    n = text:match("^(%d+) Armor")
     if n then Add(t, "ARMOR", tonumber(n)) return end
     n = text:match("^(%d+) Block$")
     if n then Add(t, "BLOCKVAL", tonumber(n)) return end
@@ -69,8 +91,14 @@ local function ParseLine(t, text)
     local body = text:match("^Equip: (.+)$")
     if not body then return end
     local v
-    v = body:match("Increases attack power by (%d+)")
+    -- conditional bonuses ("... when fighting Undead") are not part of normal play
+    if body:find("when fighting") or body:find("against ") then return end
+    local hv, dv = body:match("Increases healing done by up to (%d+) and damage done by up to (%d+) for all magical spells")
+    if hv then Add(t, "HEAL", tonumber(hv)) Add(t, "SP", tonumber(dv)) return end
+    v = body:match("Increases attack power by (%d+)") or body:match("^%+(%d+) Attack Power")
     if v then Add(t, "AP", tonumber(v)) return end
+    v = body:match("Increases ranged attack power by (%d+)")
+    if v then Add(t, "RAP", tonumber(v)) return end
     v = body:match("%+(%d+) ranged Attack Power")
     if v then Add(t, "RAP", tonumber(v)) return end
     v = body:match("Increases damage and healing done by magical spells and effects by up to (%d+)")
@@ -167,7 +195,18 @@ function ns.ReadItem(link)
             local r, g, b = left:GetTextColor()
             local red = IsRed(r, g, b)
             local kind, v = ReadRequirement(text)
-            if kind == "level" then
+            local setN, setBody = text:match("^%((%d+)%) Set: (.+)$")
+            local setHead, setHave = text:match("^(.-) %((%d+)/%d+%)$")
+            if setN then
+                -- set bonuses are kept apart: they only matter when this piece is swapped out
+                res.setBonus = res.setBonus or {}
+                local bt = {}
+                setBody = setBody:gsub("%.$", "")
+                ParseLine(bt, setBody:match("^[%+%d]") and setBody or ("Equip: " .. setBody))
+                res.setBonus[tonumber(setN)] = bt
+            elseif setHead and not text:match("^%(") then
+                res.setName, res.setCount = setHead, tonumber(setHave)
+            elseif kind == "level" then
                 res.reqLevel = v
             elseif kind == "unusable" then
                 res.unusable = res.unusable or v
@@ -176,7 +215,17 @@ function ns.ReadItem(link)
             elseif red then
                 res.unusable = res.unusable or text
             else
+                local before = 0
+                for _ in pairs(res.stats) do before = before + 1 end
+                local sum0 = 0
+                for _, x in pairs(res.stats) do sum0 = sum0 + x end
                 ParseLine(res.stats, text)
+                local sum1 = 0
+                for _, x in pairs(res.stats) do sum1 = sum1 + x end
+                if sum1 == sum0 and (text:match("^Equip:") or text:match("^%+%d")) then
+                    res.unparsed = res.unparsed or {}
+                    res.unparsed[#res.unparsed + 1] = text
+                end
             end
             local right = _G["OutfitterScanTipTextRight" .. i]
             local rt = right and right:GetText()
@@ -270,6 +319,14 @@ function ns.Compare(link)
         end
     end
     wornScore = wornScore or 0
+    -- swapping out a piece of a set that is active loses the bonus that needed that piece
+    if worn and equipLoc ~= "INVTYPE_2HWEAPON" then
+        local wi = ns.ReadItem(worn)
+        if wi and wi.setBonus and wi.setCount and wi.setName ~= info.setName then
+            local lost = wi.setBonus[wi.setCount]
+            if lost then wornScore = wornScore + ns.Score(lost, w) end
+        end
+    end
     res.worn, res.wornScore, res.slot = worn, wornScore, wornSlot or slots[1]
     if wornScore <= 0 then res.gain = score > 0 and 100 or 0
     else res.gain = (score - wornScore) / wornScore * 100 end

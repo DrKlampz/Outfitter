@@ -1,5 +1,12 @@
 # Outfitter
 
+## v0.5.6
+- Read the "Increases healing done by up to X and damage done by up to Y for all magical spells and effects" line (it was ignored, so pieces carrying it were undervalued and swaps looked much bigger than they are, e.g. +114% instead of about +21%).
+- More stat line forms understood: "+N Spell Damage/Power", "+N Healing Spells", "+N <school> Damage", "+N mana every 5 sec", "+N Attack Power", ranged attack power, and armor with a bonus. Bonuses that only apply "when fighting" something are no longer counted.
+- Enchants and gems are not counted twice (the game already puts them in the stat lines).
+- Swapping out a piece of an active set now counts the set bonus you would lose.
+- New `/outfit unread` lists any stat lines on your worn gear that Outfitter does not understand.
+
 ## v0.5.5
 - Single-school spell damage ("+10 Frost damage") is now only worth what your spec actually casts from that school: Frost pants are no longer an upgrade for an Affliction Warlock, but are for a Frost Mage. Each spec has its own school weights (Affliction: Shadow, some Fire; Destruction: Fire, some Shadow; and so on).
 - "Restores N Mana per 5 sec" is now read (the game capitalizes Mana), so mana regeneration is counted. Before this, a gear piece with MP5 was under-valued and weak swaps looked like upgrades.

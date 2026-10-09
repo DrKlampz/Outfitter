@@ -138,8 +138,19 @@ SlashCmdList.OUTFITTER = function(msg)
         if sv and sv.items then for _ in pairs(sv.items) do saved = saved + 1 end end
         ns.Print(("auction: saved listings=%d running=%s ready=%s done=%s/%s errors=%s found=%d shown=%d"):format(saved, tostring(a.running), tostring(a.ready), tostring(a.done), tostring(a.total), tostring(a.errors), (function() local n = 0 for _ in pairs(a.found or {}) do n = n + 1 end return n end)(), #(a.list or {})))
         if a.lastError then ns.Print("auction last error: " .. a.lastError) end
+    elseif msg == "unread" then
+        -- stat lines on your worn gear that Outfitter does not understand (so they count as zero)
+        local n = 0
+        for slot = 1, 18 do
+            local l = GetInventoryItemLink("player", slot)
+            local r = l and ns.ReadItem(l)
+            if r and r.unparsed then
+                for _, t in ipairs(r.unparsed) do ns.Print(("%s: %s"):format(l, t)) n = n + 1 end
+            end
+        end
+        ns.Print(n == 0 and "Every stat line on your worn gear is understood." or (n .. " stat line(s) are not counted."))
     elseif msg == "help" then
-        ns.Print("/outfit  window | spec  next spec | weights | tip  tooltip line | minimap  show/hide button | alert  upgrade alerts | gain N  minimum % better | debug")
+        ns.Print("/outfit  window | spec  next spec | weights | tip  tooltip line | minimap  show/hide button | alert  upgrade alerts | gain N  minimum % better | unread  unknown stat lines | debug")
     else
         if ns.ToggleUI then ns.ToggleUI() end
     end
