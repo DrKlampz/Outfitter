@@ -30,3 +30,5 @@ Outfitter guesses your spec from your talents. Pick a different one from the dro
 | `/outfit debug` | Print what the game reports about your bags |
 
 The item text is read in English. MIT licensed.
+
+Where to get uses the quest database from Questie (QuestieDB) when it is installed, so every class gets quest, vendor and dungeon suggestions.

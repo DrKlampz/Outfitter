@@ -485,6 +485,14 @@ function ns.FindSources()
     local list = {}
     for _, e in ipairs(static) do known[e[1]] = true list[#list + 1] = e end
     for _, e in ipairs(DynamicSources(have, known)) do list[#list + 1] = e end
+    -- quests, vendors and dungeon bosses for every class, from the quest database
+    if ns.QuestSources then
+        if ns.QuestDBAvailable() and not ns.QIndex.ready then
+            ns.QuestIndexStart()
+            pending = pending + 1                 -- still reading the database; the tab refreshes when done
+        end
+        for _, e in ipairs(ns.QuestSources(level, have, known)) do list[#list + 1] = e end
+    end
     for _, e in ipairs(list) do
         local id, name, req, how, where, note = e[1], e[2], e[3], e[4], e[5], e[6]
         if not have[id] and req <= level then

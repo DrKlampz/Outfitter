@@ -1,5 +1,10 @@
 # Outfitter
 
+## v0.6.0
+- Where to get now works for every class with real quest, vendor and dungeon sources. It reads the quest database that Questie installs (QuestieDB) and lists, for your class, race and level, armor and weapons from quest rewards ("Quest: name - zone"), vendors ("Vendor: name, zone") and dungeon bosses ("Drop: boss, dungeon"), each checked against what you wear. The built-in Mage/Warlock/Priest lists still add their own notes.
+- The database is read once per session in small slices a few seconds after login, so there is no hitch; opening Where to get before it finishes shows "Loading..." and fills in by itself.
+- Needs Questie (QuestieDB) installed; without it you still get the built-in lists and your other characters' gear and recipes.
+
 ## v0.5.7
 - Where to get no longer offers gear you cannot actually get: bind-on-pickup crafts only show if your own character has the profession ("Leatherworking - you know the recipe"), and soulbound or bind-on-pickup gear sitting on another character is no longer offered (it cannot be passed on). Bind-on-equip crafts by your other characters still show.
 - Auction tab rows now show the real colored item names instead of raw "item:1234:::..." text.
