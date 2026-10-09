@@ -1,5 +1,10 @@
 # Outfitter
 
+## v0.5.1
+- Auction tab no longer sticks at "Checking auction items... 0 of N". It now reads the live Auction House listing itself (every item with its real random suffix, e.g. "of Frozen Wrath"), so stats are scored correctly, and one unreadable item can no longer stop the whole check.
+- Shows up to 12 buys instead of 8, and says how many items could not be read.
+- Open the Auction House and let the scan finish (Profiteer's scan is picked up automatically), then open the Auction tab.
+
 ## v0.5.0
 - Where to get now works for every class: it lists gear your other characters hold in their bags or bank ("Alt: in Barry's bags") and gear your characters know how to craft ("Crafted: Blacksmithing - Barry knows the recipe"), each checked against your class, level and what you wear. This reads the data Profiteer saves, so Profiteer must be installed.
 - The built-in quest/dungeon/vendor lists are still Mage, Warlock and Priest only.

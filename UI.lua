@@ -137,7 +137,7 @@ function ns.RefreshUI()
         local st = ns.AH
         if not ns.AuctionAvailable() then
             Resize(6)
-            frame.empty:SetText("No auction prices yet.\nProfiteer saves them: open the Auction House with Profiteer enabled and let it scan.")
+            frame.empty:SetText("No auction prices yet.\nOpen the Auction House and wait for the scan to finish (Profiteer or Outfitter reads it), then come back.")
             frame.empty:Show()
             frame.more:SetText("")
             return
@@ -152,9 +152,9 @@ function ns.RefreshUI()
             return
         end
         local list = st.list
-        local shown = math.min(#list, 8)
+        local shown = math.min(#list, 12)
         if shown == 0 then
-            frame.empty:SetText("Nothing for sale in the last scan beats what you're wearing.")
+            frame.empty:SetText(((st.errors or 0) > 0 and ("%d items couldn't be read (%s). "):format(st.errors, tostring(st.lastError)) or "") .. "Nothing for sale in the last scan beats what you're wearing.")
             frame.empty:Show()
         else
             frame.empty:Hide()
@@ -183,7 +183,7 @@ function ns.RefreshUI()
             return
         end
         stride = 34
-        local shown = math.min(#list, 8)
+        local shown = math.min(#list, 12)
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... reopen in a moment."
                 or (checked or 0) == 0 and ("Nothing to check at level %d yet. Where to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
