@@ -1,5 +1,8 @@
 # Outfitter
 
+## v0.6.3
+- Same as v0.6.2 (which was tagged on the wrong commit); first release listed on Wago Addons.
+
 ## v0.6.2
 - Weapons whose skill you still have to learn from a trainer (for example one-handed swords for a Warlock) are no longer suggested; they show as "train Swords" in /outfit weapons.
 - New `/outfit weapons` lists the weapons in your level range with their score against what you hold.
