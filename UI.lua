@@ -186,7 +186,8 @@ function ns.RefreshUI()
         local shown = math.min(#list, 8)
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... reopen in a moment."
-                or "None of the known sources beat what you're wearing right now.")
+                or (checked or 0) == 0 and ("The built-in lists have nothing for level %d yet. Try the Auction tab."):format(UnitLevel("player") or 0)
+                or ("Checked %d known items for level %d: none beat what you're wearing. Try the Auction tab."):format(checked or 0, UnitLevel("player") or 0))
             frame.empty:Show()
         else
             frame.empty:Hide()

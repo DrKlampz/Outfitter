@@ -1,5 +1,9 @@
 # Outfitter
 
+## v0.4.1
+- Where to get now has early-game gear for Mages, Warlocks and Priests: 40 crafted cloth pieces (robes, pants, boots, gloves, belts, cloaks, hoods, shoulders) and two wands, read from the game's own tailoring and enchanting lists, so low-level characters (a level 10 Mage, for one) get suggestions instead of an empty list.
+- The empty list now says how many items it checked and points to the Auction tab.
+
 ## v0.4.0
 - New "Auction" tab, works for every class: reads the prices Profiteer saved from your last Auction House scan, scores every piece of gear in it against what you wear, and shows the best buy per slot with its price (red if you cannot afford it yet).
 - Empty slots now rank by how good the item is, not just by price.
