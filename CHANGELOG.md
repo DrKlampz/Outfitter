@@ -1,5 +1,9 @@
 # Outfitter
 
+## v0.5.0
+- Where to get now works for every class: it lists gear your other characters hold in their bags or bank ("Alt: in Barry's bags") and gear your characters know how to craft ("Crafted: Blacksmithing - Barry knows the recipe"), each checked against your class, level and what you wear. This reads the data Profiteer saves, so Profiteer must be installed.
+- The built-in quest/dungeon/vendor lists are still Mage, Warlock and Priest only.
+
 ## v0.4.1
 - Where to get now has early-game gear for Mages, Warlocks and Priests: 40 crafted cloth pieces (robes, pants, boots, gloves, belts, cloaks, hoods, shoulders) and two wands, read from the game's own tailoring and enchanting lists, so low-level characters (a level 10 Mage, for one) get suggestions instead of an empty list.
 - The empty list now says how many items it checked and points to the Auction tab.

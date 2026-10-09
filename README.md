@@ -7,7 +7,7 @@ Open it with `/outfit`, the minimap button, or the addon list.
 ## What it does
 - **Bag upgrades.** Every piece of gear in your bags is read from its real tooltip, scored for your spec, and compared with the item you would replace. Only the best upgrade per slot is listed (two for rings and trinkets). An empty slot always gets the best item you can use.
 - **What I wear.** Every equipped item with its score, and which slots are empty.
-- **Where to get.** Known quest rewards, dungeon drops, vendor and crafted items for your level, scored the same way, with where to get each one. Built-in lists so far cover **Mage, Warlock and Priest** (levels 10-60); other classes use the Auction tab for now.
+- **Where to get.** Known quest rewards, dungeon drops, vendor and crafted items for your level, scored the same way, with where to get each one. For **every class** it also lists gear your other characters carry in their bags or bank, and gear one of your characters can craft (this part reads Profiteer's saved data, so install Profiteer). Built-in lists of quest, dungeon and vendor gear cover **Mage, Warlock and Priest** so far; the Auction tab works for every class.
 - **Auction.** Reads the prices Profiteer saved from your last Auction House scan and shows the best gear for sale per slot, with its price (red when you cannot afford it yet). Needs Profiteer.
 - **Tooltips.** Hover any item for a line saying whether it is an upgrade, worse or about the same compared with what you wear.
 - **Minimap button** (left click opens, right click opens Where to get, drag to move) and a chat alert when a new upgrade lands in your bags.

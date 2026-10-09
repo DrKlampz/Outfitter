@@ -262,15 +262,55 @@ function ns.EquippedScores()
     return out
 end
 
--- Known gear from the built-in lists that would beat what you wear, best first.
+-- Extra candidates read from Profiteer's saved data (if it is installed): gear your characters can
+-- craft, and gear sitting in your other characters' bags and bank. Works for every class.
+local function ShortChar(k) return (tostring(k):match("^[^-]+")) or tostring(k) end
+
+local function DynamicSources(have, known)
+    local out = {}
+    local db = _G.ProfiteerDB
+    if type(db) ~= "table" then return out end
+    local me = UnitName and UnitName("player")
+    local names = type(db.names) == "table" and db.names or {}
+    local function nameOf(id, fallback)
+        return names[id] or fallback or (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or ("item " .. id)
+    end
+    local function add(id, name, how, where)
+        if type(id) ~= "number" or have[id] or known[id] then return end
+        if not ns.EquipLoc("item:" .. id) then return end        -- not wearable
+        known[id] = true
+        out[#out + 1] = { id, nameOf(id, name), 1, how, where, "" }
+    end
+    -- bags and bank of your other characters
+    for ck, inv in pairs(type(db.inventory) == "table" and db.inventory or {}) do
+        if ShortChar(ck) ~= me and type(inv) == "table" then
+            for _, where in ipairs({ "bags", "bank" }) do
+                for id in pairs(type(inv[where]) == "table" and inv[where] or {}) do
+                    add(id, nil, "alt", ("in %s's %s"):format(ShortChar(ck), where))
+                end
+            end
+        end
+    end
+    -- gear your characters know how to make
+    for ck, profs in pairs(type(db.recipes) == "table" and db.recipes or {}) do
+        for prof, recs in pairs(type(profs) == "table" and profs or {}) do
+            for _, r in ipairs(type(recs) == "table" and recs or {}) do
+                add(r.id, r.name, "crafted", ("%s - %s knows the recipe"):format(prof, ShortChar(ck)))
+            end
+        end
+    end
+    return out
+end
+
+-- Known gear that would beat what you wear, best first: the built-in lists for the cloth casters,
+-- plus gear your other characters hold or can craft (any class).
 -- Returns list, pending (items whose data the game has not sent yet), checked.
 function ns.FindSources()
     local out, pending, checked = {}, 0, 0
     local group = ns.SourceClasses and ns.SourceClasses[ns.Class() or ""]
-    local list = group and ns.Sources and ns.Sources[group]
-    if not list then return nil end
+    local static = group and ns.Sources and ns.Sources[group] or {}
     local level = UnitLevel("player") or 1
-    local have = {}
+    local have, known = {}, {}
     for _, it in ipairs(ns.BagItems()) do
         local id = tonumber((it.link or ""):match("item:(%d+)"))
         if id then have[id] = true end
@@ -280,6 +320,9 @@ function ns.FindSources()
         local id = l and tonumber(l:match("item:(%d+)"))
         if id then have[id] = true end
     end
+    local list = {}
+    for _, e in ipairs(static) do known[e[1]] = true list[#list + 1] = e end
+    for _, e in ipairs(DynamicSources(have, known)) do list[#list + 1] = e end
     for _, e in ipairs(list) do
         local id, name, req, how, where, note = e[1], e[2], e[3], e[4], e[5], e[6]
         if not have[id] and req <= level then

@@ -177,7 +177,7 @@ function ns.RefreshUI()
         local list, pending, checked = ns.FindSources()
         if not list then
             Resize(6)
-            frame.empty:SetText("No built-in where-to-get list for your class yet.\nThe Auction tab works for every class.")
+            frame.empty:SetText("Nothing to check yet. The Auction tab works for every class.")
             frame.empty:Show()
             frame.more:SetText("")
             return
@@ -186,7 +186,7 @@ function ns.RefreshUI()
         local shown = math.min(#list, 8)
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... reopen in a moment."
-                or (checked or 0) == 0 and ("The built-in lists have nothing for level %d yet. Try the Auction tab."):format(UnitLevel("player") or 0)
+                or (checked or 0) == 0 and ("Nothing to check at level %d yet. Where to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
                 or ("Checked %d known items for level %d: none beat what you're wearing. Try the Auction tab."):format(checked or 0, UnitLevel("player") or 0))
             frame.empty:Show()
         else
