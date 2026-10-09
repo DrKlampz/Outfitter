@@ -219,3 +219,54 @@ f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
     C_Timer.After(20, ns.QuestIndexStart)       -- quietly, once the game has settled
 end)
+
+-- What a vendor charges: remembered whenever you open a merchant window (gold, honor, tokens...),
+-- falling back to the plain gold price Profiteer has seen.
+local function CostParts(i)
+    local parts = {}
+    local n = GetMerchantItemCostInfo and GetMerchantItemCostInfo(i) or 0
+    for j = 1, n or 0 do
+        local tex, val, link, name = GetMerchantItemCostItem(i, j)
+        if val and val > 0 then
+            local label = name or link
+            if not label then
+                local t = tostring(tex or ""):lower()
+                label = t:find("honor", 1, true) and "honor" or t:find("arena", 1, true) and "arena points" or "currency"
+            end
+            parts[#parts + 1] = val .. " " .. label
+        end
+    end
+    return parts
+end
+
+local function ScanMerchant()
+    if not (ns.db and GetMerchantNumItems) then return end
+    ns.db.vendorCost = ns.db.vendorCost or {}
+    for i = 1, GetMerchantNumItems() or 0 do
+        local link = GetMerchantItemLink and GetMerchantItemLink(i)
+        local id = link and tonumber(link:match("item:(%d+)"))
+        if id then
+            local _, _, price, qty = GetMerchantItemInfo(i)
+            local parts = {}
+            if price and price > 0 then parts[1] = ns.Money(price) end
+            for _, p in ipairs(CostParts(i)) do parts[#parts + 1] = p end
+            if #parts > 0 then
+                local s = table.concat(parts, " + ")
+                if qty and qty > 1 then s = s .. " (for " .. qty .. ")" end
+                ns.db.vendorCost[id] = s
+            end
+        end
+    end
+end
+
+function ns.VendorCost(id)
+    local c = ns.db and ns.db.vendorCost and ns.db.vendorCost[id]
+    if c then return c end
+    local p = ProfiteerDB and ProfiteerDB.vendor and ProfiteerDB.vendor[id]
+    if p and p > 0 then return ns.Money(p) end
+end
+
+local mf = CreateFrame("Frame")
+mf:RegisterEvent("MERCHANT_SHOW")
+mf:RegisterEvent("MERCHANT_UPDATE")
+mf:SetScript("OnEvent", function() pcall(ScanMerchant) end)

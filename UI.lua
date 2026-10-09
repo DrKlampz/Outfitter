@@ -5,6 +5,8 @@ local tab = "bags"
 
 local ROW_H, ROWS = 24, 12
 local stride = ROW_H
+local usedH = 0         -- height of the rows placed so far (rows can wrap onto extra lines)
+local wrapSub = false   -- Where-to-get rows let the second line wrap instead of cutting it off
 local TOP = 90          -- y of the first row
 local WIDTH = 470
 
@@ -73,9 +75,18 @@ end
 local function Fill(i, link, note, sub, label)
     local r = Row(i)
     r:ClearAllPoints()
-    r:SetPoint("TOPLEFT", 16, -TOP - (i - 1) * stride)
-    r:SetHeight(stride)
+    r.sub:SetMaxLines(wrapSub and 0 or 1)
+    r.sub:SetWordWrap(wrapSub)
     r.sub:SetText(sub or "")
+    local h = stride
+    if wrapSub and sub then
+        local sh = r.sub.GetStringHeight and r.sub:GetStringHeight() or 0
+        if type(sh) == "number" and sh > 0 then h = math.max(stride, 16 + sh + 6) end
+    end
+    if i == 1 then usedH = 0 end
+    r:SetPoint("TOPLEFT", 16, -TOP - (wrapSub and usedH or (i - 1) * stride))
+    r:SetHeight(h)
+    usedH = usedH + h
     r.name:ClearAllPoints()
     if sub then r.name:SetPoint("TOPLEFT", r.icon, "TOPRIGHT", 6, -1)
     else r.name:SetPoint("LEFT", r.icon, "RIGHT", 6, 0) end
@@ -93,6 +104,8 @@ function ns.RefreshUI()
     if not frame or not frame:IsShown() then return end
     for _, r in ipairs(rows) do r:Hide() end
     stride = ROW_H
+    wrapSub = false
+    usedH = 0
     frame.empty:SetWidth(WIDTH - 40)
     local spec = ns.Spec()
     local class = ns.Class()
@@ -195,7 +208,8 @@ function ns.RefreshUI()
             return
         end
         stride = 34
-        local shown = math.min(#list, 12)
+        wrapSub = true
+        local shown = #list
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... reopen in a moment."
                 or (checked or 0) == 0 and ("Nothing to check at level %d yet. Where to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
@@ -213,11 +227,16 @@ function ns.RefreshUI()
             note = note .. (e.tooHigh and (" |cffffaa00lvl %d|r"):format(e.tooHigh) or "")
             local src = ("%s: %s"):format(e.how:sub(1, 1):upper() .. e.how:sub(2), e.where)
             if e.note ~= "" then src = src .. " (" .. e.note .. ")" end
+            if e.how == "vendor" and ns.VendorCost then
+                local c = ns.VendorCost(e.id)
+                src = src .. (c and ("\n|cffffd100Cost: " .. c .. "|r") or "\n|cffaaaaaaCost: unknown until you visit the vendor|r")
+            end
             local real = LinkText(e.link)
             Fill(i, e.link, note, src, (real and real ~= e.link) and real or ("|cff%s%s|r"):format("1eff00", e.name))
         end
-        Resize(math.max(shown, 5))
-        frame.more:SetText(#list > shown and ("+%d more"):format(#list - shown) or "")
+        Resize(5)
+        if shown > 0 then frame:SetHeight(TOP + math.max(usedH, 5 * stride) + 36) end
+        frame.more:SetText("")
     end
 end
 

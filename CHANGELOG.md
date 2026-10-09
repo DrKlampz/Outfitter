@@ -1,5 +1,10 @@
 # Outfitter
 
+## v0.6.2
+- Where to get shows every result instead of cutting off with "+N more".
+- Long source lines (several vendors, long zone names) now wrap inside the window instead of running off the edge.
+- Vendor items show what they cost: gold, honor, arena points or trade items. Prices are remembered once you open that vendor (or from Profiteer's gold prices); until then it says the price is unknown.
+
 ## v0.6.1
 - Quest rewards are back for every class: a bundled list of Classic quest rewards (armor and weapons, with each quest's level, race and class limits and zone) is combined with the Questie vendor and dungeon data. Quest rewards show as "Quest: name - zone".
 - Items that would give you nothing (fishing hats and buckets, anything with no stats you use) are no longer suggested for empty slots.
