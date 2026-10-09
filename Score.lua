@@ -104,6 +104,51 @@ end
 local function IsRed(r, g, b) return r and r > 0.9 and g < 0.2 and b < 0.2 end
 
 -- Returns { stats = {...}, unusable = text or nil, reqLevel = n or nil } for an item link.
+-- Does the player have this profession / skill at that rank? nil when the client can't tell.
+local function HasSkill(name, need)
+    local n = _G.GetNumSkillLines and GetNumSkillLines()
+    if not n or not _G.GetSkillLineInfo then return nil end
+    for i = 1, n do
+        local sname, header, _, rank = GetSkillLineInfo(i)
+        if not header and sname and sname:lower() == name:lower() then
+            return (rank or 0) >= need
+        end
+    end
+    return false
+end
+
+-- Armor types by class: the highest the class can wear from this level on.
+local ARMOR_FROM = {
+    MAGE = { Cloth = 1 }, WARLOCK = { Cloth = 1 }, PRIEST = { Cloth = 1 },
+    ROGUE = { Cloth = 1, Leather = 1 }, DRUID = { Cloth = 1, Leather = 1 },
+    HUNTER = { Cloth = 1, Leather = 1, Mail = 40 }, SHAMAN = { Cloth = 1, Leather = 1, Mail = 40, Shield = 1 },
+    WARRIOR = { Cloth = 1, Leather = 1, Mail = 1, Plate = 40, Shield = 1 },
+    PALADIN = { Cloth = 1, Leather = 1, Mail = 1, Plate = 40, Shield = 1 },
+}
+
+-- A requirement line, whatever colour the tooltip painted it. Returns "level", n | "unusable", text | nil
+local function ReadRequirement(text)
+    local lvl = text:match("^Requires [Ll]evel (%d+)")
+    if lvl then return "level", tonumber(lvl) end
+    local skill, rank = text:match("^Requires (.-) %((%d+)%)$")
+    if skill then
+        local has = HasSkill(skill, tonumber(rank))
+        if has == false then return "unusable", text end
+        return nil
+    end
+    local classes = text:match("^Classes: (.+)$")
+    if classes then
+        local _, cls = UnitClass("player")
+        local mine = (UnitClass("player") or ""):lower()
+        if not classes:lower():find(mine, 1, true) then return "unusable", text end
+        return nil
+    end
+    if text:match("^Requires ") and not text:find("^Requires [Ll]evel") then
+        -- reputation, riding, honor rank and the like: only trust the tooltip's own red
+        return "maybe", text
+    end
+end
+
 function ns.ReadItem(link)
     if not link then return nil end
     local c = ns.cache and ns.cache[link]
@@ -113,14 +158,22 @@ function ns.ReadItem(link)
     scan:SetHyperlink(link)
     if scan:NumLines() < 2 then return nil end        -- item data not loaded yet; try again later
     local res = { stats = {} }
+    local _, class = UnitClass("player")
     for i = 2, scan:NumLines() do
         local left = _G["OutfitterScanTipTextLeft" .. i]
         local text = left and left:GetText()
         if text and text ~= "" then
             local r, g, b = left:GetTextColor()
-            if IsRed(r, g, b) then
-                local lvl = text:match("Requires Level (%d+)")
-                if lvl then res.reqLevel = tonumber(lvl) else res.unusable = res.unusable or text end
+            local red = IsRed(r, g, b)
+            local kind, v = ReadRequirement(text)
+            if kind == "level" then
+                res.reqLevel = v
+            elseif kind == "unusable" then
+                res.unusable = res.unusable or v
+            elseif kind == "maybe" then
+                if red then res.unusable = res.unusable or v end
+            elseif red then
+                res.unusable = res.unusable or text
             else
                 ParseLine(res.stats, text)
             end
@@ -129,7 +182,20 @@ function ns.ReadItem(link)
             if rt and rt ~= "" then
                 local rr, rg, rb = right:GetTextColor()
                 if IsRed(rr, rg, rb) and not rt:find("Requires") then res.unusable = res.unusable or rt end
+                local allowed = ARMOR_FROM[class]
+                if allowed and (rt == "Cloth" or rt == "Leather" or rt == "Mail" or rt == "Plate" or rt == "Shield") then
+                    local from = allowed[rt]
+                    local lv = UnitLevel("player") or 1
+                    if not from or lv < from then res.unusable = res.unusable or rt end
+                end
             end
+        end
+    end
+    if not res.reqLevel then
+        local fn = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+        if fn then
+            local ok, _, _, _, _, minLevel = pcall(fn, link)
+            if ok and type(minLevel) == "number" and minLevel > 0 then res.reqLevel = minLevel end
         end
     end
     if ns.cache then ns.cache[link] = res end

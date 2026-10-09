@@ -1,5 +1,8 @@
 # Outfitter
 
+## v0.5.3
+- Gear you cannot use yet no longer gets suggested: level, profession rank ("Requires Blacksmithing (125)"), class ("Classes: ..."), and armor type your class cannot wear yet (plate/mail before level 40, shields for non-shield classes) are now checked from the item text itself, not only from the tooltip's red color. The item's minimum level from the game is used as a backup.
+
 ## v0.5.2
 - Fixed the actual cause of the Auction tab freezing: the game rejected a level lookup (UnitLevel needs "player"), so no item was ever checked.
 - The Auction tab can no longer get stuck on "Checking auction items... 0 of N": every batch is error-protected, a stalled check restarts itself, and new auction data replaces a check that was running on old data.
