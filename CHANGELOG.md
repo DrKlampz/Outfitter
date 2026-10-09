@@ -1,5 +1,10 @@
 # Outfitter
 
+## v0.5.7
+- Where to get no longer offers gear you cannot actually get: bind-on-pickup crafts only show if your own character has the profession ("Leatherworking - you know the recipe"), and soulbound or bind-on-pickup gear sitting on another character is no longer offered (it cannot be passed on). Bind-on-equip crafts by your other characters still show.
+- Auction tab rows now show the real colored item names instead of raw "item:1234:::..." text.
+- Weapons your class cannot use at all (a Druid with a sword, a Mage with an axe, and so on) are no longer suggested.
+
 ## v0.5.6
 - Read the "Increases healing done by up to X and damage done by up to Y for all magical spells and effects" line (it was ignored, so pieces carrying it were undervalued and swaps looked much bigger than they are, e.g. +114% instead of about +21%).
 - More stat line forms understood: "+N Spell Damage/Power", "+N Healing Spells", "+N <school> Damage", "+N mana every 5 sec", "+N Attack Power", ranged attack power, and armor with a bonus. Bonuses that only apply "when fighting" something are no longer counted.

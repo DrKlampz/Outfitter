@@ -58,6 +58,18 @@ local function Resize(n)
     frame:SetHeight(TOP + n * stride + 36)
 end
 
+-- "item:1234::::" strings show as raw text; turn them into the real colored item link once the game knows it
+local function LinkText(link)
+    if type(link) ~= "string" or link:find("|H", 1, true) then return link end
+    local fn = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+    if fn then
+        local ok, name, full = pcall(fn, link)
+        if ok and type(full) == "string" then return full end
+        if ok and type(name) == "string" then return name end
+    end
+    return link
+end
+
 local function Fill(i, link, note, sub, label)
     local r = Row(i)
     r:ClearAllPoints()
@@ -72,7 +84,7 @@ local function Fill(i, link, note, sub, label)
     r.link = link
     local tex = ns.ItemIcon(link) or "Interface\\Icons\\INV_Misc_QuestionMark"
     r.icon:SetTexture(tex)
-    r.name:SetText(label or link or "")
+    r.name:SetText(label or LinkText(link) or "")
     r.note:SetText(note or "")
     r:Show()
 end
@@ -169,7 +181,7 @@ function ns.RefreshUI()
             local age = e.time and time and math.max(0, time() - e.time)
             local ageText = age and (age >= 86400 and ("%dd ago"):format(age / 86400) or age >= 3600 and ("%dh ago"):format(age / 3600) or ("%dm ago"):format(age / 60)) or "?"
             local sub = ("%s%s|r  (%s listed, scanned %s)"):format(afford and "|cffffffff" or "|cffff6060", ns.Money(e.price), tostring(e.n or "?"), ageText)
-            Fill(i, e.link, note, sub, e.link)
+            Fill(i, e.link, note, sub)
         end
         Resize(math.max(shown, 5))
         frame.more:SetText(#list > shown and ("+%d more"):format(#list - shown) or "")

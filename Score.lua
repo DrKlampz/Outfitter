@@ -155,6 +155,21 @@ local ARMOR_FROM = {
     PALADIN = { Cloth = 1, Leather = 1, Mail = 1, Plate = 40, Shield = 1 },
 }
 
+-- Weapon types each class can use at all (training aside).
+local function set(...) local t = {} for _, v in ipairs({ ... }) do t[v] = true end return t end
+local WEAPON_TYPES = set("Axe", "Mace", "Sword", "Dagger", "Fist Weapon", "Polearm", "Staff", "Bow", "Crossbow", "Gun", "Wand", "Thrown")
+local WEAPONS = {
+    WARRIOR = set("Axe", "Mace", "Sword", "Dagger", "Fist Weapon", "Polearm", "Staff", "Bow", "Crossbow", "Gun", "Thrown"),
+    PALADIN = set("Axe", "Mace", "Sword", "Polearm"),
+    HUNTER = set("Axe", "Dagger", "Fist Weapon", "Polearm", "Staff", "Sword", "Bow", "Crossbow", "Gun", "Thrown"),
+    ROGUE = set("Dagger", "Fist Weapon", "Mace", "Sword", "Bow", "Crossbow", "Gun", "Thrown"),
+    PRIEST = set("Dagger", "Mace", "Staff", "Wand"),
+    SHAMAN = set("Axe", "Dagger", "Fist Weapon", "Mace", "Staff"),
+    MAGE = set("Dagger", "Staff", "Sword", "Wand"),
+    WARLOCK = set("Dagger", "Staff", "Sword", "Wand"),
+    DRUID = set("Dagger", "Fist Weapon", "Mace", "Polearm", "Staff"),
+}
+
 -- A requirement line, whatever colour the tooltip painted it. Returns "level", n | "unusable", text | nil
 local function ReadRequirement(text)
     local lvl = text:match("^Requires [Ll]evel (%d+)")
@@ -195,6 +210,10 @@ function ns.ReadItem(link)
             local r, g, b = left:GetTextColor()
             local red = IsRed(r, g, b)
             local kind, v = ReadRequirement(text)
+            if text == "Binds when picked up" then res.bind = "bop"
+            elseif text == "Soulbound" then res.bind = "bop"
+            elseif text == "Binds to account" or text == "Binds to Blizzard account" then res.bind = res.bind or "account"
+            elseif text == "Binds when equipped" then res.bind = res.bind or "boe" end
             local setN, setBody = text:match("^%((%d+)%) Set: (.+)$")
             local setHead, setHave = text:match("^(.-) %((%d+)/%d+%)$")
             if setN then
@@ -232,6 +251,8 @@ function ns.ReadItem(link)
             if rt and rt ~= "" then
                 local rr, rg, rb = right:GetTextColor()
                 if IsRed(rr, rg, rb) and not rt:find("Requires") then res.unusable = res.unusable or rt end
+                local wp = WEAPONS[class]
+                if wp and WEAPON_TYPES[rt] and not wp[rt] then res.unusable = res.unusable or rt end
                 local allowed = ARMOR_FROM[class]
                 if allowed and (rt == "Cloth" or rt == "Leather" or rt == "Mail" or rt == "Plate" or rt == "Shield") then
                     local from = allowed[rt]
@@ -399,9 +420,15 @@ local function DynamicSources(have, known)
     local function nameOf(id, fallback)
         return names[id] or fallback or (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or ("item " .. id)
     end
-    local function add(id, name, how, where)
+    -- Soulbound / bind-on-pickup gear cannot be handed from one character to another
+    local function tradable(id)
+        local r = ns.ReadItem and ns.ReadItem("item:" .. id)
+        return r ~= nil and r.bind ~= "bop"
+    end
+    local function add(id, name, how, where, needsTrade)
         if type(id) ~= "number" or have[id] or known[id] then return end
         if not ns.EquipLoc("item:" .. id) then return end        -- not wearable
+        if needsTrade and not tradable(id) then return end
         known[id] = true
         out[#out + 1] = { id, nameOf(id, name), 1, how, where, "" }
     end
@@ -410,7 +437,7 @@ local function DynamicSources(have, known)
         if ShortChar(ck) ~= me and type(inv) == "table" then
             for _, where in ipairs({ "bags", "bank" }) do
                 for id in pairs(type(inv[where]) == "table" and inv[where] or {}) do
-                    add(id, nil, "alt", ("in %s's %s"):format(ShortChar(ck), where))
+                    add(id, nil, "alt", ("in %s's %s"):format(ShortChar(ck), where), true)
                 end
             end
         end
@@ -419,7 +446,9 @@ local function DynamicSources(have, known)
     for ck, profs in pairs(type(db.recipes) == "table" and db.recipes or {}) do
         for prof, recs in pairs(type(profs) == "table" and profs or {}) do
             for _, r in ipairs(type(recs) == "table" and recs or {}) do
-                add(r.id, r.name, "crafted", ("%s - %s knows the recipe"):format(prof, ShortChar(ck)))
+                local mine = ShortChar(ck) == me
+                add(r.id, r.name, "crafted", mine and ("%s - you know the recipe"):format(prof)
+                    or ("%s - %s knows the recipe"):format(prof, ShortChar(ck)), not mine)
             end
         end
     end
@@ -429,6 +458,15 @@ end
 -- Known gear that would beat what you wear, best first: the built-in lists for the cloth casters,
 -- plus gear your other characters hold or can craft (any class).
 -- Returns list, pending (items whose data the game has not sent yet), checked.
+-- A bind-on-pickup craft is only yours if your character has the profession itself.
+local function CraftOnlyByOthers(link, where)
+    local info = ns.ReadItem(link)
+    if not (info and info.bind == "bop") then return false end
+    if where:find("you know", 1, true) then return false end
+    local prof = where:match("^(%a+)")
+    return prof ~= nil and HasSkill(prof, 1) == false
+end
+
 function ns.FindSources()
     local out, pending, checked = {}, 0, 0
     local group = ns.SourceClasses and ns.SourceClasses[ns.Class() or ""]
@@ -455,7 +493,8 @@ function ns.FindSources()
             local r = ns.Compare(link)
             if r == nil then
                 if ns.EquipLoc(link) then pending = pending + 1 end
-            elseif (r.empty or (r.gain and r.gain >= (ns.db.minGain or 3))) and not r.unusable and not r.tooHigh then
+            elseif (r.empty or (r.gain and r.gain >= (ns.db.minGain or 3))) and not r.unusable and not r.tooHigh
+                and not (how == "crafted" and CraftOnlyByOthers(link, where)) then
                 r.link, r.name, r.req, r.how, r.where, r.note, r.id = link, name, req, how, where, note, id
                 if r.empty then r.gain = 1000 + (r.score or 0) end
                 out[#out + 1] = r
