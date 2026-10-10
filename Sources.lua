@@ -105,7 +105,6 @@ ns.Sources.cloth = {
     { 5003, "Crystal Starfire Medallion", 26, "drop", "World drop (no fixed source)", "" },
     { 6695, "Stygian Bone Amulet", 27, "drop", "Blind Hunter, Razorfen Kraul", "" },
     { 5180, "Necklace of Harmony", 29, "drop", "Singer, Northfold Manor, Arathi Highlands", "" },
-    { 23169, "Scorn's Icy Choker", 30, "drop", "Scorn, Scarlet Monastery Graveyard", "" },
     { 13084, "Kaleidoscope Chain", 30, "drop", "World drop (no fixed source)", "" },
     { 7731, "Ghostshard Talisman", 30, "drop", "Azshir the Sleepless, Scarlet Monastery Graveyard", "" },
     { 4614, "Pendant of Myzrael", 30, "drop", "World drop (no fixed source)", "" },
