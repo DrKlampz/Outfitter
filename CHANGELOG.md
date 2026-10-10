@@ -1,6 +1,7 @@
 # Outfitter
 
 ## v0.7.0
+- Tooltips: hovering any item now adds an Outfitter line (green UPGRADE with the % over what you wear, red worse, grey same, or can't use). It uses the current client's tooltip hook, so it now actually appears; `/outfit tip` toggles it.
 - Wands now score by their damage per second for casters (before, a wand was valued only for its stats, so wand upgrades never showed up).
 - About 750 more boss drops added from AzerothCompendium (v0.7.10) loot tables, covering Forever-added gear in the classic dungeons and bosses that were missing (e.g. Azshir the Sleepless).
 - Proofread the source data against AzerothCompendium's loot tables: removed Scourge Invasion event mobs (Balzaphon, Revanchion, Lord Blackwood, Sever, Lady Falther'ess) that were listed as dungeon bosses; fixed Staff of Dominance (Golemagg, Molten Core) and Rod of the Sleepwalker (Twilight Lord Kelris, Blackfathom Deeps); dropped an entry with no known source.
