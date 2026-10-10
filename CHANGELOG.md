@@ -1,6 +1,7 @@
 # Outfitter
 
 ## v0.7.0
+- Proofread the source data against AzerothCompendium's loot tables: removed Scourge Invasion event mobs (Balzaphon, Revanchion, Lord Blackwood, Sever, Lady Falther'ess) that were listed as dungeon bosses; fixed Staff of Dominance (Golemagg, Molten Core) and Rod of the Sleepwalker (Twilight Lord Kelris, Blackfathom Deeps); dropped an entry with no known source.
 - Removed Scorn's Icy Choker's bogus source (Scorn is a Scourge Invasion event mob, not in Scarlet Monastery).
 - Scoring fix: Warlocks were being offered healing gear. Pure healing items (healing power, no spell damage) now get half credit for specs that don't heal, and Warlock weights for Spirit, mana regen and Stamina were lowered (Life Tap makes them worth far less than spell damage).
 - Dungeon and raid drops are now accurate: every item lists the actual bosses that drop it and the instance (up to three bosses, bosses only; ordinary monsters only when nothing else drops it). Before, the first monster in the quest database was shown, often a trash mob or the wrong place.
