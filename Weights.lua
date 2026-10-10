@@ -32,21 +32,21 @@ set("ROGUE", "Assassination", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS
 set("ROGUE", "Combat", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS = 16, HIT = 18, CRIT = 14 }))
 set("ROGUE", "Subtlety", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS = 12, HIT = 16, CRIT = 14 }))
 
-set("PRIEST", "Discipline", "healer", { INT = 1.8, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.01 })
-set("PRIEST", "Holy", "healer", { INT = 1.8, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.01 })
-set("PRIEST", "Shadow", "dps", { INT = 1.0, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, ARMOR = 0.01 })
+set("PRIEST", "Discipline", "healer", { INT = 1.8, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Holy", "healer", { INT = 1.8, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Shadow", "dps", { INT = 1.0, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2, ARMOR = 0.01 })
 
 set("SHAMAN", "Elemental", "dps", { INT = 1.2, STA = 0.4, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.5, ARMOR = 0.02 })
 set("SHAMAN", "Enhancement", "dps", melee({ STR = 1.6, AGI = 1.0, AP = 1.0, INT = 0.2, DPS = 16, HIT = 16, CRIT = 14 }))
 set("SHAMAN", "Restoration", "healer", { INT = 1.8, SPI = 0.4, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.02 })
 
-set("MAGE", "Arcane", "dps", { INT = 1.2, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, ARMOR = 0.01 })
-set("MAGE", "Fire", "dps", { INT = 1.0, SPI = 0.2, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.6, ARMOR = 0.01 })
-set("MAGE", "Frost", "dps", { INT = 1.0, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.8, ARMOR = 0.01 })
+set("MAGE", "Arcane", "dps", { INT = 1.2, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2.5, ARMOR = 0.01 })
+set("MAGE", "Fire", "dps", { INT = 1.0, SPI = 0.2, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.6, WDPS = 2.5, ARMOR = 0.01 })
+set("MAGE", "Frost", "dps", { INT = 1.0, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.8, WDPS = 2.5, ARMOR = 0.01 })
 
-set("WARLOCK", "Affliction", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, ARMOR = 0.01 })
-set("WARLOCK", "Demonology", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, ARMOR = 0.01 })
-set("WARLOCK", "Destruction", "dps", { STA = 0.5, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.15, ARMOR = 0.01 })
+set("WARLOCK", "Affliction", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
+set("WARLOCK", "Demonology", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
+set("WARLOCK", "Destruction", "dps", { STA = 0.5, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
 
 set("DRUID", "Balance", "dps", { INT = 1.2, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.2, ARMOR = 0.01 })
 set("DRUID", "Feral (cat)", "dps", { AGI = 2.0, STR = 2.0, STA = 0.5, AP = 0.8, CRIT = 14, HIT = 12, DPS = 4, ARMOR = 0.02 })

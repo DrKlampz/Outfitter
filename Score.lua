@@ -274,6 +274,7 @@ function ns.ReadItem(link)
             if rt and rt ~= "" then
                 local rr, rg, rb = right:GetTextColor()
                 if IsRed(rr, rg, rb) and not rt:find("Requires") then res.unusable = res.unusable or rt end
+                if rt == "Wand" then res.isWand = true end
                 local wp = WEAPONS[class]
                 if wp and WEAPON_TYPES[rt] and not wp[rt] then res.unusable = res.unusable or rt end
                 if wp and wp[rt] and not res.unusable then
@@ -289,6 +290,8 @@ function ns.ReadItem(link)
             end
         end
     end
+    -- a wand is worth its damage per second to a caster (melee weapon speed means nothing to one)
+    if res.isWand and res.stats.DPS then res.stats.WDPS = res.stats.DPS end
     if not res.reqLevel then
         local fn = (C_Item and C_Item.GetItemInfo) or GetItemInfo
         if fn then
