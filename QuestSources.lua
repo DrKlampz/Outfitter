@@ -76,6 +76,34 @@ local function AddRewards()
     end
 end
 
+-- Dungeon and raid bosses for each item: the Classic loot data (ns.BossDrops) plus the WoW Forever dungeons
+-- (ns.ForeverInstances). Q.boss[itemId] = { { boss, instance, bossLevel, isBoss }, ... }
+local function AddBossDrops()
+    Q.boss = {}
+    local function add(id, boss, inst, lvl, isBoss)
+        local list = Q.boss[id]
+        if not list then list = {} Q.boss[id] = list end
+        for _, e in ipairs(list) do if e[1] == boss and e[2] == inst then return end end
+        list[#list + 1] = { boss, inst, lvl, isBoss }
+        local loc = ns.EquipLoc and ns.EquipLoc("item:" .. id)
+        if loc and ns.SlotsFor and ns.SlotsFor(loc) then
+            local it = Q.items[id]
+            if not it then
+                Q.items[id] = { lvl = math.max(1, (lvl or 1) - 5) }
+                Q.count = Q.count + 1
+            end
+        end
+    end
+    for id, list in pairs(ns.BossDrops or {}) do
+        for _, e in ipairs(list) do add(id, e[1], e[2], e[4], true) end
+    end
+    for _, inst in ipairs(ns.ForeverInstances or {}) do
+        for _, b in ipairs(inst[5]) do
+            for _, id in ipairs(b[3]) do add(id, b[1], inst[1], b[2], true) end
+        end
+    end
+end
+
 function ns.QuestIndexStart()
     if Q.ready or Q.building then return end
     local all
@@ -83,10 +111,11 @@ function ns.QuestIndexStart()
         local ok, a = pcall(Lib().Item.GetAllIds)
         if ok and type(a) == "table" then all = a end
     end
-    if not all and not ns.QuestRewards then return end
+    if not all and not ns.QuestRewards and not ns.BossDrops and not ns.ForeverInstances then return end
     Q.building = true
     ids, pos = all or {}, 1
     AddRewards()
+    AddBossDrops()
     if not all then Q.ready, Q.building = true, false return end
     C_Timer.After(0.02, Slice)
 end
@@ -195,6 +224,19 @@ function ns.QuestSources(level, have, known)
                         if n then how, where = "vendor", z and (n .. ", " .. z) or n break end
                     end
                 end
+            end
+            if not how and Q.boss and Q.boss[id] then
+                local list, byInst, order = Q.boss[id], {}, {}
+                for _, e in ipairs(list) do
+                    if not byInst[e[2]] then byInst[e[2]] = {} order[#order + 1] = e[2] end
+                    local t = byInst[e[2]]
+                    if #t < 3 then t[#t + 1] = e[1] end
+                end
+                local parts = {}
+                for k = 1, math.min(#order, 2) do
+                    parts[#parts + 1] = table.concat(byInst[order[k]], ", ") .. " - " .. order[k]
+                end
+                how, where = "drop", table.concat(parts, "; ")
             end
             if not how and it.d and L then
                 for k = 1, math.min(#it.d, 30) do
