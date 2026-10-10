@@ -97,9 +97,11 @@ local function AddBossDrops()
     for id, list in pairs(ns.BossDrops or {}) do
         for _, e in ipairs(list) do add(id, e[1], e[2], e[4], true) end
     end
-    for _, inst in ipairs(ns.ForeverInstances or {}) do
-        for _, b in ipairs(inst[5]) do
-            for _, id in ipairs(b[3]) do add(id, b[1], inst[1], b[2], true) end
+    for _, list in ipairs({ ns.ForeverInstances or {}, ns.ForeverDrops or {} }) do
+        for _, inst in ipairs(list) do
+            for _, b in ipairs(inst[5]) do
+                for _, id in ipairs(b[3]) do add(id, b[1], inst[1], b[2], true) end
+            end
         end
     end
 end
@@ -111,7 +113,7 @@ function ns.QuestIndexStart()
         local ok, a = pcall(Lib().Item.GetAllIds)
         if ok and type(a) == "table" then all = a end
     end
-    if not all and not ns.QuestRewards and not ns.BossDrops and not ns.ForeverInstances then return end
+    if not all and not ns.QuestRewards and not ns.BossDrops and not ns.ForeverInstances and not ns.ForeverDrops then return end
     Q.building = true
     ids, pos = all or {}, 1
     AddRewards()
