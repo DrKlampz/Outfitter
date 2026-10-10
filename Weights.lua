@@ -44,9 +44,9 @@ set("MAGE", "Arcane", "dps", { INT = 1.2, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT 
 set("MAGE", "Fire", "dps", { INT = 1.0, SPI = 0.2, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.6, ARMOR = 0.01 })
 set("MAGE", "Frost", "dps", { INT = 1.0, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.8, ARMOR = 0.01 })
 
-set("WARLOCK", "Affliction", "dps", { STA = 0.9, INT = 0.8, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.5, ARMOR = 0.01 })
-set("WARLOCK", "Demonology", "dps", { STA = 0.9, INT = 0.8, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.5, ARMOR = 0.01 })
-set("WARLOCK", "Destruction", "dps", { STA = 0.8, INT = 0.8, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.5, ARMOR = 0.01 })
+set("WARLOCK", "Affliction", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, ARMOR = 0.01 })
+set("WARLOCK", "Demonology", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, ARMOR = 0.01 })
+set("WARLOCK", "Destruction", "dps", { STA = 0.5, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.15, ARMOR = 0.01 })
 
 set("DRUID", "Balance", "dps", { INT = 1.2, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.2, ARMOR = 0.01 })
 set("DRUID", "Feral (cat)", "dps", { AGI = 2.0, STR = 2.0, STA = 0.5, AP = 0.8, CRIT = 14, HIT = 12, DPS = 4, ARMOR = 0.02 })

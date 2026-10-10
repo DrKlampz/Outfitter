@@ -1,6 +1,7 @@
 # Outfitter
 
 ## v0.7.0
+- Scoring fix: Warlocks were being offered healing gear. Pure healing items (healing power, no spell damage) now get half credit for specs that don't heal, and Warlock weights for Spirit, mana regen and Stamina were lowered (Life Tap makes them worth far less than spell damage).
 - Dungeon and raid drops are now accurate: every item lists the actual bosses that drop it and the instance (up to three bosses, bosses only; ordinary monsters only when nothing else drops it). Before, the first monster in the quest database was shown, often a trash mob or the wrong place.
 - WoW Forever's own dungeons are covered: The Hall of Thanes, Ruins of Lordaeron, Excavation Site: Wetlands and City of Dalaran, with their bosses and gear. Classic's database did not know these dungeons, so their drops were missing or unplaced.
 - Gear that WoW Forever added to the original dungeons (for example new drops in Blackfathom Deeps, Gnomeregan, Maraudon and Dire Maul) is included, and named bosses such as Quartermaster Zigris are now recognised as bosses.

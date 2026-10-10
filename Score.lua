@@ -306,6 +306,9 @@ function ns.Score(stats, w)
         local x = w[k]
         if x then s = s + v * x end
     end
+    -- a pure healing item (healing power, no spell damage) has its Intellect, Spirit and mana regen
+    -- budgeted for healing; a spec that doesn't heal gets only half credit for those stats
+    if not w.HEAL and (stats.HEAL or 0) > 0 and (stats.SP or 0) == 0 then s = s * 0.5 end
     return s
 end
 
