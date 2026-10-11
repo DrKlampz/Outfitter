@@ -43,6 +43,7 @@ local function Tip(self)
     end
     GameTooltip:AddLine("Left click: open", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Right click: where to get gear", 0.7, 0.7, 0.7)
+    GameTooltip:AddLine("Alt-click: window looks", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Drag: move this button", 0.7, 0.7, 0.7)
     GameTooltip:Show()
 end
@@ -75,6 +76,7 @@ function ns.BuildMinimapButton()
     ring:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
     ring:SetPoint("TOPLEFT")
     btn:SetScript("OnClick", function(_, button)
+        if IsAltKeyDown() and ns.WinLook then ns.WinLook.Toggle() return end
         if button == "RightButton" then
             if ns.OpenTab then ns.OpenTab("src") end
         elseif ns.ToggleUI then
