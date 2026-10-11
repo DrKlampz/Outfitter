@@ -218,7 +218,7 @@ function ns.RefreshUI()
         local shown = #list
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... reopen in a moment."
-                or (checked or 0) == 0 and ("Nothing to check at level %d yet. Where to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
+                or (checked or 0) == 0 and ("Nothing to check at level %d yet. What to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
                 or ("Checked %d known items for level %d: none beat what you're wearing. Try the Auction tab."):format(checked or 0, UnitLevel("player") or 0))
             frame.empty:Show()
         else
@@ -308,7 +308,7 @@ local function Build()
     menu:SetScript("OnShow", menu.Populate)
     frame.tabs = {}
     local x = 14
-    for _, t in ipairs({ { "bags", "Bag upgrades" }, { "worn", "What I wear" }, { "src", "Where to get" }, { "ah", "Auction" } }) do
+    for _, t in ipairs({ { "bags", "Inventory" }, { "worn", "Equipped" }, { "src", "What to get" }, { "ah", "Auction" } }) do
         local b = Button(frame, t[2], 104, function() tab = t[1] ns.RefreshUI() end)
         b:SetPoint("TOPLEFT", x, -58)
         frame.tabs[t[1]] = b

@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- Minimap button: left click opens the window, right click opens "Where to get",
+-- Minimap button: left click opens the window, right click opens "What to get",
 -- drag to move it around the minimap. /outfit minimap hides or shows it.
 local btn
 local ICON = "Interface\\Icons\\INV_Helmet_01"
@@ -42,7 +42,7 @@ local function Tip(self)
         GameTooltip:AddLine(#list > 0 and ("%d upgrade%s in your bags"):format(#list, #list == 1 and "" or "s") or "No upgrades in your bags", 0.4, 1, 0.4)
     end
     GameTooltip:AddLine("Left click: open", 0.7, 0.7, 0.7)
-    GameTooltip:AddLine("Right click: where to get gear", 0.7, 0.7, 0.7)
+    GameTooltip:AddLine("Right click: what to get", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Alt-click: window looks", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Drag: move this button", 0.7, 0.7, 0.7)
     GameTooltip:Show()

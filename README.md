@@ -5,12 +5,12 @@ A gear advisor for **WoW: Forever**. Tell it your class and spec and it rates th
 Open it with `/outfit`, the minimap button, or the addon list.
 
 ## What it does
-- **Bag upgrades.** Every piece of gear in your bags is read from its real tooltip, scored for your spec, and compared with the item you would replace. Only the best upgrade per slot is listed (two for rings and trinkets). An empty slot always gets the best item you can use.
-- **What I wear.** Every equipped item with its score, and which slots are empty.
-- **Where to get.** Known quest rewards, dungeon drops, vendor and crafted items for your level, scored the same way, with where to get each one. For **every class** it also lists gear your other characters carry in their bags or bank, and gear one of your characters can craft (this part reads Profiteer's saved data, so install Profiteer). Built-in lists of quest, dungeon and vendor gear cover **Mage, Warlock and Priest** so far; the Auction tab works for every class.
+- **Inventory.** Every piece of gear in your bags is read from its real tooltip, scored for your spec, and compared with the item you would replace. Only the best upgrade per slot is listed (two for rings and trinkets). An empty slot always gets the best item you can use.
+- **Equipped.** Every equipped item with its score, and which slots are empty.
+- **What to get.** Known quest rewards, dungeon drops, vendor and crafted items for your level, scored the same way, with where to get each one. For **every class** it also lists gear your other characters carry in their bags or bank, and gear one of your characters can craft (this part reads Profiteer's saved data, so install Profiteer). Built-in lists of quest, dungeon and vendor gear cover **Mage, Warlock and Priest** so far; the Auction tab works for every class.
 - **Auction.** Reads the prices Profiteer saved from your last Auction House scan and shows the best gear for sale per slot, with its price (red when you cannot afford it yet). Needs Profiteer.
 - **Tooltips.** Hover any item for a line saying whether it is an upgrade, worse or about the same compared with what you wear.
-- **Minimap button** (left click opens, right click opens Where to get, drag to move) and a chat alert when a new upgrade lands in your bags.
+- **Minimap button** (left click opens, right click opens What to get, drag to move) and a chat alert when a new upgrade lands in your bags.
 
 Everything is limited to what you can use now: items above your level or that your class cannot wear are never suggested.
 
@@ -31,4 +31,4 @@ Outfitter guesses your spec from your talents. Pick a different one from the dro
 
 The item text is read in English. MIT licensed.
 
-Where to get uses the quest database from Questie (QuestieDB) when it is installed, so every class gets quest, vendor and dungeon suggestions.
+What to get uses the quest database from Questie (QuestieDB) when it is installed, so every class gets quest, vendor and dungeon suggestions.
