@@ -6,6 +6,6 @@ ns.WinLook.Setup({
     media = "Interface\\AddOns\\Outfitter\\Media\\",
     db = function() return OutfitterDB end,
     windows = {
-        { id = "main", name = "Main window", global = "OutfitterFrame", strip = "template", title = function(f) return f.TitleText end },
+        { id = "main", name = "Main window", global = "OutfitterFrame", strip = "template", defaultOn = true, title = function(f) return f.TitleText end },
     },
 })
