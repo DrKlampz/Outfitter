@@ -11,6 +11,8 @@
 
 Weights.lua
 Core.lua
+Look.lua
+LookSetup.lua
 Score.lua
 Sources.lua
 QuestData.lua

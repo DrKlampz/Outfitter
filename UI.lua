@@ -249,6 +249,7 @@ end
 local function Build()
     frame = CreateFrame("Frame", "OutfitterFrame", UIParent, "BasicFrameTemplateWithInset")
     frame:SetSize(WIDTH, 300)
+    if ns.WinLook then ns.WinLook.Attach("main", frame) end
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("HIGH")
     frame:SetMovable(true)
