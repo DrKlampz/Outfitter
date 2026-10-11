@@ -1,7 +1,7 @@
 # Outfitter
 
 ## Unreleased
-- New: window customization. Alt-click the minimap button to restyle each window separately (or all together): background textures, colors with copy/paste, opacity sliders, border styles, fonts, scale and position lock. Off until you tick "Use a custom look"; unticking restores the original.
+- New: window customization. Alt-click the minimap button to restyle each window separately (or all together): background textures, colors with copy/paste, opacity sliders, border styles, fonts, scale and position lock. Over 50 fonts to pick from (install the LookFonts folder for the bundled ones; SharedMedia fonts show up too). Off until you tick "Use a custom look"; unticking restores the original.
 
 ## v0.7.0
 - Tooltips: hovering any item now adds an Outfitter line (green UPGRADE with the % over what you wear, red worse, grey same, or can't use). It uses the current client's tooltip hook, so it now actually appears; `/outfit tip` toggles it.
