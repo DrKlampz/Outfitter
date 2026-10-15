@@ -332,14 +332,30 @@ ns.SLOT_NAMES = { [1] = "Head", [2] = "Neck", [3] = "Shoulders", [5] = "Chest", 
 -- the melee weapons are worth their stats.
 local MELEE_LOC = { INVTYPE_WEAPON = true, INVTYPE_2HWEAPON = true, INVTYPE_WEAPONMAINHAND = true, INVTYPE_WEAPONOFFHAND = true }
 local huntMelee = setmetatable({}, { __mode = "k" })
+local RANGED_LOC = { INVTYPE_RANGED = true, INVTYPE_RANGEDRIGHT = true, INVTYPE_THROWN = true }
+local lowRanged = setmetatable({}, { __mode = "k" })
 local function WeightsFor(link, w)
-    if ns.Class() == "HUNTER" and w.DPS and MELEE_LOC[ns.EquipLoc(link) or ""] then
+    local loc = w.DPS and ns.EquipLoc(link) or ""
+    local class = ns.Class()
+    if class == "HUNTER" and MELEE_LOC[loc or ""] then
         local c = huntMelee[w]
         if not c then
             c = {}
             for k, v in pairs(w) do c[k] = v end
             c.DPS = w.DPS * 0.07
             huntMelee[w] = c
+        end
+        return c
+    end
+    -- Warriors, Rogues and the other melee classes only pull with a bow, gun or thrown weapon:
+    -- its damage per second is not worth what a main hand weapon's is.
+    if class ~= "HUNTER" and RANGED_LOC[loc or ""] then
+        local c = lowRanged[w]
+        if not c then
+            c = {}
+            for k, v in pairs(w) do c[k] = v end
+            c.DPS = w.DPS * 0.07
+            lowRanged[w] = c
         end
         return c
     end

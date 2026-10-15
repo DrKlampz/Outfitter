@@ -18,7 +18,9 @@ end
 
 set("WARRIOR", "Arms", "dps", melee({ STR = 2.0, AGI = 1.0, AP = 1.0, DPS = 14, HIT = 16, CRIT = 16 }))
 set("WARRIOR", "Fury", "dps", melee({ STR = 2.0, AGI = 1.2, AP = 1.0, DPS = 12, HIT = 18, CRIT = 18 }))
-set("WARRIOR", "Protection", "tank", { STA = 1.5, STR = 0.6, AGI = 0.8, ARMOR = 0.12, DEF = 2.5, DODGE = 14, PARRY = 14, BLOCK = 8, BLOCKVAL = 0.5, AP = 0.3, HIT = 6, CRIT = 5, DPS = 4 })
+-- Protection: stamina is the yardstick. At level 60 one point of armor is worth about 0.05 stamina, one percent of
+-- dodge or parry about 5 to 7 (a little more for the threat from Revenge), defense a bit under 2.
+set("WARRIOR", "Protection", "tank", { STA = 1.5, STR = 0.6, AGI = 0.6, ARMOR = 0.08, DEF = 2.2, DODGE = 10, PARRY = 10, BLOCK = 6, BLOCKVAL = 0.5, AP = 0.3, HIT = 6, CRIT = 5, DPS = 4 })
 
 set("PALADIN", "Retribution", "dps", melee({ STR = 2.0, AGI = 0.8, INT = 0.1, AP = 1.0, DPS = 15, HIT = 16, CRIT = 14, SP = 0.1 }))
 set("PALADIN", "Protection", "tank", { STA = 1.5, STR = 0.9, AGI = 0.5, SPI = 0.15, ARMOR = 0.12, DEF = 2.5, DODGE = 12, PARRY = 12, BLOCK = 10, BLOCKVAL = 0.6, SP = 0.5, INT = 0.3, DPS = 2 })

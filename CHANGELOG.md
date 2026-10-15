@@ -1,6 +1,7 @@
 # Outfitter
 
 ## Unreleased
+- Warriors: a bow, gun or thrown weapon no longer scores like a main hand weapon (it is only for pulling), which was making ranged weapons look like huge upgrades. Protection weights rebalanced so armor, dodge, parry and block are worth what they are next to stamina.
 - Characters window (shift-click the minimap button): delete a character's saved spec, and deleted characters are spotted and removed automatically.
 
 ## v0.8.3
