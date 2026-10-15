@@ -29,15 +29,23 @@ function ns.GuessSpec()
     local class = ns.Class()
     local list = ns.Weights[class]
     if not list then return 1 end
-    local best, bestPts = 1, -1
+    local best, bestPts, bestName = 1, -1, nil
     if GetNumTalentTabs and GetTalentTabInfo then
         local tabs = GetNumTalentTabs() or 0
         for i = 1, tabs do
-            local _, _, pts = GetTalentTabInfo(i)
+            local name, _, pts = GetTalentTabInfo(i)
             pts = tonumber(pts) or 0
-            if pts > bestPts then best, bestPts = i, pts end
+            if pts > bestPts then best, bestPts, bestName = i, pts, name end
         end
     end
+    -- match by the tree's name first: the talent trees are not listed in the same order as the weights
+    -- (a Paladin's trees run Holy, Protection, Retribution)
+    if type(bestName) == "string" then
+        for i, sp in ipairs(list) do
+            if sp.name == bestName then return i end
+        end
+    end
+    if class == "PALADIN" then return ({ 3, 2, 1 })[best] or 1 end   -- tree order: Holy, Protection, Retribution
     if class == "DRUID" and best == 2 then return 2 end        -- feral defaults to cat
     if class == "DRUID" and best == 3 then return 4 end        -- druid tree 3 is Restoration
     return math.min(best, #list)

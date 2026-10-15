@@ -328,10 +328,31 @@ ns.SLOT_NAMES = { [1] = "Head", [2] = "Neck", [3] = "Shoulders", [5] = "Chest", 
     [9] = "Wrists", [10] = "Hands", [11] = "Ring", [12] = "Ring", [13] = "Trinket", [14] = "Trinket", [15] = "Back",
     [16] = "Main hand", [17] = "Off hand", [18] = "Ranged" }
 
+-- A Hunter fights from range: weapon damage per second only matters on the ranged weapon,
+-- the melee weapons are worth their stats.
+local MELEE_LOC = { INVTYPE_WEAPON = true, INVTYPE_2HWEAPON = true, INVTYPE_WEAPONMAINHAND = true, INVTYPE_WEAPONOFFHAND = true }
+local huntMelee = setmetatable({}, { __mode = "k" })
+local function WeightsFor(link, w)
+    if ns.Class() == "HUNTER" and w.DPS and MELEE_LOC[ns.EquipLoc(link) or ""] then
+        local c = huntMelee[w]
+        if not c then
+            c = {}
+            for k, v in pairs(w) do c[k] = v end
+            c.DPS = w.DPS * 0.07
+            huntMelee[w] = c
+        end
+        return c
+    end
+    return w
+end
+
 local function ItemScore(link, w)
     local r = ns.ReadItem(link)
-    return r and ns.Score(r.stats, w) or 0
+    return r and ns.Score(r.stats, WeightsFor(link, w)) or 0
 end
+
+-- levels at which a class learns to dual wield (Shaman need a talent, so they are left out)
+local DUAL_WIELD_FROM = { ROGUE = 10, WARRIOR = 20, HUNTER = 20 }
 
 -- Compare one item to what is worn. Returns a result table or nil if it is not gear.
 -- { gain = percent (positive = better), slot = id, worn = link, score, wornScore, unusable, reqLevel, tooHigh }
@@ -344,7 +365,7 @@ function ns.Compare(link)
     local info = ns.ReadItem(link)
     if not info then return nil end
     local w = spec.w
-    local score = ns.Score(info.stats, w)
+    local score = ns.Score(info.stats, WeightsFor(link, w))
     local level = UnitLevel("player") or 1
     local res = { score = score, unusable = info.unusable, reqLevel = info.reqLevel, equipLoc = equipLoc }
     if info.reqLevel and info.reqLevel > level then res.tooHigh = info.reqLevel end
@@ -361,7 +382,10 @@ function ns.Compare(link)
             -- a one-hander only goes in the off hand if you already dual wield
             local oh = GetInventoryItemLink("player", 17)
             local ohLoc = oh and ns.EquipLoc(oh)
-            if ohLoc ~= "INVTYPE_WEAPON" and ohLoc ~= "INVTYPE_WEAPONOFFHAND" then slots = { 16 } end
+            -- ...or you can dual wield and the off hand is still empty
+            local mhl = GetInventoryItemLink("player", 16)
+            local canDW = not oh and mhl and ns.EquipLoc(mhl) ~= "INVTYPE_2HWEAPON" and spec.role == "dps" and (DUAL_WIELD_FROM[ns.Class() or ""] or 99) <= level
+            if ohLoc ~= "INVTYPE_WEAPON" and ohLoc ~= "INVTYPE_WEAPONOFFHAND" and not canDW then slots = { 16 } end
         end
         for _, s in ipairs(slots) do
             local l = GetInventoryItemLink("player", s)
