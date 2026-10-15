@@ -337,7 +337,8 @@ local function Build()
             return
         end
         ns.cache = {}
-        if ns.AuctionDirty then ns.AuctionDirty() end
+        -- only a change to what you wear (or your level) changes the auction answer; bag shuffles don't
+        if event ~= "BAG_UPDATE_DELAYED" and ns.AuctionDirty then ns.AuctionDirty() end
         ns.RefreshUI()
     end)
     table.insert(UISpecialFrames, "OutfitterFrame")

@@ -51,9 +51,13 @@ local function IngestStep()
     end
     g.i = last + 1
     if g.i >= g.n then
+        -- only restart the check when the listings actually changed; an unchanged re-scan must not wipe the results
+        local function Sig(items) local n, sum = 0, 0 for k, e in pairs(items or {}) do n = n + 1 sum = sum + (e.p or 0) + (e.n or 0) end return n .. ":" .. sum end
+        local same = ns.db.ah and Sig(ns.db.ah.items) == Sig(g.items)
         ns.db.ah = { time = time and time() or 0, items = g.items }
         ingest = nil
-        ns.AuctionDirty()
+        state.lastIngest = GetTime and GetTime() or 0
+        if not (same and state.ready) then ns.AuctionDirty() end
         if ns.RefreshUI then ns.RefreshUI() end
     else
         C_Timer.After(0.02, IngestStep)
@@ -65,6 +69,7 @@ ev:RegisterEvent("REPLICATE_ITEM_LIST_UPDATE")
 ev:SetScript("OnEvent", function()
     local C = _G.C_AuctionHouse
     if not C or not C.GetNumReplicateItems or ingest then return end
+    if state.lastIngest and GetTime and GetTime() - state.lastIngest < 120 then return end   -- one read per scan, not a loop
     local n = C.GetNumReplicateItems() or 0
     if n == 0 then return end
     ingest = { i = 0, n = n, items = {}, seen = {} }
