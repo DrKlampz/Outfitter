@@ -1,15 +1,10 @@
 local _, ns = ...
 -- Adds a line to item tooltips saying whether the item beats what you wear:
 --   Outfitter: UPGRADE +12% over [worn item]  /  worse  /  about the same  /  can't use
-local function Add(tip, link)
-    if not ns.db or not ns.db.showTooltip or not ns.Spec or not ns.Spec() then return end
-    if not link then
-        local ok, _, l = pcall(tip.GetItem, tip)
-        link = ok and l or nil
-    end
-    if not link or tip.outfitterDone == link then return end
+local function Verdict(link)
+    if not link or not ns.db or not ns.db.showTooltip or not ns.Spec or not ns.Spec() then return nil end
     local ok, r = pcall(ns.Compare, link)
-    if not ok or not r or not r.gain or r.isWorn then return end
+    if not ok or not r or not r.gain or r.isWorn then return nil end
     local worn = r.worn and r.worn:match("%[(.-)%]") or nil
     local minGain = ns.db.minGain or 3
     local line
@@ -26,6 +21,17 @@ local function Add(tip, link)
     else
         line = "|cffccccccOutfitter: about the same as " .. (worn or "what you wear") .. "|r"
     end
+    return line
+end
+
+local function Add(tip, link)
+    if not link then
+        local ok, _, l = pcall(tip.GetItem, tip)
+        link = ok and l or nil
+    end
+    if not link or tip.outfitterDone == link then return end
+    local line = Verdict(link)
+    if not line then return end
     tip.outfitterDone = link
     tip:AddLine(" ")
     tip:AddLine(line)
@@ -49,3 +55,27 @@ for _, name in ipairs({ "GameTooltip", "ItemRefTooltip", "ShoppingTooltip1", "Sh
         pcall(t.HookScript, t, "OnTooltipCleared", Clear)
     end
 end
+
+-- Dialogue UI draws quest rewards and gossip items in its own tooltip (not the game's), so it needs its own hook
+local dialogueHooked
+local function HookDialogue()
+    if dialogueHooked then return end
+    local api = _G.DialogueUIAPI
+    if not (api and api.AddItemTooltipProcessorExternal) then return end
+    dialogueHooked = true
+    api.AddItemTooltipProcessorExternal(function(tip, itemID, link)
+        link = link or (itemID and ("item:" .. itemID))
+        if not link or tip.outfitterData == tip.tooltipData and tip.outfitterLink == link then return end
+        local line = Verdict(link)
+        if not line then return end
+        tip.outfitterData, tip.outfitterLink = tip.tooltipData, link
+        tip:AddLine(" ")
+        tip:AddLine(line)
+        return true
+    end)
+end
+HookDialogue()
+local dl = CreateFrame("Frame")
+dl:RegisterEvent("ADDON_LOADED")
+dl:RegisterEvent("PLAYER_LOGIN")
+dl:SetScript("OnEvent", function() HookDialogue() end)
