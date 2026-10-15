@@ -23,7 +23,7 @@ set("WARRIOR", "Fury", "dps", melee({ STR = 2.0, AGI = 1.2, AP = 1.0, DPS = 12, 
 set("WARRIOR", "Protection", "tank", { STA = 1.5, STR = 0.6, AGI = 0.6, ARMOR = 0.08, DEF = 2.2, DODGE = 10, PARRY = 10, BLOCK = 6, BLOCKVAL = 0.5, AP = 0.3, HIT = 6, CRIT = 5, DPS = 4 })
 
 set("PALADIN", "Retribution", "dps", melee({ STR = 2.0, AGI = 0.8, INT = 0.1, AP = 1.0, DPS = 15, HIT = 16, CRIT = 14, SP = 0.1 }))
-set("PALADIN", "Protection", "tank", { STA = 1.5, STR = 0.9, AGI = 0.5, SPI = 0.15, ARMOR = 0.12, DEF = 2.5, DODGE = 12, PARRY = 12, BLOCK = 10, BLOCKVAL = 0.6, SP = 0.5, INT = 0.3, DPS = 2 })
+set("PALADIN", "Protection", "tank", { STA = 1.5, STR = 0.9, AGI = 0.5, SPI = 0.15, ARMOR = 0.12, DEF = 2.5, DODGE = 12, PARRY = 12, BLOCK = 10, BLOCKVAL = 0.6, SP = 0.5, INT = 0.3, AP = 0.2, HIT = 3, CRIT = 2, DPS = 2 })
 set("PALADIN", "Holy", "healer", { INT = 1.8, SPI = 0.3, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 8, ARMOR = 0.02 })
 
 set("HUNTER", "Beast Mastery", "dps", { AGI = 2.0, STA = 0.4, INT = 0.3, STR = 0.2, RAP = 1.0, AP = 0.5, CRIT = 14, HIT = 12, DPS = 14, ARMOR = 0.02 })

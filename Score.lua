@@ -415,10 +415,13 @@ function ns.Compare(link)
     wornScore = wornScore or 0
     -- a tank fights with a one-hander and a shield: a two-hander is never the suggestion, and while one is
     -- wielded the main hand and the shield slot both count as empty (a one-hander and a shield are what is missing)
-    local tank = spec.role == "tank"
+    -- only the shield classes (Protection warrior and paladin); a bear druid cannot use a shield and tanks with a two-hander
+    local arm = ns.Armor and ns.Armor[ns.Class() or ""]
+    local tank = spec.role == "tank" and arm and arm.Shield and true or false
     local mhNow = GetInventoryItemLink("player", 16)
     local twoHandedNow = tank and mhNow and ns.EquipLoc(mhNow) == "INVTYPE_2HWEAPON"
     if tank and equipLoc == "INVTYPE_2HWEAPON" then res.unusable = res.unusable or "tanks use a one-hander and a shield" end
+    if tank and equipLoc == "INVTYPE_HOLDABLE" then res.unusable = res.unusable or "tanks use a shield" end
     if twoHandedNow and (equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND") then
         worn, wornScore, wornSlot = nil, 0, 16
     end
