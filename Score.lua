@@ -413,6 +413,15 @@ function ns.Compare(link)
         end
     end
     wornScore = wornScore or 0
+    -- a tank fights with a one-hander and a shield: a two-hander is never the suggestion, and while one is
+    -- wielded the main hand and the shield slot both count as empty (a one-hander and a shield are what is missing)
+    local tank = spec.role == "tank"
+    local mhNow = GetInventoryItemLink("player", 16)
+    local twoHandedNow = tank and mhNow and ns.EquipLoc(mhNow) == "INVTYPE_2HWEAPON"
+    if tank and equipLoc == "INVTYPE_2HWEAPON" then res.unusable = res.unusable or "tanks use a one-hander and a shield" end
+    if twoHandedNow and (equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND") then
+        worn, wornScore, wornSlot = nil, 0, 16
+    end
     -- swapping out a piece of a set that is active loses the bonus that needed that piece
     if worn and equipLoc ~= "INVTYPE_2HWEAPON" then
         local wi = ns.ReadItem(worn)
@@ -430,7 +439,10 @@ function ns.Compare(link)
     -- nothing goes in the off hand while a two-handed weapon is in the main hand
     if (equipLoc == "INVTYPE_SHIELD" or equipLoc == "INVTYPE_HOLDABLE" or equipLoc == "INVTYPE_WEAPONOFFHAND") then
         local mh = GetInventoryItemLink("player", 16)
-        if mh and ns.EquipLoc(mh) == "INVTYPE_2HWEAPON" then res.unusable = res.unusable or "two-handed weapon equipped" end
+        if mh and ns.EquipLoc(mh) == "INVTYPE_2HWEAPON" then
+            if twoHandedNow and equipLoc == "INVTYPE_SHIELD" then worn, wornScore, res.worn, res.wornScore = nil, 0, nil, 0   -- tank: a shield is wanted
+            else res.unusable = res.unusable or "two-handed weapon equipped" end
+        end
     end
     for sl = 1, 19 do
         if GetInventoryItemLink("player", sl) == link then res.isWorn = true end
