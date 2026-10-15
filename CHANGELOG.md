@@ -1,5 +1,8 @@
 # Outfitter
 
+## Unreleased
+- Characters window (shift-click the minimap button): delete a character's saved spec, and deleted characters are spotted and removed automatically.
+
 ## v0.8.3
 - Tooltips now also show in Dialogue UI windows.
 - Protection Paladin: shields, block and defense weigh properly, and the spec is detected by talent tree name, so Hammer vs Talonstrike style comparisons read right.

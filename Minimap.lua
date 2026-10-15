@@ -44,6 +44,7 @@ local function Tip(self)
     GameTooltip:AddLine("Left click: open", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Right click: what to get", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Alt-click: window looks", 0.7, 0.7, 0.7)
+    GameTooltip:AddLine("Shift-click: your characters", 0.7, 0.7, 0.7)
     GameTooltip:AddLine("Drag: move this button", 0.7, 0.7, 0.7)
     GameTooltip:Show()
 end
@@ -77,6 +78,7 @@ function ns.BuildMinimapButton()
     ring:SetPoint("TOPLEFT")
     btn:SetScript("OnClick", function(_, button)
         if IsAltKeyDown() and ns.WinLook then ns.WinLook.Toggle() return end
+        if IsShiftKeyDown() and ns.Roster then ns.Roster.Toggle() return end
         if button == "RightButton" then
             if ns.OpenTab then ns.OpenTab("src") end
         elseif ns.ToggleUI then
