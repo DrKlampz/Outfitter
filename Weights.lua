@@ -34,8 +34,8 @@ set("ROGUE", "Assassination", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS
 set("ROGUE", "Combat", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS = 16, HIT = 18, CRIT = 14 }))
 set("ROGUE", "Subtlety", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS = 12, HIT = 16, CRIT = 14 }))
 
-set("PRIEST", "Discipline", "healer", { INT = 1.8, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
-set("PRIEST", "Holy", "healer", { INT = 1.8, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Discipline", "healer", { INT = 1.9, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Holy", "healer", { INT = 1.7, SPI = 1.3, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
 set("PRIEST", "Shadow", "dps", { INT = 1.0, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2, ARMOR = 0.01 })
 
 set("SHAMAN", "Elemental", "dps", { INT = 1.2, STA = 0.4, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.5, ARMOR = 0.02 })
