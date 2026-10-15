@@ -30,7 +30,15 @@ local function Add(tip, link)
         link = ok and l or nil
     end
     if not link or tip.outfitterDone == link then return end
-    local line = Verdict(link)
+    -- the Auction House groups random-suffix items ("of the Monkey") into one entry whose tooltip has no real stats;
+    -- scoring it would be a guess, so say so instead and leave the exact figure to Outfitter's Auction tab
+    local varies
+    for i = 1, (tip.NumLines and tip:NumLines() or 0) do
+        local fs = _G[(tip:GetName() or "") .. "TextLeft" .. i]
+        local t = fs and fs.GetText and fs:GetText()
+        if type(t) == "string" and t:find("may vary in stats", 1, true) then varies = true break end
+    end
+    local line = varies and (ns.db and ns.db.showTooltip and "|cffccccccOutfitter: stats vary by listing, see the Auction tab|r") or Verdict(link)
     if not line then return end
     tip.outfitterDone = link
     tip:AddLine(" ")
