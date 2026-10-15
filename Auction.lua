@@ -103,14 +103,19 @@ local function StepBody()
             local loc = ns.EquipLoc(link)
             if loc and ns.SlotsFor(loc) then
                 local r = ns.Compare(link)
+                local why = state.why
                 if r == nil then
                     state.pend[#state.pend + 1] = id          -- item data not loaded yet
-                elseif not r.isWorn and not r.unusable and not r.tooHigh
-                    and (r.empty or (r.gain and r.gain >= (ns.db.minGain or 3))) then
+                elseif r.isWorn then why.worn = why.worn + 1
+                elseif r.unusable then why.unusable = why.unusable + 1
+                elseif r.tooHigh then why.tooHigh = why.tooHigh + 1
+                elseif r.empty or (r.gain and r.gain >= (ns.db.minGain or 3)) then
                     if r.empty then r.gain = 1000 + (r.score or 0) end
                     r.link, r.id, r.price, r.n, r.time = link, id, p.min, p.n, p.time
                     state.found[id] = r
-                end
+                else why.noGain = why.noGain + 1 end
+            else
+                state.why.notGear = state.why.notGear + 1
             end
         end)
         if not ok then
@@ -189,6 +194,7 @@ function ns.AuctionStart()
     state.errors, state.lastError = 0, nil
     state.prices, state.ids, state.i, state.total, state.done = prices, ids, 1, #ids, 0
     state.found, state.pend, state.pass, state.newest = {}, {}, 0, newest
+    state.why = { worn = 0, unusable = 0, tooHigh = 0, noGain = 0, notGear = 0 }
     state.running, state.ready = true, false
     Step()
 end

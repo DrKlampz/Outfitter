@@ -185,7 +185,8 @@ function ns.RefreshUI()
         local list = st.list
         local shown = math.min(#list, 12)
         if shown == 0 then
-            frame.empty:SetText(((st.errors or 0) > 0 and ("%d items couldn't be read (%s). "):format(st.errors, tostring(st.lastError)) or "") .. "Nothing for sale in the last scan beats what you're wearing.")
+            frame.empty:SetText(((st.errors or 0) > 0 and ("%d items couldn't be read (%s). "):format(st.errors, tostring(st.lastError)) or "") .. "Nothing for sale in the last scan beats what you're wearing."
+                .. (st.why and (("\n|cffaaaaaaOf %d listings: %d need a higher level than %d, %d can't be used by your class or skills, %d are no better than yours, %d aren't gear.|r"):format(st.total or 0, st.why.tooHigh, UnitLevel("player") or 0, st.why.unusable, st.why.noGain, st.why.notGear)) or ""))
             frame.empty:Show()
         else
             frame.empty:Hide()
