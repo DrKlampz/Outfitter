@@ -1,5 +1,11 @@
 # Outfitter
 
+## v0.8.3
+- Tooltips now also show in Dialogue UI windows.
+- Protection Paladin: shields, block and defense weigh properly, and the spec is detected by talent tree name, so Hammer vs Talonstrike style comparisons read right.
+- Class audit: Hunters value melee weapons by their stats, and dual-wield classes get off-hand suggestions.
+- Auction tab: when nothing shows, it now says why (too high a level, unusable, no better, not gear).
+
 ## v0.8.0
 - Tabs renamed: Bag upgrades is now Inventory, What I wear is now Equipped, Where to get is now What to get.
 - New: window customization. Alt-click the minimap button to restyle each window separately (or all together): background textures, colors with copy/paste, opacity sliders, border styles, fonts, scale and position lock. Over 50 fonts to pick from (install the LookFonts folder for the bundled ones; SharedMedia fonts show up too). Off until you tick "Use a custom look"; unticking restores the original. All of the add-on's options now live in that same window, on an Options tab, and the window itself wears the first window's look.
