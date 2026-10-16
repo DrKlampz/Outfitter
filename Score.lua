@@ -334,7 +334,7 @@ local MELEE_LOC = { INVTYPE_WEAPON = true, INVTYPE_2HWEAPON = true, INVTYPE_WEAP
 local huntMelee = setmetatable({}, { __mode = "k" })
 local RANGED_LOC = { INVTYPE_RANGED = true, INVTYPE_RANGEDRIGHT = true, INVTYPE_THROWN = true }
 local lowRanged = setmetatable({}, { __mode = "k" })
-local function WeightsFor(link, w)
+local function WeightsBase(link, w)
     local loc = w.DPS and ns.EquipLoc(link) or ""
     local class = ns.Class()
     if class == "HUNTER" and MELEE_LOC[loc or ""] then
@@ -360,6 +360,65 @@ local function WeightsFor(link, w)
         return c
     end
     return w
+end
+
+-- How well you can use a weapon of this type: your trained skill against the most your level allows.
+-- A dagger at skill 1 swings far worse than a sword at 58, so its damage is worth less until you train it up.
+local SKILL_OF = { ["One-Handed Axes"] = "Axes", ["One-Handed Swords"] = "Swords", ["One-Handed Maces"] = "Maces" }
+local skillNow, skillAt = nil, 0
+local function WeaponSkills()
+    local now = GetTime and GetTime() or 0
+    if skillNow and now - skillAt < 5 then return skillNow end
+    local saved = ns.db and ns.db.skills
+    local found, any = {}, false
+    if GetNumSkillLines and GetSkillLineInfo then
+        for i = 1, GetNumSkillLines() do
+            local name, header, _, rank = GetSkillLineInfo(i)
+            if name and not header and type(rank) == "number" then found[name] = rank any = true end
+        end
+    end
+    if any and ns.db then
+        ns.db.skills = ns.db.skills or {}
+        for k, v in pairs(found) do ns.db.skills[k] = v end      -- remembered for when the skills window is collapsed
+    end
+    skillNow, skillAt = (any and found) or saved or {}, now
+    return skillNow
+end
+local function WeaponFactor(link)
+    local f = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+    if not f then return 1 end
+    local ok, _, _, sub = pcall(f, link)
+    if not ok or type(sub) ~= "string" then return 1 end
+    local rank = WeaponSkills()[SKILL_OF[sub] or sub]
+    if type(rank) ~= "number" then return 1 end
+    local cap = math.max(5, 5 * (UnitLevel("player") or 1))
+    return 0.5 + 0.5 * math.min(1, rank / cap)
+end
+
+-- Armor is worth far more at low level: the same points take a bigger bite out of the damage you take.
+-- The tank weights were set for level 60 (damage taken falls by A / (A + 85 * level + 400)).
+local tuned = setmetatable({}, { __mode = "k" })
+local function WeightsFor(link, w)
+    local base = WeightsBase(link, w)
+    local lv = UnitLevel("player") or 60
+    local armorK = 1
+    if base.DODGE and base.ARMOR and lv < 60 then armorK = math.min(4, 5500 / (85 * lv + 400)) end
+    local dpsK = 1
+    local loc = base.DPS and ns.EquipLoc(link) or ""
+    if base.DPS and (MELEE_LOC[loc] or RANGED_LOC[loc]) then dpsK = WeaponFactor(link) end
+    if armorK == 1 and dpsK >= 0.995 then return base end
+    local bucket = tuned[base]
+    if not bucket then bucket = {} tuned[base] = bucket end
+    local key = ("%d|%.2f"):format(lv, dpsK)
+    local c = bucket[key]
+    if not c then
+        c = {}
+        for k, v in pairs(base) do c[k] = v end
+        if armorK ~= 1 then c.ARMOR = base.ARMOR * armorK end
+        if dpsK ~= 1 then c.DPS = base.DPS * dpsK end
+        bucket[key] = c
+    end
+    return c
 end
 
 local function ItemScore(link, w)

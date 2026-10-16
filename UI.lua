@@ -93,6 +93,8 @@ local function Fill(i, link, note, sub, label)
     r:SetPoint("TOPLEFT", 16, -TOP - (wrapSub and usedH or (i - 1) * stride))
     r:SetHeight(h)
     usedH = usedH + h
+    r.icon:ClearAllPoints()
+    if sub then r.icon:SetPoint("TOPLEFT", 0, -2) else r.icon:SetPoint("LEFT", 0, 0) end   -- keep the icon on the first line of a tall row
     r.name:ClearAllPoints()
     if sub then r.name:SetPoint("TOPLEFT", r.icon, "TOPRIGHT", 6, -1)
     else r.name:SetPoint("LEFT", r.icon, "RIGHT", 6, 0) end
