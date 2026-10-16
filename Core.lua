@@ -226,4 +226,29 @@ function ns.StartAlerts()
             primed = true
         end
     end)
+    -- gear your other characters are carrying (bags and bank, from Profiteer's saved data) that this one can use
+    local altSeen = {}
+    local function AltCheck()
+        if not ns.db.alert or not ns.FindSources then return end
+        ns.cache = {}
+        local ok, list = pcall(ns.FindSources)
+        if not ok or not list then return end
+        local n = 0
+        for _, u in ipairs(list) do
+            if u.how == "alt" and not u.tooHigh and u.id and not altSeen[u.id] then
+                altSeen[u.id] = true
+                n = n + 1
+                if n <= 4 then
+                    local where = tostring(u.where or "")
+                    local gain = u.empty and "fills an empty slot" or ("+%d%%"):format(math.floor((u.gain or 0) + 0.5))
+                    ns.Print(("upgrade on another character (%s): %s, %s for your %s"):format((where:gsub("^in ", "")), u.name or u.link, gain, (ns.SLOT_NAMES[u.slot] or "?"):lower()))
+                end
+            end
+        end
+        if n > 4 then ns.Print(("...and %d more on your other characters. Open Outfitter, What to get."):format(n - 4)) end
+    end
+    C_Timer.After(15, AltCheck)
+    local ev2 = CreateFrame("Frame")
+    ev2:RegisterEvent("PLAYER_LEVEL_UP")
+    ev2:SetScript("OnEvent", function() C_Timer.After(3, AltCheck) end)
 end

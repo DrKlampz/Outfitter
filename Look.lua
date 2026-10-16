@@ -222,7 +222,7 @@ local function Defaults()
         buttons = false, btnBgStyle = "solid", btnColor = { 0.16, 0.16, 0.20 }, btnHover = { 0.30, 0.30, 0.38 },
         btnAlpha = 1, btnEdgeStyle = "line", btnEdgeColor = { 0.88, 0.69, 0.29 }, btnEdgeSize = 1,
         btnTextColor = { 1, 0.82, 0.2 }, btnGloss = false, btnNoTint = false,
-        follow = true, edgeFx = "none", depth = 0, topLight = 0, texScale = 1,
+        follow = true, edgeFx = "none", depth = 0, topLight = 0, texScale = 1, flair = "gilded", pulse = false,
     }
 end
 
@@ -242,6 +242,16 @@ local function Store()
     if cfg and cfg.syncDefault == false and not L.syncReset then L.sync = false L.syncReset = true end
     L.w = L.w or {}
     L.open = L.open or {}
+    -- once: dress up windows that were left plain (look switched off, or no flair) with the gilded trim
+    if not L.pizzazz1 then
+        L.pizzazz1 = true
+        for _, w in pairs(L.w) do
+            if type(w) == "table" then
+                if w.enabled == false then w.enabled = true end
+                if w.flair == nil or w.flair == "none" then w.flair = "gilded" end
+            end
+        end
+    end
     return L
 end
 
@@ -629,6 +639,49 @@ local function Fx(bg, s, inset, e)
             Line("T", 1, -k, e[1], e[2], e[3], a) Line("B", 1, -k, e[1], e[2], e[3], a) Line("L", 1, -k, e[1], e[2], e[3], a) Line("R", 1, -k, e[1], e[2], e[3], a)
         end
     end
+
+    -- flair: a gilded inner line with corner studs ("gilded"), or a second line and diamond corners ("royal")
+    local flair = s.flair or "none"
+    fx.studs = fx.studs or {}
+    for _, st in ipairs(fx.studs) do st:Hide() end
+    if flair == "gilded" or flair == "royal" then
+        Line("T", 1, i0 + 3, e[1], e[2], e[3], 0.55) Line("B", 1, i0 + 3, e[1], e[2], e[3], 0.55)
+        Line("L", 1, i0 + 3, e[1], e[2], e[3], 0.55) Line("R", 1, i0 + 3, e[1], e[2], e[3], 0.55)
+        if flair == "royal" then
+            Line("T", 1, i0 + 6, e[1], e[2], e[3], 0.28) Line("B", 1, i0 + 6, e[1], e[2], e[3], 0.28)
+            Line("L", 1, i0 + 6, e[1], e[2], e[3], 0.28) Line("R", 1, i0 + 6, e[1], e[2], e[3], 0.28)
+        end
+        local sz = flair == "royal" and 7 or 5
+        local o = i0 + 2
+        local corners = { { "TOPLEFT", o, -o }, { "TOPRIGHT", -o, -o }, { "BOTTOMLEFT", o, o }, { "BOTTOMRIGHT", -o, o } }
+        for k, c in ipairs(corners) do
+            local st = fx.studs[k]
+            if not st then
+                st = bg:CreateTexture(nil, "OVERLAY", nil, 2)
+                st:SetTexture(WHITE)
+                fx.studs[k] = st
+            end
+            st:ClearAllPoints()
+            st:SetPoint("CENTER", bg, c[1], c[2] + (c[2] > 0 and sz / 2 or -sz / 2), c[3] + (c[3] > 0 and sz / 2 or -sz / 2))
+            st:SetSize(sz, sz)
+            st:SetVertexColor(e[1], e[2], e[3], 0.95)
+            if st.SetRotation then st:SetRotation(flair == "royal" and math.rad(45) or 0) end
+            st:Show()
+        end
+    end
+    -- optional slow pulse of the studs and the glow
+    if not fx.pulser then
+        fx.pulser = CreateFrame("Frame", nil, bg)
+        fx.pulser.t = 0
+        fx.pulser:SetScript("OnUpdate", function(self, dt)
+            if not self.on then return end
+            self.t = self.t + dt
+            local k = 0.65 + 0.35 * math.sin(self.t * 2.2)
+            for _, st in ipairs(fx.studs or {}) do if st:IsShown() then st:SetAlpha(k) end end
+        end)
+    end
+    fx.pulser.on = s.pulse and true or false
+    if not s.pulse then for _, st in ipairs(fx.studs) do st:SetAlpha(1) end end
     for i = n + 1, #fx.t do fx.t[i]:Hide() end
 end
 
@@ -1092,6 +1145,9 @@ local SECTIONS = {
           names = { line = "Thin line", tooltip = "Tooltip style", dialog = "Ornate dialog", none = "None" } },
         { key = "edgeFx", kind = "cycle", label = "Edge finish", values = { "none", "soft", "bevel", "double", "glow" },
           names = { none = "Plain", soft = "Soft (inner shadow and faint glow)", bevel = "Bevel (raised)", double = "Double line", glow = "Glow" } },
+        { key = "flair", kind = "cycle", label = "Flair (gold trim)", values = { "none", "gilded", "royal" },
+          names = { none = "None", gilded = "Gilded line and studs", royal = "Royal: double line and diamond corners" } },
+        { key = "pulse", kind = "check", label = "Pulse the flair" },
         { key = "edgeSize", kind = "slider", label = "Line thickness", min = 1, max = 8, step = 1 },
         { key = "header", kind = "check", label = "Header bar behind the title" },
         { key = "headerSize", kind = "slider", label = "Header bar height", min = 16, max = 44, step = 1 },
