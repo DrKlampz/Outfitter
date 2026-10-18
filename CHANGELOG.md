@@ -1,5 +1,8 @@
 # Outfitter
 
+## v0.8.5
+- Tooltip: a huge upgrade percentage (over 300%, like +1300% on a low-level cloak) now reads "big upgrade", the same as the window does.
+
 ## v0.8.4
 - Healers on shield classes use a one-hander and shield; tanks are never offered a two-hander; gold trim window flair; alert for upgrades held by other characters; tooltip no longer guesses on grouped random-suffix auction entries.
 - Warriors: a bow, gun or thrown weapon no longer scores like a main hand weapon (it is only for pulling), which was making ranged weapons look like huge upgrades. Protection weights rebalanced so armor, dodge, parry and block are worth what they are next to stamina.

@@ -14,7 +14,11 @@ local function Verdict(link)
         line = "|cff40ff40Outfitter: UPGRADE, fills an empty slot|r"
         if r.tooHigh then line = line .. (" |cffffaa00(needs level %d)|r"):format(r.tooHigh) end
     elseif r.gain >= minGain then
-        line = ("|cff40ff40Outfitter: UPGRADE, +%d%% over %s|r"):format(math.floor(r.gain + 0.5), worn or "what you wear")
+        if r.gain > 300 then   -- same cut-off as the window: a huge percentage on a low-level item is just noise
+            line = ("|cff40ff40Outfitter: UPGRADE, big upgrade over %s|r"):format(worn or "what you wear")
+        else
+            line = ("|cff40ff40Outfitter: UPGRADE, +%d%% over %s|r"):format(math.floor(r.gain + 0.5), worn or "what you wear")
+        end
         if r.tooHigh then line = line .. (" |cffffaa00(needs level %d)|r"):format(r.tooHigh) end
     elseif r.gain <= -minGain then
         line = ("|cffff9090Outfitter: worse, %d%% below %s|r"):format(math.floor(-r.gain + 0.5), worn or "what you wear")
