@@ -2,6 +2,9 @@
 
 ## v0.8.5
 - Tooltip: a huge upgrade percentage (over 300%, like +1300% on a low-level cloak) now reads "big upgrade", the same as the window does.
+- Checked every class and spec against every armor type, shield, weapon type, two-hander and relic: Libram, Idol and Totem now only count for Paladins, Druids and Shamans, and two-handed swords, axes and maces are flagged for the classes that can't use them (Rogues, Mages, Warlocks, Priests and so on).
+- The upgrade alert for another character also says "a big upgrade" instead of a huge percentage.
+- "Allows X% of your Mana regeneration to continue while casting" is now counted (healers value it most), along with "Increases your spell damage by up to N" wording.
 
 ## v0.8.4
 - Healers on shield classes use a one-hander and shield; tanks are never offered a two-hander; gold trim window flair; alert for upgrades held by other characters; tooltip no longer guesses on grouped random-suffix auction entries.

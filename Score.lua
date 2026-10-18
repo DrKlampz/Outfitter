@@ -108,6 +108,10 @@ local function ParseLine(t, text)
     local school
     school, v = body:match("Increases damage done by (%a+) spells and effects by up to (%d+)")
     if v then Add(t, "SP_" .. school:upper(), tonumber(v)) return end   -- one school only: worth what your spec casts from it
+    v = body:match("Allows (%d+)%% of your [Mm]ana regeneration to continue while casting")
+    if v then Add(t, "CASTREGEN", tonumber(v)) return end
+    v = body:match("Increases your spell damage by up to (%d+)") or body:match("Increases spell power by (%d+)")
+    if v then Add(t, "SP", tonumber(v)) Add(t, "HEAL", tonumber(v)) return end
     v = body:match("Restores (%d+) [Mm]ana per 5 sec")
     if v then Add(t, "MP5", tonumber(v)) return end
     v = body:match("Improves your chance to get a critical strike by (%d+)%%")
@@ -193,6 +197,15 @@ local WEAPONS = {
     DRUID = set("Dagger", "Fist Weapon", "Mace", "Polearm", "Staff"),
 }
 
+-- Two-handed weapons by class (a class that has none of that kind can't use it, whatever the skill list says)
+local TWO_H_CLASSES = {
+    Sword = set("WARRIOR", "PALADIN", "HUNTER"),
+    Axe = set("WARRIOR", "PALADIN", "HUNTER", "SHAMAN"),
+    Mace = set("WARRIOR", "PALADIN", "SHAMAN", "DRUID"),
+}
+-- Relics: each class's own kind only
+local RELIC_CLASS = { Libram = "PALADIN", Idol = "DRUID", Totem = "SHAMAN" }
+
 -- A requirement line, whatever colour the tooltip painted it. Returns "level", n | "unusable", text | nil
 local function ReadRequirement(text)
     local lvl = text:match("^Requires [Ll]evel (%d+)")
@@ -275,6 +288,8 @@ function ns.ReadItem(link)
                 local rr, rg, rb = right:GetTextColor()
                 if IsRed(rr, rg, rb) and not rt:find("Requires") then res.unusable = res.unusable or rt end
                 if rt == "Wand" then res.isWand = true end
+                if RELIC_CLASS[rt] and RELIC_CLASS[rt] ~= class then res.unusable = res.unusable or rt end
+                if text == "Two-Hand" and TWO_H_CLASSES[rt] and not TWO_H_CLASSES[rt][class] then res.unusable = res.unusable or ("two-handed " .. rt:lower()) end
                 local wp = WEAPONS[class]
                 if wp and WEAPON_TYPES[rt] and not wp[rt] then res.unusable = res.unusable or rt end
                 if wp and wp[rt] and not res.unusable then

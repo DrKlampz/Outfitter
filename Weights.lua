@@ -55,6 +55,13 @@ set("DRUID", "Feral (cat)", "dps", { AGI = 2.0, STR = 2.0, STA = 0.5, AP = 0.8, 
 set("DRUID", "Feral (bear)", "tank", { STA = 1.5, AGI = 1.2, STR = 0.5, ARMOR = 0.1, DEF = 1.0, DODGE = 14, AP = 0.3, HIT = 4, CRIT = 4 })
 set("DRUID", "Restoration", "healer", { INT = 1.6, SPI = 1.2, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.01 })
 
+-- "X% of your mana regeneration continues while casting": worth most to healers, a good bit to casters
+for _, specs in pairs(W) do
+    for _, sp in ipairs(specs) do
+        if sp.w.HEAL then sp.w.CASTREGEN = 1.2 elseif sp.w.SP then sp.w.CASTREGEN = 0.7 end
+    end
+end
+
 -- Armor and weapon types each class can use (best armor type first; used to flag unusable gear)
 ns.Armor = {
     WARRIOR = { Plate = true, Mail = true, Leather = true, Cloth = true, Shield = true },

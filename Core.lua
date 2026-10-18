@@ -240,7 +240,7 @@ function ns.StartAlerts()
                 n = n + 1
                 if n <= 4 then
                     local where = tostring(u.where or "")
-                    local gain = u.empty and "fills an empty slot" or ("+%d%%"):format(math.floor((u.gain or 0) + 0.5))
+                    local gain = u.empty and "fills an empty slot" or ((u.gain or 0) > 300 and "a big upgrade" or ("+%d%%"):format(math.floor((u.gain or 0) + 0.5)))
                     ns.Print(("upgrade on another character (%s): %s, %s for your %s"):format((where:gsub("^in ", "")), u.name or u.link, gain, (ns.SLOT_NAMES[u.slot] or "?"):lower()))
                 end
             end
