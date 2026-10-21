@@ -227,6 +227,15 @@ function ns.RefreshUI()
         else
             frame.empty:Hide()
         end
+        -- vendors you have visited that turned out not to sell the item: listed last, with a note
+        do
+            local ok, rest = {}, {}
+            for _, e in ipairs(list) do
+                if ns.VendorOutOfStock and ns.VendorOutOfStock(e) then rest[#rest + 1] = e else ok[#ok + 1] = e end
+            end
+            for _, e in ipairs(rest) do ok[#ok + 1] = e end
+            list = ok
+        end
         for i = 1, shown do
             local e = list[i]
             local slot = ns.SLOT_NAMES[e.slot] or "?"
@@ -236,7 +245,10 @@ function ns.RefreshUI()
             note = note .. (e.tooHigh and (" |cffffaa00lvl %d|r"):format(e.tooHigh) or "")
             local src = ("%s: %s"):format(e.how:sub(1, 1):upper() .. e.how:sub(2), e.where)
             if e.note ~= "" then src = src .. " (" .. e.note .. ")" end
-            if e.how == "vendor" and ns.VendorCost then
+            local gone = ns.VendorOutOfStock and ns.VendorOutOfStock(e)
+            if gone then
+                src = src .. "\n|cffff6060You checked " .. gone .. ": not for sale right now|r"
+            elseif e.how == "vendor" and ns.VendorCost then
                 local c = ns.VendorCost(e.id)
                 src = src .. (c and ("\n|cffffd100Cost: " .. c .. "|r") or "\n|cffaaaaaaCost: unknown until you visit the vendor|r")
             end

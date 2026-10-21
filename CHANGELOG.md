@@ -1,5 +1,8 @@
 # Outfitter
 
+## v0.8.6
+- What to get: Outfitter now remembers what each vendor really has for sale when you open their window. If you have visited every vendor listed for an item and none of them sells it (like Kelm Hargunth's empty window in The Barrens), the item drops to the bottom of the list with a red "You checked <vendor>: not for sale right now" line instead of a cost.
+
 ## v0.8.5
 - Tooltip: a huge upgrade percentage (over 300%, like +1300% on a low-level cloak) now reads "big upgrade", the same as the window does.
 - Checked every class and spec against every armor type, shield, weapon type, two-hander and relic: Libram, Idol and Totem now only count for Paladins, Druids and Shamans, and two-handed swords, axes and maces are flagged for the classes that can't use them (Rogues, Mages, Warlocks, Priests and so on).

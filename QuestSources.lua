@@ -286,9 +286,19 @@ end
 local function ScanMerchant()
     if not (ns.db and GetMerchantNumItems) then return end
     ns.db.vendorCost = ns.db.vendorCost or {}
+    -- what this merchant really has for sale right now, by name, so What to get can tell when a
+    -- vendor it lists has nothing (or not that item) in stock
+    local who = UnitName and UnitName("npc")
+    local stock
+    if who and who ~= "" then
+        ns.db.vendorStock = ns.db.vendorStock or {}
+        stock = { t = time and time() or 0 }
+        ns.db.vendorStock[who] = stock
+    end
     for i = 1, GetMerchantNumItems() or 0 do
         local link = GetMerchantItemLink and GetMerchantItemLink(i)
         local id = link and tonumber(link:match("item:(%d+)"))
+        if id and stock then stock[id] = true end
         if id then
             local _, _, price, qty = GetMerchantItemInfo(i)
             local parts = {}
@@ -301,6 +311,22 @@ local function ScanMerchant()
             end
         end
     end
+end
+
+-- If every vendor a "vendor" entry names has been visited and none of them sells the item, returns
+-- the name of the first one (so the window can say so). Vendors never visited count as unknown.
+function ns.VendorOutOfStock(e)
+    if not (e and e.how == "vendor" and e.where and ns.db and ns.db.vendorStock) then return nil end
+    local first
+    for part in (e.where:gsub("%b()", "") .. "/"):gmatch("([^/;]*)[/;]") do
+        local name = part:gsub("^%s*also%s+", ""):gsub("^%s+", ""):gsub("%s+$", "")
+        if name ~= "" then
+            local st = ns.db.vendorStock[name]
+            if not st or st[e.id] then return nil end
+            first = first or name
+        end
+    end
+    return first
 end
 
 function ns.VendorCost(id)
