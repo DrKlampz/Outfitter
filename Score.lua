@@ -665,7 +665,7 @@ function ns.FindSources()
     end
     for _, e in ipairs(list) do
         local id, name, req, how, where, note = e[1], e[2], e[3], e[4], e[5], e[6]
-        if not have[id] and req <= level then
+        if not have[id] and req <= level and ns.SourceOn(ns.SourceKind({ id = id, how = how, where = where })) then
             checked = checked + 1
             local link = "item:" .. id
             local r = ns.Compare(link)

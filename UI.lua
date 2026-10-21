@@ -57,7 +57,8 @@ end
 
 local function Resize(n)
     if n < 6 then n = 6 end
-    frame:SetHeight(TOP + n * stride + 36)
+    frame:SetHeight(TOP + n * stride + 36 + (tab == "src" and 22 or 0))
+    if frame.srcFilter then frame.srcFilter:SetShown(tab == "src") end
 end
 
 -- "item:1234::::" strings show as raw text; turn them into the real colored item link once the game knows it
@@ -208,6 +209,7 @@ function ns.RefreshUI()
         Resize(math.max(shown, 5))
         frame.more:SetText(#list > shown and ("+%d more"):format(#list - shown) or "")
     else
+        for _, cb in ipairs(frame.srcFilter.boxes) do cb:SetChecked(ns.SourceOn(cb.kind)) end
         local list, pending, checked = ns.FindSources()
         if not list then
             Resize(6)
@@ -329,6 +331,38 @@ local function Build()
         frame.tabs[t[1]] = b
         x = x + 108
     end
+    -- What to get: which kinds of source this character wants to see
+    frame.srcFilter = CreateFrame("Frame", nil, frame)
+    frame.srcFilter:SetSize(WIDTH - 28, 20)
+    frame.srcFilter:SetPoint("BOTTOMLEFT", 14, 30)
+    frame.srcFilter.boxes = {}
+    local fx = 0
+    for _, k in ipairs({ { "quest", "Quest" }, { "dungeon", "Dungeon" }, { "battleground", "Battleground" }, { "vendor", "Vendor" } }) do
+        local cb = CreateFrame("CheckButton", nil, frame.srcFilter, "UICheckButtonTemplate")
+        cb:SetSize(22, 22)
+        cb:SetPoint("LEFT", fx, 0)
+        cb.kind = k[1]
+        local fs = cb.Text or cb.text or cb:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        fs:SetText(k[2])
+        fs:ClearAllPoints()
+        fs:SetPoint("LEFT", cb, "RIGHT", 0, 1)
+        cb.label = fs
+        cb:SetScript("OnClick", function(self)
+            ns.SetSourceOn(self.kind, self:GetChecked() and true or false)
+            ns.cache = {}
+            ns.RefreshUI()
+        end)
+        cb:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetText("Show " .. self.label:GetText():lower() .. " gear in What to get", 1, 1, 1)
+            GameTooltip:AddLine("Saved for this character only.", 0.7, 0.7, 0.7)
+            GameTooltip:Show()
+        end)
+        cb:SetScript("OnLeave", GameTooltip_Hide)
+        frame.srcFilter.boxes[#frame.srcFilter.boxes + 1] = cb
+        fx = fx + 28 + math.max(40, (fs:GetStringWidth() or 40))
+    end
+    frame.srcFilter:Hide()
     frame.empty = frame:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     frame.empty:SetPoint("TOP", 0, -TOP - 30)
     frame.more = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")

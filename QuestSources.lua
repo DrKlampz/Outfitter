@@ -329,6 +329,41 @@ function ns.VendorOutOfStock(e)
     return first
 end
 
+-- Which of the "what to get" kinds an entry belongs to: quest, dungeon, battleground, vendor
+-- (nil for crafted items, which are always shown). Honor/mark vendors and battleground bosses are "battleground".
+local BG = { "warsong gulch", "arathi basin", "alterac valley" }
+function ns.SourceKind(e)
+    local how = e.how
+    if how == "quest" then return "quest" end
+    local where = (e.where or ""):lower()
+    if how == "vendor" then
+        local cost = ns.VendorCost and ns.VendorCost(e.id)
+        cost = cost and tostring(cost):lower() or ""
+        if cost:find("honor", 1, true) or cost:find("mark of", 1, true) then return "battleground" end
+        for _, z in ipairs(BG) do if where:find(z, 1, true) then return "battleground" end end
+        return "vendor"
+    end
+    if how == "drop" then
+        for _, z in ipairs(BG) do if where:find(z, 1, true) then return "battleground" end end
+        return "dungeon"
+    end
+    return nil
+end
+
+-- Per character: which kinds are switched off. Everything is on until you turn it off.
+function ns.SourceOn(kind)
+    if not kind then return true end
+    local off = ns.db and ns.db.srcOff and ns.db.srcOff[ns.CharKey()]
+    return not (off and off[kind])
+end
+
+function ns.SetSourceOn(kind, on)
+    ns.db.srcOff = ns.db.srcOff or {}
+    local k = ns.CharKey()
+    ns.db.srcOff[k] = ns.db.srcOff[k] or {}
+    ns.db.srcOff[k][kind] = (not on) or nil
+end
+
 function ns.VendorCost(id)
     local c = ns.db and ns.db.vendorCost and ns.db.vendorCost[id]
     if c then return c end

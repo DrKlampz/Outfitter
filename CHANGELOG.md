@@ -1,6 +1,7 @@
 # Outfitter
 
 ## v0.8.6
+- What to get: tick boxes along the bottom (Quest, Dungeon, Battleground, Vendor) choose which kinds of gear each character sees. Saved per character; everything is on until you turn it off. Honor and mark vendors and the battleground bosses count as Battleground; crafted gear is always shown.
 - What to get: Outfitter now remembers what each vendor really has for sale when you open their window. If you have visited every vendor listed for an item and none of them sells it (like Kelm Hargunth's empty window in The Barrens), the item drops to the bottom of the list with a red "You checked <vendor>: not for sale right now" line instead of a cost.
 
 ## v0.8.5
