@@ -95,7 +95,7 @@ dl:SetScript("OnEvent", function() HookDialogue() end)
 -- ===== Quest rewards: highlight the best upgrade =====
 do
 -- When a quest offers a choice of rewards, marks the one that is the best upgrade for your spec:
--- a green glow and a "BEST UPGRADE" tag over its icon, and "UPGRADE +x%" tags on the other real upgrades.
+-- a green outline around its icon, and a "+x%" strip along the bottom of every real upgrade.
 -- Nothing is marked when none of the choices beats what you wear. /outfit quest turns it off.
 
 local MAX_CHOICES = 6
@@ -105,20 +105,37 @@ local function Mark(btn)
     local m = marks[btn]
     if m then return m end
     m = {}
-    local glow = btn:CreateTexture(nil, "OVERLAY", nil, 7)
-    glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
-    glow:SetBlendMode("ADD")
-    glow:SetPoint("CENTER", btn.Icon or _G[(btn:GetName() or "") .. "IconTexture"] or btn, "CENTER", 0, 0)
-    glow:SetSize(70, 70)
-    glow:SetVertexColor(0.25, 1, 0.25, 0.95)
-    glow:Hide()
+    local icon = btn.Icon or _G[(btn:GetName() or "") .. "IconTexture"] or btn
+    -- a green outline hugging the icon (best pick only)
+    m.edges = {}
+    for i = 1, 4 do
+        local e = btn:CreateTexture(nil, "OVERLAY", nil, 6)
+        e:SetColorTexture(0.25, 1, 0.25, 1)
+        m.edges[i] = e
+        e:Hide()
+    end
+    local T, B, L, R = m.edges[1], m.edges[2], m.edges[3], m.edges[4]
+    T:SetPoint("BOTTOMLEFT", icon, "TOPLEFT", -2, 0)   T:SetPoint("BOTTOMRIGHT", icon, "TOPRIGHT", 2, 0)   T:SetHeight(2)
+    B:SetPoint("TOPLEFT", icon, "BOTTOMLEFT", -2, 0)   B:SetPoint("TOPRIGHT", icon, "BOTTOMRIGHT", 2, 0)   B:SetHeight(2)
+    L:SetPoint("TOPRIGHT", icon, "TOPLEFT", 0, 2)      L:SetPoint("BOTTOMRIGHT", icon, "BOTTOMLEFT", 0, -2) L:SetWidth(2)
+    R:SetPoint("TOPLEFT", icon, "TOPRIGHT", 0, 2)      R:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 0, -2) R:SetWidth(2)
+    -- a small strip along the bottom of the icon with the percentage, so nothing floats over the text above
+    local bar = btn:CreateTexture(nil, "OVERLAY", nil, 6)
+    bar:SetColorTexture(0, 0, 0, 0.7)
+    bar:SetPoint("BOTTOMLEFT", icon, "BOTTOMLEFT", 0, 0)
+    bar:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", 0, 0)
+    bar:SetHeight(13)
+    bar:Hide()
     local text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    text:SetPoint("BOTTOM", btn, "TOP", 0, 2)
+    text:SetPoint("CENTER", bar, "CENTER", 0, 0)
+    text:SetFont((text:GetFont()), 10, "OUTLINE")
     text:Hide()
-    m.glow, m.text = glow, text
+    m.bar, m.text = bar, text
     marks[btn] = m
     return m
 end
+
+local function ShowEdges(m, on) for _, e in ipairs(m.edges) do if on then e:Show() else e:Hide() end end end
 
 local function ButtonFor(i)
     local frame = _G.QuestInfoRewardsFrame or (_G.QuestInfoFrame and QuestInfoFrame.rewardsFrame)
@@ -131,7 +148,7 @@ local function ButtonFor(i)
 end
 
 local function Clear()
-    for _, m in pairs(marks) do m.glow:Hide() m.text:Hide() end
+    for _, m in pairs(marks) do ShowEdges(m, false) m.bar:Hide() m.text:Hide() end
 end
 
 local function Refresh()
@@ -155,13 +172,15 @@ local function Refresh()
         local btn = ButtonFor(row.i)
         if btn then
             local m = Mark(btn)
+            local pct = row.empty and "new" or ("+%d%%"):format(math.floor(row.gain + 0.5))
             if row == best then
-                m.glow:Show()
-                m.text:SetText("|cff40ff40BEST UPGRADE|r")
+                ShowEdges(m, true)
+                m.text:SetText("|cff40ff40" .. pct .. "|r")
             else
-                m.glow:Hide()
-                m.text:SetText(row.empty and "|cff90e090upgrade|r" or ("|cff90e090upgrade +%d%%|r"):format(math.floor(row.gain + 0.5)))
+                ShowEdges(m, false)
+                m.text:SetText("|cffb0e8b0" .. pct .. "|r")
             end
+            m.bar:Show()
             m.text:Show()
         end
     end

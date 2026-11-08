@@ -1,5 +1,8 @@
 # Outfitter
 
+## v0.8.8
+- Quest rewards: cleaner marks. The best upgrade gets a green outline around its icon, and every real upgrade gets a small strip along the bottom of its icon with the percentage (or "new" for an empty slot). Nothing floats over the text above the buttons any more.
+
 ## v0.8.7
 - New: green arrow on the best upgrades in your bags (Look settings); two-part character name fix; /issues log.
 
