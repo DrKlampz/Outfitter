@@ -1,8 +1,18 @@
 local ADDON, ns = ...
 ns.VERSION = "dev"
-local DEFAULTS = { spec = {}, showTooltip = true, minGain = 3, alert = true, minimap = { hide = false, angle = 215 } }   -- spec[charKey] = index into Weights[class]
+local DEFAULTS = { spec = {}, showTooltip = true, questPick = true, bagArrow = true, minGain = 3, alert = true, minimap = { hide = false, angle = 215 } }   -- spec[charKey] = index into Weights[class]
 
-local function CharKey() return (UnitName("player") or "?") .. "-" .. (GetRealmName and GetRealmName() or "") end
+local function FullPlayerName()
+    local first, second = UnitName("player")
+    if type(first) ~= "string" then return "?" end
+    if type(second) == "string" and second ~= "" and not first:find(" ", 1, true) then
+        local realm = GetRealmName and GetRealmName()
+        local nrealm = GetNormalizedRealmName and GetNormalizedRealmName()
+        if second ~= realm and second ~= nrealm then return first .. " " .. second end
+    end
+    return first
+end
+local function CharKey() return FullPlayerName() .. "-" .. (GetRealmName and GetRealmName() or "") end
 ns.CharKey = CharKey
 
 function ns.Money(c)

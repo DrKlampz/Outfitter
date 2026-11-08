@@ -9,6 +9,8 @@ local function Options()
         { id = "main", title = "Outfitter", open = true, rows = {
             L.Kon("Add an Outfitter line to item tooltips (upgrade or not)", db, "showTooltip"),
             L.Kon("Alert me when a better item is in my bags", db, "alert"),
+            L.Kon("Highlight the best upgrade when a quest offers a choice of rewards", db, "questPick"),
+            L.Kon("Green arrow on the best upgrades in my bags", db, "bagArrow", function() if ns.RefreshBagArrows then ns.RefreshBagArrows() end end),
             L.Slider("Smallest improvement worth mentioning (%)", db, "minGain", 0, 30, 1),
             L.K("Show the minimap button", mmdb, "hide", function() if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end end, true),
         } },
