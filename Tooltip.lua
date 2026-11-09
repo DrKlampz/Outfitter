@@ -246,29 +246,53 @@ local function Rebuild()
     return changed
 end
 
--- the arrow is built from small coloured blocks (no image file needed): a dark outline under a bright green arrow
+-- The arrow and a green frame around the icon live on their own small frame on top of the slot. They must not be
+-- textures of the slot button itself: Baggie hides every texture it did not make on its buttons, which is why the
+-- arrow never showed in Baggie before.
 local function ArrowFor(btn)
     local g = arrows[btn]
     if g then return g end
-    g = {}
-    local function box(x, y, w, h, r, gr, b, layer)
-        local t = btn:CreateTexture(nil, "OVERLAY", nil, layer)
+    local host = CreateFrame("Frame", nil, btn)
+    host:SetAllPoints(btn)
+    host:SetFrameLevel((btn:GetFrameLevel() or 1) + 20)
+    host:EnableMouse(false)
+    host:Hide()
+    g = { host = host }
+    -- a soft green wash and a bright green frame, so the item stands out without hovering it
+    local wash = host:CreateTexture(nil, "OVERLAY", nil, 1)
+    wash:SetAllPoints(host)
+    wash:SetColorTexture(0.2, 1, 0.2, 0.16)
+    for _, e in ipairs({ { "TOPLEFT", "TOPRIGHT", 0, 2 }, { "BOTTOMLEFT", "BOTTOMRIGHT", 0, 2 } }) do
+        local t = host:CreateTexture(nil, "OVERLAY", nil, 3)
+        t:SetColorTexture(0.25, 1, 0.25, 0.95)
+        t:SetHeight(2)
+        t:SetPoint(e[1], host, e[1], 0, 0)
+        t:SetPoint(e[2], host, e[2], 0, 0)
+    end
+    for _, e in ipairs({ { "TOPLEFT", "BOTTOMLEFT" }, { "TOPRIGHT", "BOTTOMRIGHT" } }) do
+        local t = host:CreateTexture(nil, "OVERLAY", nil, 3)
+        t:SetColorTexture(0.25, 1, 0.25, 0.95)
+        t:SetWidth(2)
+        t:SetPoint(e[1], host, e[1], 0, 0)
+        t:SetPoint(e[2], host, e[2], 0, 0)
+    end
+    -- the arrow, built from small coloured blocks (no image file needed): a dark outline under a bright green arrow
+    local BASE = 3
+    local function ab(x, y, w, h, r, gr, b, layer)
+        local t = host:CreateTexture(nil, "OVERLAY", nil, layer)
         t:SetColorTexture(r, gr, b, 1)
         t:SetSize(w, h)
-        t:SetPoint("BOTTOMLEFT", btn, "BOTTOM", x, y)
-        t:Hide()
-        g[#g + 1] = t
+        t:SetPoint("BOTTOMLEFT", host, "BOTTOM", x, y)
     end
-    local BASE = 2
-    box(-4, BASE - 1, 8, 8, 0, 0.2, 0, 6)                          -- outline: shaft
-    for i = 0, 5 do box(-(12 - 2 * i + 2) / 2, BASE + 7 + i, 12 - 2 * i + 2, 1, 0, 0.2, 0, 6) end
-    box(-2, BASE + 13, 4, 1, 0, 0.2, 0, 6)                          -- outline: tip
-    box(-3, BASE, 6, 7, 0.25, 1, 0.25, 7)                           -- fill: shaft
-    for i = 0, 5 do box(-(12 - 2 * i) / 2, BASE + 7 + i, 12 - 2 * i, 1, 0.25, 1, 0.25, 7) end
+    ab(-4, BASE - 1, 8, 8, 0, 0.2, 0, 6)
+    for i = 0, 5 do ab(-(12 - 2 * i + 2) / 2, BASE + 7 + i, 12 - 2 * i + 2, 1, 0, 0.2, 0, 6) end
+    ab(-2, BASE + 13, 4, 1, 0, 0.2, 0, 6)
+    ab(-3, BASE, 6, 7, 0.25, 1, 0.25, 7)
+    for i = 0, 5 do ab(-(12 - 2 * i) / 2, BASE + 7 + i, 12 - 2 * i, 1, 0.25, 1, 0.25, 7) end
     arrows[btn] = g
     return g
 end
-local function SetArrow(g, on) for _, t in ipairs(g) do if on then t:Show() else t:Hide() end end end
+local function SetArrow(g, on) if g.host then g.host:SetShown(on and true or false) end end
 
 -- paint (or clear) the arrow on one bag button; bag and slot say which item it shows
 function ns.PaintBagArrow(btn, bag, slot)

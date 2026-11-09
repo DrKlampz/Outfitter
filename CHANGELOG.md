@@ -1,6 +1,7 @@
 # Outfitter
 
 ## Unreleased
+- Bags: the green upgrade arrow now actually shows in Baggie (Baggie was hiding it), and upgrades also get a green frame and a faint green wash over the icon, so they stand out without hovering.
 - Fonts: the font pack now ships inside this add-on (Fonts folder), so the separate Look Fonts add-on is no longer needed, and there are about 60 more fonts to pick from under Look > Font.
 
 ## v0.8.9
