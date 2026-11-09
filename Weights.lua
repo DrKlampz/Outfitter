@@ -1,5 +1,5 @@
 -- Stat weights per class and spec. One point of the main stat is about 1.0. Edit freely:
--- /outfit weights shows the numbers a spec uses.
+-- /hawk weights shows the numbers a spec uses.
 local _, ns = ...
 
 -- keys: STR AGI STA INT SPI ARMOR AP RAP SP (damage/spell power) HEAL CRIT HIT SPCRIT SPHIT

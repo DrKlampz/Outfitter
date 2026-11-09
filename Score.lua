@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- Reads an item's tooltip and turns it into numbers. English client text.
-local scan = CreateFrame("GameTooltip", "OutfitterScanTip", nil, "GameTooltipTemplate")
+local scan = CreateFrame("GameTooltip", "GearhawkScanTip", nil, "GameTooltipTemplate")
 scan:SetOwner(UIParent, "ANCHOR_NONE")
 
 -- API wrappers: the client may have the old global functions, the C_ ones, or both.
@@ -240,7 +240,7 @@ function ns.ReadItem(link)
     local res = { stats = {} }
     local _, class = UnitClass("player")
     for i = 2, scan:NumLines() do
-        local left = _G["OutfitterScanTipTextLeft" .. i]
+        local left = _G["GearhawkScanTipTextLeft" .. i]
         local text = left and left:GetText()
         if text and text ~= "" then
             local r, g, b = left:GetTextColor()
@@ -282,7 +282,7 @@ function ns.ReadItem(link)
                     res.unparsed[#res.unparsed + 1] = text
                 end
             end
-            local right = _G["OutfitterScanTipTextRight" .. i]
+            local right = _G["GearhawkScanTipTextRight" .. i]
             local rt = right and right:GetText()
             if rt and rt ~= "" then
                 local rr, rg, rb = right:GetTextColor()

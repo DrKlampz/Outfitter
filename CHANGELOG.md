@@ -1,4 +1,7 @@
-# Outfitter
+# Gearhawk
+
+## v0.10.0
+- Renamed from Outfitter to Gearhawk, because another add-on already uses the name Outfitter and the two would clash. Commands are now `/hawk` and `/gearhawk`. Settings start fresh under the new name.
 
 ## v0.9.0
 - Bags: the green upgrade arrow now actually shows in Baggie (Baggie was hiding it), and upgrades also get a green frame and a faint green wash over the icon, so they stand out without hovering.

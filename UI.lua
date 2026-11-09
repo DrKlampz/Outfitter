@@ -119,7 +119,7 @@ function ns.RefreshUI()
     local spec = ns.Spec()
     local class = ns.Class()
     if not spec then
-        frame.info:SetText("Outfitter has no weights for your class.")
+        frame.info:SetText("Gearhawk has no weights for your class.")
         frame.specBtn:Hide()
         return
     end
@@ -171,7 +171,7 @@ function ns.RefreshUI()
         local st = ns.AH
         if not ns.AuctionAvailable() then
             Resize(6)
-            frame.empty:SetText("No auction prices yet.\nOpen the Auction House and wait for the scan to finish (Profiteer or Outfitter reads it), then come back.")
+            frame.empty:SetText("No auction prices yet.\nOpen the Auction House and wait for the scan to finish (Profiteer or Gearhawk reads it), then come back.")
             frame.empty:Show()
             frame.more:SetText("")
             return
@@ -264,7 +264,7 @@ function ns.RefreshUI()
 end
 
 local function Build()
-    frame = CreateFrame("Frame", "OutfitterFrame", UIParent, "BasicFrameTemplateWithInset")
+    frame = CreateFrame("Frame", "GearhawkFrame", UIParent, "BasicFrameTemplateWithInset")
     frame:SetSize(WIDTH, 300)
     if ns.WinLook then ns.WinLook.Attach("main", frame) end
     frame:SetPoint("CENTER")
@@ -275,8 +275,8 @@ local function Build()
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
     frame:SetToplevel(true)
-    if frame.TitleText then frame.TitleText:SetText("Outfitter") end
-    if frame.title then frame.title:SetText("Outfitter") end
+    if frame.TitleText then frame.TitleText:SetText("Gearhawk") end
+    if frame.title then frame.title:SetText("Gearhawk") end
     frame.info = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.info:SetPoint("TOPLEFT", 16, -34)
     -- spec drop-down: a button that opens a list of every spec for the class.
@@ -389,7 +389,7 @@ local function Build()
         if event ~= "BAG_UPDATE_DELAYED" and ns.AuctionDirty then ns.AuctionDirty() end
         ns.RefreshUI()
     end)
-    table.insert(UISpecialFrames, "OutfitterFrame")
+    table.insert(UISpecialFrames, "GearhawkFrame")
 end
 
 function ns.ToggleUI()

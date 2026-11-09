@@ -1,6 +1,6 @@
 local _, ns = ...
 -- Adds a line to item tooltips saying whether the item beats what you wear:
---   Outfitter: UPGRADE +12% over [worn item]  /  worse  /  about the same  /  can't use
+--   Gearhawk: UPGRADE +12% over [worn item]  /  worse  /  about the same  /  can't use
 local function Verdict(link)
     if not link or not ns.db or not ns.db.showTooltip or not ns.Spec or not ns.Spec() then return nil end
     local ok, r = pcall(ns.Compare, link)
@@ -9,21 +9,21 @@ local function Verdict(link)
     local minGain = ns.db.minGain or 3
     local line
     if r.unusable then
-        line = "|cffff6060Outfitter: you can't use this|r"
+        line = "|cffff6060Gearhawk: you can't use this|r"
     elseif r.empty then
-        line = "|cff40ff40Outfitter: UPGRADE, fills an empty slot|r"
+        line = "|cff40ff40Gearhawk: UPGRADE, fills an empty slot|r"
         if r.tooHigh then line = line .. (" |cffffaa00(needs level %d)|r"):format(r.tooHigh) end
     elseif r.gain >= minGain then
         if r.gain > 300 then   -- same cut-off as the window: a huge percentage on a low-level item is just noise
-            line = ("|cff40ff40Outfitter: UPGRADE, big upgrade over %s|r"):format(worn or "what you wear")
+            line = ("|cff40ff40Gearhawk: UPGRADE, big upgrade over %s|r"):format(worn or "what you wear")
         else
-            line = ("|cff40ff40Outfitter: UPGRADE, +%d%% over %s|r"):format(math.floor(r.gain + 0.5), worn or "what you wear")
+            line = ("|cff40ff40Gearhawk: UPGRADE, +%d%% over %s|r"):format(math.floor(r.gain + 0.5), worn or "what you wear")
         end
         if r.tooHigh then line = line .. (" |cffffaa00(needs level %d)|r"):format(r.tooHigh) end
     elseif r.gain <= -minGain then
-        line = ("|cffff9090Outfitter: worse, %d%% below %s|r"):format(math.floor(-r.gain + 0.5), worn or "what you wear")
+        line = ("|cffff9090Gearhawk: worse, %d%% below %s|r"):format(math.floor(-r.gain + 0.5), worn or "what you wear")
     else
-        line = "|cffccccccOutfitter: about the same as " .. (worn or "what you wear") .. "|r"
+        line = "|cffccccccGearhawk: about the same as " .. (worn or "what you wear") .. "|r"
     end
     return line
 end
@@ -33,24 +33,24 @@ local function Add(tip, link)
         local ok, _, l = pcall(tip.GetItem, tip)
         link = ok and l or nil
     end
-    if not link or tip.outfitterDone == link then return end
+    if not link or tip.gearhawkDone == link then return end
     -- the Auction House groups random-suffix items ("of the Monkey") into one entry whose tooltip has no real stats;
-    -- scoring it would be a guess, so say so instead and leave the exact figure to Outfitter's Auction tab
+    -- scoring it would be a guess, so say so instead and leave the exact figure to Gearhawk's Auction tab
     local varies
     for i = 1, (tip.NumLines and tip:NumLines() or 0) do
         local fs = _G[(tip:GetName() or "") .. "TextLeft" .. i]
         local t = fs and fs.GetText and fs:GetText()
         if type(t) == "string" and t:find("may vary in stats", 1, true) then varies = true break end
     end
-    local line = varies and (ns.db and ns.db.showTooltip and "|cffccccccOutfitter: stats vary by listing, see the Auction tab|r") or Verdict(link)
+    local line = varies and (ns.db and ns.db.showTooltip and "|cffccccccGearhawk: stats vary by listing, see the Auction tab|r") or Verdict(link)
     if not line then return end
-    tip.outfitterDone = link
+    tip.gearhawkDone = link
     tip:AddLine(" ")
     tip:AddLine(line)
     tip:Show()
 end
 
-local function Clear(tip) tip.outfitterDone = nil end
+local function Clear(tip) tip.gearhawkDone = nil end
 
 -- current clients build tooltips from data and run post-call hooks; older ones fire OnTooltipSetItem
 if _G.TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and Enum and Enum.TooltipDataType and Enum.TooltipDataType.Item then
@@ -77,10 +77,10 @@ local function HookDialogue()
     dialogueHooked = true
     api.AddItemTooltipProcessorExternal(function(tip, itemID, link)
         link = link or (itemID and ("item:" .. itemID))
-        if not link or tip.outfitterData == tip.tooltipData and tip.outfitterLink == link then return end
+        if not link or tip.gearhawkData == tip.tooltipData and tip.gearhawkLink == link then return end
         local line = Verdict(link)
         if not line then return end
-        tip.outfitterData, tip.outfitterLink = tip.tooltipData, link
+        tip.gearhawkData, tip.gearhawkLink = tip.tooltipData, link
         tip:AddLine(" ")
         tip:AddLine(line)
         return true
@@ -96,7 +96,7 @@ dl:SetScript("OnEvent", function() HookDialogue() end)
 do
 -- When a quest offers a choice of rewards, marks the one that is the best upgrade for your spec:
 -- a green outline around its icon, and a "+x%" strip along the bottom of every real upgrade.
--- Nothing is marked when none of the choices beats what you wear. /outfit quest turns it off.
+-- Nothing is marked when none of the choices beats what you wear. /hawk quest turns it off.
 
 local MAX_CHOICES = 6
 local marks = {}   -- button -> { glow, text }
@@ -350,7 +350,7 @@ local function Later(delay)
     end)
 end
 ns.RefreshBagArrows = function() dirty = true Rebuild() RepaintAll() end
--- for /issues test outfitter: which bag slots currently get an arrow, and how many buttons have one
+-- for /issues test gearhawk: which bag slots currently get an arrow, and how many buttons have one
 function ns.ArrowInfo()
     if dirty then Rebuild() end
     local keys, n = {}, 0

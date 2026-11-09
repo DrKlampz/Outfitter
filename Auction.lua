@@ -12,7 +12,7 @@ local function Prices()
 end
 
 -- Gear read straight from the full Auction House scan (every listing with its real item link,
--- random suffix and all), saved in OutfitterDB.ah = { time, items = { ["item:..."] = { p = lowest buyout, n = listings } } }
+-- random suffix and all), saved in GearhawkDB.ah = { time, items = { ["item:..."] = { p = lowest buyout, n = listings } } }
 local function Saved()
     local ah = ns.db and ns.db.ah
     if ah and type(ah.items) == "table" and next(ah.items) then return ah end

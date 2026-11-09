@@ -1,11 +1,11 @@
 ## Interface: 16001
-## Title: |cff33ccffOutfitter|r
+## Title: |cff33ccffGearhawk|r
 ## Notes: Gear advisor for WoW Forever: pick your class and spec, see which items in your bags beat what you wear, where to get better gear for your level, and the best buys in the Auction House.
 ## Author: David
 ## Version: @project-version@
 ## Category: Inventory
-## IconTexture: Interface\AddOns\Outfitter\Media\Icon
-## SavedVariables: OutfitterDB
+## IconTexture: Interface\AddOns\Gearhawk\Media\Icon
+## SavedVariables: GearhawkDB
 ## X-License: MIT
 ## X-Wago-ID: rNkg5ONa
 

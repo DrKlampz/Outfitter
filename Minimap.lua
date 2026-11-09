@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- Minimap button: left click opens the window, right click opens "What to get",
--- drag to move it around the minimap. /outfit minimap hides or shows it.
+-- drag to move it around the minimap. /hawk minimap hides or shows it.
 local btn
 local ICON = "Interface\\Icons\\INV_Helmet_01"
 
@@ -34,7 +34,7 @@ end
 
 local function Tip(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-    GameTooltip:AddLine("Outfitter", 0.2, 0.8, 1)
+    GameTooltip:AddLine("Gearhawk", 0.2, 0.8, 1)
     local spec = ns.Spec and ns.Spec()
     if spec then GameTooltip:AddLine(("%s (%s)"):format(spec.name, spec.role), 1, 1, 1) end
     local ok, list = pcall(ns.FindUpgrades)
@@ -56,7 +56,7 @@ end
 
 function ns.BuildMinimapButton()
     if btn or not Minimap then return end
-    btn = CreateFrame("Button", "OutfitterMinimapButton", Minimap)
+    btn = CreateFrame("Button", "GearhawkMinimapButton", Minimap)
     btn:SetSize(31, 31)
     btn:SetFrameStrata("MEDIUM")
     btn:SetFrameLevel(8)

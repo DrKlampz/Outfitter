@@ -1,8 +1,8 @@
-# Outfitter
+# Gearhawk
 
 A gear advisor for **WoW: Forever**. Tell it your class and spec and it rates the gear in your bags against what you wear, tells you where to get better gear for your level, and shows the best buys in the Auction House.
 
-Open it with `/outfit`, the minimap button, or the addon list.
+Open it with `/hawk`, the minimap button, or the addon list.
 
 ## What it does
 - **Inventory.** Every piece of gear in your bags is read from its real tooltip, scored for your spec, and compared with the item you would replace. Only the best upgrade per slot is listed (two for rings and trinkets). An empty slot always gets the best item you can use.
@@ -15,19 +15,19 @@ Open it with `/outfit`, the minimap button, or the addon list.
 Everything is limited to what you can use now: items above your level or that your class cannot wear are never suggested.
 
 ## Spec and weights
-Outfitter guesses your spec from your talents. Pick a different one from the drop-down in the window, or `/outfit spec` to cycle. Each spec has its own stat weights (`/outfit weights` prints them).
+Gearhawk guesses your spec from your talents. Pick a different one from the drop-down in the window, or `/hawk spec` to cycle. Each spec has its own stat weights (`/hawk weights` prints them).
 
 ## Commands
 | | |
 |---|---|
-| `/outfit` | Open or close the window |
-| `/outfit spec` | Next spec |
-| `/outfit weights` | The numbers the current spec uses |
-| `/outfit tip` | Tooltip line on/off |
-| `/outfit minimap` | Minimap button show/hide |
-| `/outfit alert` | Chat alert for new bag upgrades on/off |
-| `/outfit gain N` | Only suggest items at least N% better |
-| `/outfit debug` | Print what the game reports about your bags |
+| `/hawk` | Open or close the window |
+| `/hawk spec` | Next spec |
+| `/hawk weights` | The numbers the current spec uses |
+| `/hawk tip` | Tooltip line on/off |
+| `/hawk minimap` | Minimap button show/hide |
+| `/hawk alert` | Chat alert for new bag upgrades on/off |
+| `/hawk gain N` | Only suggest items at least N% better |
+| `/hawk debug` | Print what the game reports about your bags |
 
 The item text is read in English. MIT licensed.
 

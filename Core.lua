@@ -30,7 +30,7 @@ local function LinkOr(id)
     return n or ("item " .. id)
 end
 
-function ns.Print(msg) print("|cff33ccffOutfitter:|r " .. tostring(msg)) end
+function ns.Print(msg) print("|cff33ccffGearhawk:|r " .. tostring(msg)) end
 
 function ns.Class() local _, c = UnitClass("player") return c end
 
@@ -100,26 +100,26 @@ f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function(_, event, name)
     if event == "ADDON_LOADED" and name == ADDON then
-        OutfitterDB = OutfitterDB or {}
-        for k, v in pairs(DEFAULTS) do if OutfitterDB[k] == nil then OutfitterDB[k] = v end end
-        OutfitterDB.minimap = OutfitterDB.minimap or {}
-        if OutfitterDB.minimap.angle == nil then OutfitterDB.minimap.angle = 215 end
-        ns.db = OutfitterDB
+        GearhawkDB = GearhawkDB or {}
+        for k, v in pairs(DEFAULTS) do if GearhawkDB[k] == nil then GearhawkDB[k] = v end end
+        GearhawkDB.minimap = GearhawkDB.minimap or {}
+        if GearhawkDB.minimap.angle == nil then GearhawkDB.minimap.angle = 215 end
+        ns.db = GearhawkDB
         ns.cache = {}
     elseif event == "PLAYER_LOGIN" then
         if ns.BuildMinimapButton then pcall(ns.BuildMinimapButton) end
         if ns.StartAlerts then ns.StartAlerts() end
         local s = ns.Spec()
         if s and not ns.db.spec[CharKey()] then
-            ns.Print(("hello %s. I guessed your spec as %s from your talents. Type /outfit to change it or see your upgrades."):format(
+            ns.Print(("hello %s. I guessed your spec as %s from your talents. Type /hawk to change it or see your upgrades."):format(
                 ns.Class():sub(1, 1) .. ns.Class():sub(2):lower(), s.name))
         end
     end
 end)
 
-SLASH_OUTFITTER1 = "/outfit"
-SLASH_OUTFITTER2 = "/outfitter"
-SlashCmdList.OUTFITTER = function(msg)
+SLASH_GEARHAWK1 = "/hawk"
+SLASH_GEARHAWK2 = "/gearhawk"
+SlashCmdList.GEARHAWK = function(msg)
     msg = (msg or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
     if msg == "spec" then ns.CycleSpec()
     elseif msg == "weights" then
@@ -185,7 +185,7 @@ SlashCmdList.OUTFITTER = function(msg)
                 r.unusable and (" - can't use: " .. tostring(r.unusable)) or "", r.tooHigh and (" - needs level " .. r.tooHigh) or ""))
         end
     elseif msg == "unread" then
-        -- stat lines on your worn gear that Outfitter does not understand (so they count as zero)
+        -- stat lines on your worn gear that Gearhawk does not understand (so they count as zero)
         local n = 0
         for slot = 1, 18 do
             local l = GetInventoryItemLink("player", slot)
@@ -196,7 +196,7 @@ SlashCmdList.OUTFITTER = function(msg)
         end
         ns.Print(n == 0 and "Every stat line on your worn gear is understood." or (n .. " stat line(s) are not counted."))
     elseif msg == "help" then
-        ns.Print("/outfit  window | spec  next spec | weights | tip  tooltip line | minimap  show/hide button | alert  upgrade alerts | gain N  minimum % better | unread  unknown stat lines | weapons  weapon candidates | debug")
+        ns.Print("/hawk  window | spec  next spec | weights | tip  tooltip line | minimap  show/hide button | alert  upgrade alerts | gain N  minimum % better | unread  unknown stat lines | weapons  weapon candidates | debug")
     else
         if ns.ToggleUI then ns.ToggleUI() end
     end
@@ -255,7 +255,7 @@ function ns.StartAlerts()
                 end
             end
         end
-        if n > 4 then ns.Print(("...and %d more on your other characters. Open Outfitter, What to get."):format(n - 4)) end
+        if n > 4 then ns.Print(("...and %d more on your other characters. Open Gearhawk, What to get."):format(n - 4)) end
     end
     C_Timer.After(15, AltCheck)
     local ev2 = CreateFrame("Frame")

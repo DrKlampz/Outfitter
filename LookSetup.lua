@@ -3,11 +3,11 @@ local ADDON_NAME, ns = ...
 if not ns.WinLook then return end
 local function Options()
     local L = ns.WinLook
-    local db = function() return ns.db or OutfitterDB end
-    local mmdb = function() return (ns.db or OutfitterDB).minimap end
+    local db = function() return ns.db or GearhawkDB end
+    local mmdb = function() return (ns.db or GearhawkDB).minimap end
     return { sections = {
-        { id = "main", title = "Outfitter", open = true, rows = {
-            L.Kon("Add an Outfitter line to item tooltips (upgrade or not)", db, "showTooltip"),
+        { id = "main", title = "Gearhawk", open = true, rows = {
+            L.Kon("Add an Gearhawk line to item tooltips (upgrade or not)", db, "showTooltip"),
             L.Kon("Alert me when a better item is in my bags", db, "alert"),
             L.Kon("Highlight the best upgrade when a quest offers a choice of rewards", db, "questPick"),
             L.Kon("Green arrow on the best upgrades in my bags", db, "bagArrow", function() if ns.RefreshBagArrows then ns.RefreshBagArrows() end end),
@@ -19,10 +19,10 @@ end
 
 ns.WinLook.Setup({
     options = Options,
-    title = "Outfitter",
-    media = "Interface\\AddOns\\Outfitter\\Media\\",
-    db = function() return OutfitterDB end,
+    title = "Gearhawk",
+    media = "Interface\\AddOns\\Gearhawk\\Media\\",
+    db = function() return GearhawkDB end,
     windows = {
-        { id = "main", name = "Main window", global = "OutfitterFrame", strip = "template", defaultOn = true, title = function(f) return f.TitleText end },
+        { id = "main", name = "Main window", global = "GearhawkFrame", strip = "template", defaultOn = true, title = function(f) return f.TitleText end },
     },
 })

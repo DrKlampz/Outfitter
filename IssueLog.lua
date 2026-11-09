@@ -4,7 +4,7 @@
 -- Read it with /issues, or Ctrl+click an add-on's minimap button. Nothing is sent anywhere.
 local ADDON, NS = ...
 local VERSION = 3
-local DB_GLOBAL = "OutfitterDB"        -- the add-on's SavedVariables table; the log lives inside it
+local DB_GLOBAL = "GearhawkDB"        -- the add-on's SavedVariables table; the log lives inside it
 local MAX_ENTRIES = 60
 local MAX_LEN = 500
 
@@ -342,7 +342,7 @@ D.tests[ADDON] = {}
 local function T(name, fn) table.insert(D.tests[ADDON], { name = name, fn = fn }) end
 local function Age(t) if not t or t == 0 then return "never" end return math.floor((time() - t) / 60) .. " min ago" end
 
-local SLASHKEY = { Baggie = "BAGGIE", Guildie = "GUILDIE", Fishie = "FISHIE", Outfitter = "OUTFITTER", Postage = "POSTAGE",
+local SLASHKEY = { Baggie = "BAGGIE", Guildie = "GUILDIE", Fishie = "FISHIE", Gearhawk = "GEARHAWK", Postage = "POSTAGE",
     Profiteer = "PROFITEER", Vanity = "VANITY", GreedUI = "GREEDUI" }
 
 T("saved data is loaded", function() return type(_G[DB_GLOBAL]) == "table" end)
@@ -384,7 +384,7 @@ S.Fishie = function()
     T("cast API exists", function() return type(CastSpellByName) == "function" end)
     T("error reporter exists", function() return type(NS.ReportError) == "function" end)
 end
-S.Outfitter = function()
+S.Gearhawk = function()
     T("money formatter works", function() local m = NS.Money and NS.Money(12345) return type(m) == "string" and m ~= "", tostring(m) end)
     T("character key looks right", function() local k = NS.CharKey and NS.CharKey() return type(k) == "string" and k:find("-") ~= nil, tostring(k) end)
     T("alert starter exists", function() return type(NS.StartAlerts) == "function" end)

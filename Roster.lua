@@ -342,7 +342,7 @@ function ns.NewRoster(cfg)
 end
 
 ns.Roster = ns.NewRoster({
-  addon = "Outfitter",
+  addon = "Gearhawk",
   db = function() return ns.db end,
   current = function() return ns.CharKey() end,
   short = function(k) return k:match("^(.*)%-[^%-]*$") or k end,
