@@ -258,7 +258,7 @@ function ns.RefreshUI()
             Fill(i, e.link, note, src, (real and real ~= e.link) and real or ("|cff%s%s|r"):format("1eff00", e.name))
         end
         Resize(5)
-        if shown > 0 then frame:SetHeight(TOP + math.max(usedH, 5 * stride) + 36) end
+        if shown > 0 then frame:SetHeight(TOP + math.max(usedH, 5 * stride) + 36 + 22) end   -- +22: the Quest/Dungeon/Battleground/Vendor row sits at the bottom
         frame.more:SetText("")
     end
 end
