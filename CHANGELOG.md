@@ -1,5 +1,8 @@
 # Outfitter
 
+## Unreleased
+- Fonts: the font pack now ships inside this add-on (Fonts folder), so the separate Look Fonts add-on is no longer needed, and there are about 60 more fonts to pick from under Look > Font.
+
 ## v0.8.9
 - What to get: the Quest, Dungeon, Battleground and Vendor boxes no longer cover the last item; the window is taller to make room for them.
 
