@@ -1,5 +1,8 @@
 # Gearhawk
 
+## v0.10.1
+- Upgrade percentages are measured against a typical item you wear, so a trivial difference such as 3 armor against 7 armor on a cloak no longer shows as +133%.
+
 ## v0.10.0
 - Renamed from Outfitter to Gearhawk, because another add-on already uses the name Outfitter and the two would clash. Commands are now `/hawk` and `/gearhawk`. Settings start fresh under the new name.
 

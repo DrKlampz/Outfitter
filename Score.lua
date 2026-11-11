@@ -445,6 +445,24 @@ end
 local DUAL_WIELD_FROM = { ROGUE = 10, WARRIOR = 20, HUNTER = 20 }
 
 -- Compare one item to what is worn. Returns a result table or nil if it is not gear.
+-- A typical worn item's score, so a tiny difference between two near-empty items (3 armor against 7 armor on a
+-- cloak) is not shown as +133%. Percentages are measured against at least a third of this.
+local refCache = { t = -10 }
+local function TypicalScore(w)
+    local now = GetTime and GetTime() or 0
+    if refCache.w == w and now - refCache.t < 5 then return refCache.v end
+    local sum, n = 0, 0
+    for sl = 1, 17 do
+        if sl ~= 4 then
+            local l = GetInventoryItemLink("player", sl)
+            local sc = l and ItemScore(l, w) or 0
+            if sc > 0 then sum, n = sum + sc, n + 1 end
+        end
+    end
+    refCache.w, refCache.t, refCache.v = w, now, n > 0 and sum / n or 0
+    return refCache.v
+end
+
 -- { gain = percent (positive = better), slot = id, worn = link, score, wornScore, unusable, reqLevel, tooHigh }
 function ns.Compare(link)
     local spec = ns.Spec()
@@ -510,7 +528,7 @@ function ns.Compare(link)
     end
     res.worn, res.wornScore, res.slot = worn, wornScore, wornSlot or slots[1]
     if wornScore <= 0 then res.gain = score > 0 and 100 or 0
-    else res.gain = (score - wornScore) / wornScore * 100 end
+    else res.gain = (score - wornScore) / math.max(wornScore, TypicalScore(w) / 3) * 100 end
     -- an empty slot only counts when the item would actually give you something
     res.empty = (worn == nil) and score > 0
     if worn == nil and score <= 0 then res.gain = 0 end
