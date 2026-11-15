@@ -1,5 +1,8 @@
 # Gearhawk
 
+## v0.10.3
+- "What to get" no longer lists dungeons your faction can't get into: Hall of Thanes and the Stockade are hidden for Horde characters, and Ragefire Chasm and Ruins of Lordaeron are hidden for Alliance characters.
+
 ## v0.10.2
 - Stat weights revisited for every class and spec: Warlocks now value Stamina and Spirit properly (Affliction and Demonology especially), and Intellect is no longer over-weighted for casters, healers and Balance druids. Feral cat druids value Strength above Agility, and Retribution paladins value a little more Intellect.
 

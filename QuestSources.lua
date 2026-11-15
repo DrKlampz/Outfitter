@@ -198,6 +198,17 @@ local function RewardSource(quests, level, raceBit, classBit)
     end
 end
 
+-- Dungeons that sit inside a faction's own capital (the other faction can't realistically get in) are
+-- left out of "what to get" for the other faction.
+local ONLY_FOR = {
+    ["The Hall of Thanes"] = "Alliance", ["The Stockade"] = "Alliance",
+    ["Ragefire Chasm"] = "Horde", ["Ruins of Lordaeron"] = "Horde",
+}
+local function Reachable(inst, faction)
+    local f = ONLY_FOR[inst]
+    return not f or not faction or f == faction
+end
+
 function ns.QuestSources(level, have, known)
     local out = {}
     if not Q.ready then return out end
@@ -230,22 +241,24 @@ function ns.QuestSources(level, have, known)
             if not how and Q.boss and Q.boss[id] then
                 local list, byInst, order = Q.boss[id], {}, {}
                 for _, e in ipairs(list) do
-                    if not byInst[e[2]] then byInst[e[2]] = {} order[#order + 1] = e[2] end
-                    local t = byInst[e[2]]
-                    if #t < 3 then t[#t + 1] = e[1] end
+                    if Reachable(e[2], faction) then
+                        if not byInst[e[2]] then byInst[e[2]] = {} order[#order + 1] = e[2] end
+                        local t = byInst[e[2]]
+                        if #t < 3 then t[#t + 1] = e[1] end
+                    end
                 end
                 local parts = {}
                 for k = 1, math.min(#order, 2) do
                     parts[#parts + 1] = table.concat(byInst[order[k]], ", ") .. " - " .. order[k]
                 end
-                how, where = "drop", table.concat(parts, "; ")
+                if #parts > 0 then how, where = "drop", table.concat(parts, "; ") end
             end
             if not how and it.d and L then
                 for k = 1, math.min(#it.d, 30) do
                     local npc = it.d[k]
                     local dn = DungeonName(Get(L.Npc, npc, "zoneID"))
                     local n = dn and Get(L.Npc, npc, "name")
-                    if n then how, where = "drop", n .. ", " .. dn break end
+                    if n and Reachable(dn, faction) then how, where = "drop", n .. ", " .. dn break end
                 end
             end
             if how then
