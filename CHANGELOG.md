@@ -1,5 +1,8 @@
 # Gearhawk
 
+## v0.10.2
+- Stat weights revisited for every class and spec: Warlocks now value Stamina and Spirit properly (Affliction and Demonology especially), and Intellect is no longer over-weighted for casters, healers and Balance druids. Feral cat druids value Strength above Agility, and Retribution paladins value a little more Intellect.
+
 ## v0.10.1
 - Upgrade percentages are measured against a typical item you wear, so a trivial difference such as 3 armor against 7 armor on a cloak no longer shows as +133%.
 

@@ -22,9 +22,9 @@ set("WARRIOR", "Fury", "dps", melee({ STR = 2.0, AGI = 1.2, AP = 1.0, DPS = 12, 
 -- dodge or parry about 5 to 7 (a little more for the threat from Revenge), defense a bit under 2.
 set("WARRIOR", "Protection", "tank", { STA = 1.5, STR = 0.6, AGI = 0.6, ARMOR = 0.08, DEF = 2.2, DODGE = 10, PARRY = 10, BLOCK = 6, BLOCKVAL = 0.5, AP = 0.3, HIT = 6, CRIT = 5, DPS = 4 })
 
-set("PALADIN", "Retribution", "dps", melee({ STR = 2.0, AGI = 0.8, INT = 0.1, AP = 1.0, DPS = 15, HIT = 16, CRIT = 14, SP = 0.1 }))
+set("PALADIN", "Retribution", "dps", melee({ STR = 2.0, AGI = 0.8, INT = 0.25, AP = 1.0, DPS = 15, HIT = 16, CRIT = 14, SP = 0.1 }))
 set("PALADIN", "Protection", "tank", { STA = 1.5, STR = 0.9, AGI = 0.5, SPI = 0.15, ARMOR = 0.12, DEF = 2.5, DODGE = 12, PARRY = 12, BLOCK = 10, BLOCKVAL = 0.6, SP = 0.5, INT = 0.3, AP = 0.2, HIT = 3, CRIT = 2, DPS = 2 })
-set("PALADIN", "Holy", "healer", { INT = 1.8, SPI = 0.3, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 8, ARMOR = 0.02 })
+set("PALADIN", "Holy", "healer", { INT = 1.0, SPI = 0.2, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 8, ARMOR = 0.02 })
 
 set("HUNTER", "Beast Mastery", "dps", { AGI = 2.0, STA = 0.4, INT = 0.3, STR = 0.2, RAP = 1.0, AP = 0.5, CRIT = 14, HIT = 12, DPS = 14, ARMOR = 0.02 })
 set("HUNTER", "Marksmanship", "dps", { AGI = 2.0, STA = 0.4, INT = 0.3, STR = 0.2, RAP = 1.0, AP = 0.5, CRIT = 15, HIT = 14, DPS = 16, ARMOR = 0.02 })
@@ -34,26 +34,26 @@ set("ROGUE", "Assassination", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS
 set("ROGUE", "Combat", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS = 16, HIT = 18, CRIT = 14 }))
 set("ROGUE", "Subtlety", "dps", melee({ AGI = 2.0, STR = 1.0, AP = 1.0, DPS = 12, HIT = 16, CRIT = 14 }))
 
-set("PRIEST", "Discipline", "healer", { INT = 1.9, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
-set("PRIEST", "Holy", "healer", { INT = 1.7, SPI = 1.3, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
-set("PRIEST", "Shadow", "dps", { INT = 1.0, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Discipline", "healer", { INT = 1.0, SPI = 0.8, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Holy", "healer", { INT = 0.9, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, WDPS = 2, ARMOR = 0.01 })
+set("PRIEST", "Shadow", "dps", { INT = 0.8, SPI = 0.5, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2, ARMOR = 0.01 })
 
-set("SHAMAN", "Elemental", "dps", { INT = 1.2, STA = 0.4, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.5, ARMOR = 0.02 })
+set("SHAMAN", "Elemental", "dps", { INT = 0.9, STA = 0.4, SPI = 0.2, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.5, ARMOR = 0.02 })
 set("SHAMAN", "Enhancement", "dps", melee({ STR = 1.6, AGI = 1.0, AP = 1.0, INT = 0.2, DPS = 16, HIT = 16, CRIT = 14 }))
-set("SHAMAN", "Restoration", "healer", { INT = 1.8, SPI = 0.4, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.02 })
+set("SHAMAN", "Restoration", "healer", { INT = 1.0, SPI = 0.3, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.02 })
 
-set("MAGE", "Arcane", "dps", { INT = 1.2, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2.5, ARMOR = 0.01 })
-set("MAGE", "Fire", "dps", { INT = 1.0, SPI = 0.2, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.6, WDPS = 2.5, ARMOR = 0.01 })
-set("MAGE", "Frost", "dps", { INT = 1.0, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.8, WDPS = 2.5, ARMOR = 0.01 })
+set("MAGE", "Arcane", "dps", { INT = 1.0, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.0, WDPS = 2.5, ARMOR = 0.01 })
+set("MAGE", "Fire", "dps", { INT = 0.85, SPI = 0.2, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.6, WDPS = 2.5, ARMOR = 0.01 })
+set("MAGE", "Frost", "dps", { INT = 0.85, SPI = 0.3, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.8, WDPS = 2.5, ARMOR = 0.01 })
 
-set("WARLOCK", "Affliction", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
-set("WARLOCK", "Demonology", "dps", { STA = 0.6, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
-set("WARLOCK", "Destruction", "dps", { STA = 0.5, INT = 0.7, SPI = 0.05, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
+set("WARLOCK", "Affliction", "dps", { STA = 0.7, INT = 0.5, SPI = 0.25, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
+set("WARLOCK", "Demonology", "dps", { STA = 0.7, INT = 0.5, SPI = 0.25, SP = 1.0, SPHIT = 12, SPCRIT = 8, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
+set("WARLOCK", "Destruction", "dps", { STA = 0.6, INT = 0.55, SPI = 0.15, SP = 1.0, SPHIT = 12, SPCRIT = 12, MP5 = 0.15, WDPS = 2.5, ARMOR = 0.01 })
 
-set("DRUID", "Balance", "dps", { INT = 1.2, SPI = 0.6, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.2, ARMOR = 0.01 })
-set("DRUID", "Feral (cat)", "dps", { AGI = 2.0, STR = 2.0, STA = 0.5, AP = 0.8, CRIT = 14, HIT = 12, DPS = 4, ARMOR = 0.02 })
+set("DRUID", "Balance", "dps", { INT = 0.9, SPI = 0.4, STA = 0.5, SP = 1.0, SPHIT = 12, SPCRIT = 10, MP5 = 1.2, ARMOR = 0.01 })
+set("DRUID", "Feral (cat)", "dps", { AGI = 1.6, STR = 2.0, STA = 0.5, AP = 0.8, CRIT = 14, HIT = 12, DPS = 4, ARMOR = 0.02 })
 set("DRUID", "Feral (bear)", "tank", { STA = 1.5, AGI = 1.2, STR = 0.5, ARMOR = 0.1, DEF = 1.0, DODGE = 14, AP = 0.3, HIT = 4, CRIT = 4 })
-set("DRUID", "Restoration", "healer", { INT = 1.6, SPI = 1.2, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.01 })
+set("DRUID", "Restoration", "healer", { INT = 0.9, SPI = 1.0, STA = 0.4, HEAL = 1.0, SP = 0.4, MP5 = 2.5, SPCRIT = 6, ARMOR = 0.01 })
 
 -- "X% of your mana regeneration continues while casting": worth most to healers, a good bit to casters
 for _, specs in pairs(W) do
