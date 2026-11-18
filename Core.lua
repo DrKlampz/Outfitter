@@ -240,6 +240,7 @@ function ns.StartAlerts()
     local altSeen = {}
     local function AltCheck()
         if not ns.db.alert or not ns.FindSources then return end
+        if InCombatLockdown and InCombatLockdown() then C_Timer.After(20, AltCheck) return end
         ns.cache = {}
         local ok, list = pcall(ns.FindSources)
         if not ok or not list then return end

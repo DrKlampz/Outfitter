@@ -1,5 +1,8 @@
 # Gearhawk
 
+## Unreleased
+- Fixed "script ran too long" errors that could happen in combat. The "What to get" search now works in short slices, waits until combat ends, and the bag arrows and alerts are held until the fight is over.
+
 ## v0.10.3
 - "What to get" no longer lists dungeons your faction can't get into: Hall of Thanes and the Stockade are hidden for Horde characters, and Ragefire Chasm and Ruins of Lordaeron are hidden for Alliance characters.
 

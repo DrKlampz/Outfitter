@@ -209,14 +209,30 @@ local function Reachable(inst, faction)
     return not f or not faction or f == faction
 end
 
+-- The database is big, so it is walked in slices of a few milliseconds (never in one go, and never
+-- in combat). Results are kept per level; returns the list and whether the walk is finished.
+local scan
+local BUDGET_MS = 6
 function ns.QuestSources(level, have, known)
-    local out = {}
-    if not Q.ready then return out end
-    local L = Lib()
-    local raceBit, classBit, faction = PlayerBits()
-    local lo = math.max(1, level - 15)
-    for id, it in pairs(Q.items) do
-        if not have[id] and not known[id] and it.lvl <= level and it.lvl >= lo then
+    local res = {}
+    if not Q.ready then return res, true end
+    if not scan or scan.level ~= level then scan = { level = level, out = {} } end
+    if not scan.done then
+        if InCombatLockdown and InCombatLockdown() then return res, false end
+        local L = Lib()
+        local raceBit, classBit, faction = PlayerBits()
+        local lo = math.max(1, level - 15)
+        local out = scan.out
+        local t0, n = debugprofilestop and debugprofilestop() or 0, 0
+        local finished = true
+        for id, it in next, Q.items, scan.key do
+            n = n + 1
+            if n % 25 == 0 and debugprofilestop and debugprofilestop() - t0 > BUDGET_MS then
+                finished = false
+                break
+            end
+            scan.key = id
+            if it.lvl <= level and it.lvl >= lo then
             local how, where
             if it.rewards then
                 local w = RewardSource(it.rewards, level, raceBit, classBit)
@@ -261,14 +277,21 @@ function ns.QuestSources(level, have, known)
                     if n and Reachable(dn, faction) then how, where = "drop", n .. ", " .. dn break end
                 end
             end
-            if how then
-                known[id] = true
-                local nm = (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or (L and Get(L.Item, id, "name")) or ("item " .. id)
-                out[#out + 1] = { id, nm, it.lvl, how, where, "" }
+            if how then out[#out + 1] = { id, it.lvl, how, where } end
             end
         end
+        scan.done = finished
     end
-    return out
+    for _, e in ipairs(scan.out) do
+        local id = e[1]
+        if not have[id] and not known[id] then
+            known[id] = true
+            local L = Lib()
+            local nm = (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or (L and Get(L.Item, id, "name")) or ("item " .. id)
+            res[#res + 1] = { id, nm, e[2], e[3], e[4], "" }
+        end
+    end
+    return res, scan.done
 end
 
 local f = CreateFrame("Frame")

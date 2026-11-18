@@ -109,8 +109,10 @@ local function Fill(i, link, note, sub, label)
     r:Show()
 end
 
+local combatDirty
 function ns.RefreshUI()
     if not frame or not frame:IsShown() then return end
+    if InCombatLockdown and InCombatLockdown() then combatDirty = true return end   -- redo after the fight
     for _, r in ipairs(rows) do r:Hide() end
     stride = ROW_H
     wrapSub = false
@@ -220,9 +222,13 @@ function ns.RefreshUI()
         end
         stride = 34
         wrapSub = true
+        if pending > 0 and not frame.retry then
+                frame.retry = true      -- still working through the list: look again shortly
+                C_Timer.After(0.4, function() frame.retry = nil ns.RefreshUI() end)
+            end
         local shown = #list
         if shown == 0 then
-            frame.empty:SetText(pending > 0 and "Loading item data from the game... reopen in a moment."
+            frame.empty:SetText(pending > 0 and "Loading item data from the game... one moment."
                 or (checked or 0) == 0 and ("Nothing to check at level %d yet. What to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
                 or ("Checked %d known items for level %d: none beat what you're wearing. Try the Auction tab."):format(checked or 0, UnitLevel("player") or 0))
             frame.empty:Show()
@@ -377,7 +383,12 @@ local function Build()
     ev:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
     ev:RegisterEvent("PLAYER_LEVEL_UP")
     ev:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+    ev:RegisterEvent("PLAYER_REGEN_ENABLED")
     ev:SetScript("OnEvent", function(_, event)
+        if event == "PLAYER_REGEN_ENABLED" then
+            if combatDirty then combatDirty = nil ns.cache = {} ns.RefreshUI() end
+            return
+        end
         if event == "GET_ITEM_INFO_RECEIVED" then
             if tab ~= "src" or not frame:IsShown() or frame.pend then return end
             frame.pend = true      -- one refresh for a burst of item data

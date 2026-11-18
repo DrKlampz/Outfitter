@@ -344,6 +344,7 @@ local function Later(delay)
     pending = true
     C_Timer.After(delay or 0.3, function()
         pending = nil
+        if InCombatLockdown and InCombatLockdown() then Later(2) return end     -- not mid-fight
         dirty = true
         local changed = Rebuild()
         if changed then RepaintAll() end

@@ -657,6 +657,8 @@ end
 
 function ns.FindSources()
     local out, pending, checked = {}, 0, 0
+    if InCombatLockdown and InCombatLockdown() then return {}, 1, 0 end     -- heavy work waits for the fight to end
+    local t0 = debugprofilestop and debugprofilestop() or 0
     local group = ns.SourceClasses and ns.SourceClasses[ns.Class() or ""]
     local static = group and ns.Sources and ns.Sources[group] or {}
     local level = UnitLevel("player") or 1
@@ -679,9 +681,12 @@ function ns.FindSources()
             ns.QuestIndexStart()
             pending = pending + 1                 -- still reading the database; the tab refreshes when done
         end
-        for _, e in ipairs(ns.QuestSources(level, have, known)) do list[#list + 1] = e end
+        local qs, qdone = ns.QuestSources(level, have, known)
+        for _, e in ipairs(qs) do list[#list + 1] = e end
+        if qdone == false then pending = pending + 1 end
     end
     for _, e in ipairs(list) do
+        if debugprofilestop and debugprofilestop() - t0 > 10 then pending = pending + 1 break end   -- carry on next refresh; Compare results are cached
         local id, name, req, how, where, note = e[1], e[2], e[3], e[4], e[5], e[6]
         if not have[id] and req <= level and ns.SourceOn(ns.SourceKind({ id = id, how = how, where = where })) then
             checked = checked + 1
