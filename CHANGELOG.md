@@ -1,6 +1,6 @@
 # Gearhawk
 
-## Unreleased
+## v0.10.4
 - Fixed "script ran too long" errors that could happen in combat. The "What to get" search now works in short slices, waits until combat ends, and the bag arrows and alerts are held until the fight is over.
 
 ## v0.10.3
