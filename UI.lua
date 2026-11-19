@@ -173,7 +173,7 @@ function ns.RefreshUI()
         local st = ns.AH
         if not ns.AuctionAvailable() then
             Resize(6)
-            frame.empty:SetText("No auction prices yet.\nOpen the Auction House and wait for the scan to finish (Profiteer or Gearhawk reads it), then come back.")
+            frame.empty:SetText("No auction prices yet.\nOpen the Auction House and wait for the scan to finish (Gearhawk reads it), then come back.")
             frame.empty:Show()
             frame.more:SetText("")
             return
@@ -229,7 +229,7 @@ function ns.RefreshUI()
         local shown = #list
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... one moment."
-                or (checked or 0) == 0 and ("Nothing to check at level %d yet. What to get uses the built-in cloth lists plus gear your other characters hold or can craft (needs Profiteer). Try the Auction tab."):format(UnitLevel("player") or 0)
+                or (checked or 0) == 0 and ("Nothing to check at level %d yet. What to get uses the built-in cloth lists plus quest, vendor and dungeon rewards. Try the Auction tab."):format(UnitLevel("player") or 0)
                 or ("Checked %d known items for level %d: none beat what you're wearing. Try the Auction tab."):format(checked or 0, UnitLevel("player") or 0))
             frame.empty:Show()
         else

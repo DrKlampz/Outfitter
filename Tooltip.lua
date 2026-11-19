@@ -218,7 +218,7 @@ end
 -- ===== Bags: green arrow on the best upgrades =====
 do
 -- A small green arrow at the bottom centre of an item's icon in your bags when it is the best upgrade for its slot
--- (rings and trinkets: the best two). Works on the game's own bags and on Baggie. Turn off on the Options tab.
+-- (rings and trinkets: the best two). Works on the game's own bags. Turn off on the Options tab.
 
 local set, sig = {}, ""
 local dirty = true
@@ -246,9 +246,8 @@ local function Rebuild()
     return changed
 end
 
--- The arrow and a green frame around the icon live on their own small frame on top of the slot. They must not be
--- textures of the slot button itself: Baggie hides every texture it did not make on its buttons, which is why the
--- arrow never showed in Baggie before.
+-- The arrow and a green frame around the icon live on their own small frame on top of the slot, not on textures
+-- of the slot button itself.
 local function ArrowFor(btn)
     local g = arrows[btn]
     if g then return g end
@@ -301,15 +300,6 @@ function ns.PaintBagArrow(btn, bag, slot)
     local want = bag and slot and set[bag .. ":" .. slot]
     if want then SetArrow(ArrowFor(btn), true) elseif arrows[btn] then SetArrow(arrows[btn], false) end
 end
-local reported
-_G.Outfitter_BagArrow = function(btn, bag, slot)
-    local ok, err = pcall(ns.PaintBagArrow, btn, bag, slot)
-    if not ok and not reported then
-        reported = true
-        if ns.Issue then ns.Issue("lua", "bag arrow", tostring(err)) end
-        if ns.Print then ns.Print("bag arrow failed: " .. tostring(err)) end
-    end
-end
 
 -- the game's own bag frames
 local function PaintDefault()
@@ -334,8 +324,6 @@ end
 
 local function RepaintAll()
     pcall(PaintDefault)
-    local B = _G.Baggie
-    if B and B.Frame and B.Frame.Refresh then pcall(B.Frame.Refresh) end
 end
 
 local pending

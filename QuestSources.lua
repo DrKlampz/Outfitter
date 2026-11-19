@@ -301,7 +301,7 @@ f:SetScript("OnEvent", function()
 end)
 
 -- What a vendor charges: remembered whenever you open a merchant window (gold, honor, tokens...),
--- falling back to the plain gold price Profiteer has seen.
+-- falling back to nothing when no price is known.
 local function CostParts(i)
     local parts = {}
     local n = GetMerchantItemCostInfo and GetMerchantItemCostInfo(i) or 0
@@ -405,8 +405,6 @@ function ns.VendorCost(id)
     if c then return c end
     local b = ns.VendorPrices and ns.VendorPrices[id]
     if b then return ns.Money(b) end
-    local p = ProfiteerDB and ProfiteerDB.vendor and ProfiteerDB.vendor[id]
-    if p and p > 0 then return ns.Money(p) end
 end
 
 local mf = CreateFrame("Frame")

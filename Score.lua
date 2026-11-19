@@ -595,56 +595,8 @@ function ns.EquippedScores()
     return out
 end
 
--- Extra candidates read from Profiteer's saved data (if it is installed): gear your characters can
--- craft, and gear sitting in your other characters' bags and bank. Works for every class.
-local function ShortChar(k) return (tostring(k):match("^[^-]+")) or tostring(k) end
-
-local function DynamicSources(have, known)
-    local out = {}
-    local db = _G.ProfiteerDB
-    if type(db) ~= "table" then return out end
-    local me = UnitName and UnitName("player")
-    local names = type(db.names) == "table" and db.names or {}
-    local function nameOf(id, fallback)
-        return names[id] or fallback or (C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(id)) or ("item " .. id)
-    end
-    -- Soulbound / bind-on-pickup gear cannot be handed from one character to another
-    local function tradable(id)
-        local r = ns.ReadItem and ns.ReadItem("item:" .. id)
-        return r ~= nil and r.bind ~= "bop"
-    end
-    local function add(id, name, how, where, needsTrade)
-        if type(id) ~= "number" or have[id] or known[id] then return end
-        if not ns.EquipLoc("item:" .. id) then return end        -- not wearable
-        if needsTrade and not tradable(id) then return end
-        known[id] = true
-        out[#out + 1] = { id, nameOf(id, name), 1, how, where, "" }
-    end
-    -- bags and bank of your other characters
-    for ck, inv in pairs(type(db.inventory) == "table" and db.inventory or {}) do
-        if ShortChar(ck) ~= me and type(inv) == "table" then
-            for _, where in ipairs({ "bags", "bank" }) do
-                for id in pairs(type(inv[where]) == "table" and inv[where] or {}) do
-                    add(id, nil, "alt", ("in %s's %s"):format(ShortChar(ck), where), true)
-                end
-            end
-        end
-    end
-    -- gear your characters know how to make
-    for ck, profs in pairs(type(db.recipes) == "table" and db.recipes or {}) do
-        for prof, recs in pairs(type(profs) == "table" and profs or {}) do
-            for _, r in ipairs(type(recs) == "table" and recs or {}) do
-                local mine = ShortChar(ck) == me
-                add(r.id, r.name, "crafted", mine and ("%s - you know the recipe"):format(prof)
-                    or ("%s - %s knows the recipe"):format(prof, ShortChar(ck)), not mine)
-            end
-        end
-    end
-    return out
-end
-
 -- Known gear that would beat what you wear, best first: the built-in lists for the cloth casters,
--- plus gear your other characters hold or can craft (any class).
+-- plus quest, vendor and dungeon rewards for every class.
 -- Returns list, pending (items whose data the game has not sent yet), checked.
 -- A bind-on-pickup craft is only yours if your character has the profession itself.
 local function CraftOnlyByOthers(link, where)
@@ -674,7 +626,6 @@ function ns.FindSources()
     end
     local list = {}
     for _, e in ipairs(static) do known[e[1]] = true list[#list + 1] = e end
-    for _, e in ipairs(DynamicSources(have, known)) do list[#list + 1] = e end
     -- quests, vendors and dungeon bosses for every class, from the quest database
     if ns.QuestSources then
         if not ns.QIndex.ready then

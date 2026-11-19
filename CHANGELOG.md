@@ -1,6 +1,7 @@
 # Gearhawk
 
-## Unreleased
+## v0.11.0
+- Works completely on its own. The Auction tab now uses Gearhawk's own Auction House scan only, and the lists of gear your other characters carry or can craft are gone, because they needed another add-on's data. Quest, vendor and dungeon rewards for every class stay.
 - Removed the add-on-to-add-on theming hooks and cross-add-on names from the window look code; the shared look sync between your add-ons works the same.
 - The "Pulse the flair" option now also pulses the edge finish (soft, bevel, double line and glow), not just the corner studs.
 
