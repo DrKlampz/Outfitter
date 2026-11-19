@@ -695,12 +695,18 @@ function ns.FindSources()
     for _, e in ipairs(list) do
         if debugprofilestop and debugprofilestop() - t0 > 10 then pending = pending + 1 break end   -- carry on next refresh; Compare results are cached
         local id, name, req, how, where, note = e[1], e[2], e[3], e[4], e[5], e[6]
-        if not have[id] and req <= level and ns.SourceOn(ns.SourceKind({ id = id, how = how, where = where })) then
+        ns.srcTries = ns.srcTries or {}
+        if not have[id] and req <= level and (ns.srcTries[id] or 0) <= 5 and ns.SourceOn(ns.SourceKind({ id = id, how = how, where = where })) then
             checked = checked + 1
             local link = "item:" .. id
             local r = ns.Compare(link)
             if r == nil then
-                if ns.EquipLoc(link) then pending = pending + 1 end
+                -- the game may never send data for an item it does not know: look a few times, then leave it out
+                -- (otherwise the list keeps rebuilding forever and the window flickers)
+                if ns.EquipLoc(link) then
+                    ns.srcTries[id] = (ns.srcTries[id] or 0) + 1
+                    if ns.srcTries[id] <= 5 then pending = pending + 1 end
+                end
             elseif (r.empty or (r.gain and r.gain >= (ns.db.minGain or 3))) and not r.unusable and not r.tooHigh
                 and not (how == "crafted" and CraftOnlyByOthers(link, where)) then
                 r.link, r.name, r.req, r.how, r.where, r.note, r.id = link, name, req, how, where, note, id

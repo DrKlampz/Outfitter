@@ -222,10 +222,11 @@ function ns.RefreshUI()
         end
         stride = 34
         wrapSub = true
-        if pending > 0 and not frame.retry then
-                frame.retry = true      -- still working through the list: look again shortly
-                C_Timer.After(0.4, function() frame.retry = nil ns.RefreshUI() end)
-            end
+        if pending > 0 and not frame.retry and (frame.retries or 0) < 60 then
+            frame.retry = true      -- still working through the list: look again shortly (at most ~25 seconds)
+            frame.retries = (frame.retries or 0) + 1
+            C_Timer.After(0.4, function() frame.retry = nil ns.RefreshUI() end)
+        end
         local shown = #list
         if shown == 0 then
             frame.empty:SetText(pending > 0 and "Loading item data from the game... one moment."
@@ -377,7 +378,7 @@ local function Build()
     hint:SetPoint("BOTTOMRIGHT", -16, 12)
     hint:SetText("Hover an item for details")
     frame:SetScript("OnHide", function() menu:Hide() end)
-    frame:SetScript("OnShow", function() ns.cache = {} ns.RefreshUI() end)
+    frame:SetScript("OnShow", function() ns.cache = {} ns.srcTries = {} frame.retries = 0 ns.RefreshUI() end)
     local ev = CreateFrame("Frame")
     ev:RegisterEvent("BAG_UPDATE_DELAYED")
     ev:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -396,6 +397,7 @@ local function Build()
             return
         end
         ns.cache = {}
+        ns.srcTries = {} frame.retries = 0
         -- only a change to what you wear (or your level) changes the auction answer; bag shuffles don't
         if event ~= "BAG_UPDATE_DELAYED" and ns.AuctionDirty then ns.AuctionDirty() end
         ns.RefreshUI()
