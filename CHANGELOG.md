@@ -1,5 +1,8 @@
 # Gearhawk
 
+## Unreleased
+- Your custom look is now shared with your other add-ons: change colors, background, border or opacity in one and the rest follow (the newest change wins). It is on by default; untick "Sync my look with my other add-ons" in the Look window to turn it off.
+
 ## v0.10.4
 - Fixed "script ran too long" errors that could happen in combat. The "What to get" search now works in short slices, waits until combat ends, and the bag arrows and alerts are held until the fight is over.
 
