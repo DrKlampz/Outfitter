@@ -1,10 +1,11 @@
 # Gearhawk
 
 ## Unreleased
+- Removed the add-on-to-add-on theming hooks and cross-add-on names from the window look code; the shared look sync between your add-ons works the same.
 - The "Pulse the flair" option now also pulses the edge finish (soft, bevel, double line and glow), not just the corner studs.
 
 ## v0.10.6
-- Look sync: the first time your add-ons meet, they now all take on the same look right away (Baggie's, if it is installed) instead of waiting for you to change something. Baggie no longer shares its title bar color, which means something different there.
+- Look sync: the first time your add-ons meet, they now all take on the same look right away instead of waiting for you to change something.
 
 ## v0.10.5
 - Your custom look is now shared with your other add-ons: change colors, background, border or opacity in one and the rest follow (the newest change wins). It is on by default; untick "Sync my look with my other add-ons" in the Look window to turn it off.
@@ -25,7 +26,7 @@
 - Renamed from Outfitter to Gearhawk, because another add-on already uses the name Outfitter and the two would clash. Commands are now `/hawk` and `/gearhawk`. Settings start fresh under the new name.
 
 ## v0.9.0
-- Bags: the green upgrade arrow now actually shows in Baggie (Baggie was hiding it), and upgrades also get a green frame and a faint green wash over the icon, so they stand out without hovering.
+- Bags: the green upgrade arrow now shows in third-party bag windows, and upgrades also get a green frame and a faint green wash over the icon, so they stand out without hovering.
 - Fonts: the font pack now ships inside this add-on (Fonts folder), so the separate Look Fonts add-on is no longer needed, and there are about 60 more fonts to pick from under Look > Font.
 
 ## v0.8.9
