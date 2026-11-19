@@ -1,6 +1,7 @@
 # Gearhawk
 
 ## v0.11.0
+- New optional artwork in the window look: seven textured backgrounds (wood planks, aged paper, arcane starfield, runed slate, riveted iron, damask tapestry, dragon scales), five carved corner pieces (filigree, vines, runes, iron plates, arcane sigil), four crests for the top edge (winged, jeweled, scrollwork, crown), and eight ready-made art themes (Arcane library, Dwarven forge, Elven glade, Old tome, Runestone, Royal court, Dragonscale, Oak lodge). Pick them in the window options (Colors > Theme, Background, Border > Corner artwork and Crest). Everything is off until you choose it and syncs between your add-ons like the rest of the look.
 - Shares one Auction House scan with Profiteer when both are installed: Gearhawk never asks the game for a scan itself, skips reading the list when Profiteer already saved it, and uses Profiteer's prices when they are newer than its own.
 - Works completely on its own. Extras that use another installed add-on's saved data (auction prices, gear your other characters carry or can craft) are used only when that add-on is loaded, and the Auction tab reads Gearhawk's own scan first. The wording no longer names other add-ons.
 - Removed the add-on-to-add-on theming hooks and cross-add-on names from the window look code; the shared look sync between your add-ons works the same.
