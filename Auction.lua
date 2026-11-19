@@ -79,6 +79,10 @@ ev:SetScript("OnEvent", function()
     if state.lastIngest and GetTime and GetTime() - state.lastIngest < 120 then return end   -- one read per scan, not a loop
     local n = C.GetNumReplicateItems() or 0
     if n == 0 then return end
+    -- if Profiteer is loaded it reads this same list and saves it; do not read it twice
+    if Loaded("Profiteer") and type(_G.ProfiteerDB) == "table" and type(_G.ProfiteerDB.prices) == "table" then
+        return
+    end
     ingest = { i = 0, n = n, items = {}, seen = {} }
     C_Timer.After(0.5, IngestStep)
 end)
@@ -182,6 +186,17 @@ function ns.AuctionStart()
     local ids, newest = {}, nil
     local prices
     local saved = Saved()
+    -- When Profiteer is loaded and scanned more recently than Gearhawk last read the list, use its prices so the
+    -- two add-ons share one Auction House scan. Gearhawk never asks the game for a scan itself, so it never
+    -- uses up one of the limited scan updates.
+    if saved then
+        local pr = Prices()
+        local pt
+        for _, p in pairs(pr or {}) do
+            if type(p) == "table" and p.time and (not pt or p.time > pt) then pt = p.time end
+        end
+        if pt and pt > (saved.time or 0) then saved = nil end
+    end
     if saved then
         -- real listings with their links: random-suffix items ("of Frozen Wrath") are read correctly
         prices = {}

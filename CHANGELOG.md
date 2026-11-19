@@ -1,6 +1,7 @@
 # Gearhawk
 
 ## v0.11.0
+- Shares one Auction House scan with Profiteer when both are installed: Gearhawk never asks the game for a scan itself, skips reading the list when Profiteer already saved it, and uses Profiteer's prices when they are newer than its own.
 - Works completely on its own. Extras that use another installed add-on's saved data (auction prices, gear your other characters carry or can craft) are used only when that add-on is loaded, and the Auction tab reads Gearhawk's own scan first. The wording no longer names other add-ons.
 - Removed the add-on-to-add-on theming hooks and cross-add-on names from the window look code; the shared look sync between your add-ons works the same.
 - The "Pulse the flair" option now also pulses the edge finish (soft, bevel, double line and glow), not just the corner studs.
