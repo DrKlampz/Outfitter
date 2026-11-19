@@ -1,6 +1,6 @@
 # Gearhawk
 
-## Unreleased
+## v0.10.5
 - Your custom look is now shared with your other add-ons: change colors, background, border or opacity in one and the rest follow (the newest change wins). It is on by default; untick "Sync my look with my other add-ons" in the Look window to turn it off.
 
 ## v0.10.4
