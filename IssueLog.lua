@@ -372,7 +372,7 @@ S.Gearhawk = function()
     T("character key looks right", function() local k = NS.CharKey and NS.CharKey() return type(k) == "string" and k:find("-") ~= nil, tostring(k) end)
     T("alert starter exists", function() return type(NS.StartAlerts) == "function" end)
     T("bag arrow switch and spec", function()
-        return "info", ("bagArrow=%s, spec chosen=%s"):format(tostring(NS.db and NS.db.bagArrow), tostring(NS.Spec and NS.Spec() ~= nil))
+        return "info", ("bagArrow=%s, spec chosen=%s, bag arrow hook present=%s"):format(tostring(NS.db and NS.db.bagArrow), tostring(NS.Spec and NS.Spec() ~= nil), tostring(_G.Outfitter_BagArrow ~= nil))
     end)
     T("bags hold items that beat what you wear", function()
         if not NS.FindUpgrades then return false, "FindUpgrades missing" end

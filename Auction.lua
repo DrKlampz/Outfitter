@@ -1,10 +1,22 @@
 local _, ns = ...
 
--- Gear you could buy right now. Prices come from the last full Auction House scan Gearhawk read;
--- every equippable item in it is read from its real tooltip and scored against what you wear,
--- exactly like the bag upgrades.
+local function Loaded(name)
+    local f = (_G.C_AddOns and _G.C_AddOns.IsAddOnLoaded) or _G.IsAddOnLoaded
+    if not f then return false end
+    local ok, v = pcall(f, name)
+    return ok and v and true or false
+end
+
+-- Gear you could buy right now. Prices come from the last full Auction House scan that
+-- another installed add-on saved (if any); every equippable item in it is read from its real tooltip and scored
+-- against what you wear, exactly like the bag upgrades.
 local state = { running = false, ready = false, done = 0, total = 0, list = {}, newest = nil }
 ns.AH = state
+
+local function Prices()
+    local db = Loaded("Profiteer") and _G.ProfiteerDB or nil
+    return db and db.prices
+end
 
 -- Gear read straight from the full Auction House scan (every listing with its real item link,
 -- random suffix and all), saved in GearhawkDB.ah = { time, items = { ["item:..."] = { p = lowest buyout, n = listings } } }
@@ -14,7 +26,9 @@ local function Saved()
 end
 
 function ns.AuctionAvailable()
-    return Saved() ~= nil
+    if Saved() then return true end
+    local p = Prices()
+    return p ~= nil and next(p) ~= nil
 end
 
 local ingest
@@ -166,16 +180,28 @@ function ns.AuctionStart()
     if state.running and GetTime and (GetTime() - (state.tick or 0)) < 5 then return end
     state.gen = (state.gen or 0) + 1
     local ids, newest = {}, nil
+    local prices
     local saved = Saved()
-    if not saved then return end
-    -- real listings with their links: random-suffix items ("of Frozen Wrath") are read correctly
-    local prices = {}
-    for str, e in pairs(saved.items) do
-        prices[str] = { min = e.p, n = e.n, time = saved.time }
-        ids[#ids + 1] = str
+    if saved then
+        -- real listings with their links: random-suffix items ("of Frozen Wrath") are read correctly
+        prices = {}
+        for str, e in pairs(saved.items) do
+            prices[str] = { min = e.p, n = e.n, time = saved.time }
+            ids[#ids + 1] = str
+        end
+        newest = saved.time
+        state.links = true
+    else
+        prices = Prices()
+        if not prices then return end
+        state.links = false
+        for id, p in pairs(prices) do
+            if type(id) == "number" and type(p) == "table" and p.min and p.min > 0 then
+                ids[#ids + 1] = id
+                if p.time and (not newest or p.time > newest) then newest = p.time end
+            end
+        end
     end
-    newest = saved.time
-    state.links = true
     table.sort(ids, function(x, y) return tostring(x) < tostring(y) end)
     state.errors, state.lastError = 0, nil
     state.prices, state.ids, state.i, state.total, state.done = prices, ids, 1, #ids, 0

@@ -236,7 +236,7 @@ function ns.StartAlerts()
             primed = true
         end
     end)
-    -- how often to look for gear that beats what you wear
+    -- gear your other characters are carrying (bags and bank, from Profiteer's saved data) that this one can use
     local altSeen = {}
     local function AltCheck()
         if not ns.db.alert or not ns.FindSources then return end

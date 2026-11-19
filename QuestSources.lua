@@ -1,5 +1,12 @@
 local _, ns = ...
 
+local function Loaded(name)
+    local f = (_G.C_AddOns and _G.C_AddOns.IsAddOnLoaded) or _G.IsAddOnLoaded
+    if not f then return false end
+    local ok, v = pcall(f, name)
+    return ok and v and true or false
+end
+
 -- Where to get gear for EVERY class, read from the quest database Questie installs (QuestieDB):
 -- quest rewards, vendors and dungeon-boss drops for each piece of armor and weapon.
 -- The list is built once per session in small slices (no hitching) and held in memory.
@@ -301,7 +308,7 @@ f:SetScript("OnEvent", function()
 end)
 
 -- What a vendor charges: remembered whenever you open a merchant window (gold, honor, tokens...),
--- falling back to nothing when no price is known.
+-- falling back to a price another installed add-on has seen.
 local function CostParts(i)
     local parts = {}
     local n = GetMerchantItemCostInfo and GetMerchantItemCostInfo(i) or 0
@@ -405,6 +412,9 @@ function ns.VendorCost(id)
     if c then return c end
     local b = ns.VendorPrices and ns.VendorPrices[id]
     if b then return ns.Money(b) end
+    local PFD = Loaded("Profiteer") and _G.ProfiteerDB or nil
+    local p = PFD and PFD.vendor and PFD.vendor[id]
+    if p and p > 0 then return ns.Money(p) end
 end
 
 local mf = CreateFrame("Frame")
