@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.6
+
+- Redrawn anarchy symbol with a hand-brushed, worn look
+
 ## v0.11.5
 
 - New background symbols: sword, crossed swords, shield, sun and paw print
