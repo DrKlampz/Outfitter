@@ -3,6 +3,9 @@
 ## v0.11.6
 
 - Redrawn anarchy symbol with a hand-brushed, worn look
+- What to get: the list no longer flickers or jumps in size while item data is still loading; rows are only added, never dropped and re-added
+- Smoother, cleaner drawings of several background symbols, plus a calligraphic version of every symbol
+- Saved data is found again when the game reports an empty realm name
 
 ## v0.11.5
 

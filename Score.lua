@@ -715,12 +715,25 @@ function ns.FindSources()
             end
         end
     end
-    table.sort(out, function(a, b)
+    local function Order(a, b)
         local ah, bh = a.note ~= "" and 1 or 0, b.note ~= "" and 1 or 0     -- faction-unsure quests last
         if ah ~= bh then return ah < bh end
         return a.gain > b.gain
-    end)
-    return BestPerSlot(out), pending, checked
+    end
+    table.sort(out, Order)
+    local best = BestPerSlot(out)
+    -- while item data is still arriving, every pass sees a different part of the list. Showing each pass made rows
+    -- jump in and out and the window grow and shrink, so while loading we only ever add to what is already shown.
+    if pending > 0 and ns.srcShown then
+        local merged, seen = {}, {}
+        for _, e in ipairs(ns.srcShown) do merged[#merged + 1] = e seen[e.id] = true end
+        for _, e in ipairs(best) do if not seen[e.id] then merged[#merged + 1] = e end end
+        table.sort(merged, Order)
+        best = BestPerSlot(merged)
+    end
+    ns.srcShown = best
+    if pending == 0 then ns.srcFinal = true end
+    return best, pending, checked
 end
 
 function ns.SlotsFor(loc)
