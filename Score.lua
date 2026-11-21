@@ -581,7 +581,8 @@ function ns.FindUpgrades()
     table.sort(out, function(a, b)
         local ah, bh = a.tooHigh and 1 or 0, b.tooHigh and 1 or 0
         if ah ~= bh then return ah < bh end
-        return a.gain > b.gain
+        if a.gain ~= b.gain then return a.gain > b.gain end
+        return tostring(a.link) < tostring(b.link)     -- ties keep a fixed order, so the list does not reshuffle
     end)
     return BestPerSlot(out)
 end
@@ -718,7 +719,10 @@ function ns.FindSources()
     local function Order(a, b)
         local ah, bh = a.note ~= "" and 1 or 0, b.note ~= "" and 1 or 0     -- faction-unsure quests last
         if ah ~= bh then return ah < bh end
-        return a.gain > b.gain
+        if a.gain ~= b.gain then return a.gain > b.gain end
+        -- equal gains (several items show +100%) must keep one fixed order, or the rows swap places every refresh
+        if (a.slot or 0) ~= (b.slot or 0) then return (a.slot or 0) < (b.slot or 0) end
+        return tostring(a.id or a.link) < tostring(b.id or b.link)
     end
     table.sort(out, Order)
     local best = BestPerSlot(out)
