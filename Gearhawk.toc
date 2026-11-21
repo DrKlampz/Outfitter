@@ -8,6 +8,7 @@
 ## SavedVariables: GearhawkDB
 ## X-License: MIT
 ## X-Wago-ID: rNkg5ONa
+## X-Curse-Project-ID: 1792032
 
 IssueLog.lua
 Weights.lua
