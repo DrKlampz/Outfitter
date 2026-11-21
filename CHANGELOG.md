@@ -1,9 +1,5 @@
 # Gearhawk
 
-## v0.11.7
-
-- Right-clicking a ring, trinket or one-hander in your bags now equips it over the weakest piece Gearhawk would replace, instead of whichever slot the game picks
-
 ## v0.11.6
 
 - Redrawn anarchy symbol with a hand-brushed, worn look
