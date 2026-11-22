@@ -1,8 +1,11 @@
 # Gearhawk
 
-## v0.11.6
+## v0.11.7
 
 - What to get: items with the same upgrade percentage (like several at +100%) now stay in one fixed order instead of swapping places each time the list refreshes
+
+## v0.11.6
+
 - Redrawn anarchy symbol with a hand-brushed, worn look
 - What to get: the list no longer flickers or jumps in size while item data is still loading; rows are only added, never dropped and re-added
 - Smoother, cleaner drawings of several background symbols, plus a calligraphic version of every symbol
