@@ -8,7 +8,7 @@ local stride = ROW_H
 local usedH = 0         -- height of the rows placed so far (rows can wrap onto extra lines)
 local wrapSub = false   -- Where-to-get rows let the second line wrap instead of cutting it off
 local TOP = 90          -- y of the first row
-local WIDTH = 470
+local WIDTH = 500
 
 local function Button(parent, text, w, onClick)
     local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
@@ -49,6 +49,7 @@ local function Row(i)
     end)
     r:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
     r:SetScript("OnClick", function(self)
+        if self.wear and not (IsModifiedClick and IsModifiedClick("CHATLINK")) then ns.ProfWear(self.wear) return end
         if self.link and IsModifiedClick and IsModifiedClick("CHATLINK") and ChatEdit_InsertLink then ChatEdit_InsertLink(self.link) end
     end)
     rows[i] = r
@@ -73,7 +74,7 @@ local function LinkText(link)
     return link
 end
 
-local function Fill(i, link, note, sub, label)
+local function Fill(i, link, note, sub, label, icon, equip)
     local r = Row(i)
     r:ClearAllPoints()
     r.sub:SetMaxLines(wrapSub and 0 or 1)
@@ -102,11 +103,73 @@ local function Fill(i, link, note, sub, label)
     r.note:ClearAllPoints()
     if sub then r.note:SetPoint("TOPRIGHT", -2, -2) else r.note:SetPoint("RIGHT", -2, 0) end
     r.link = link
-    local tex = ns.ItemIcon(link) or "Interface\\Icons\\INV_Misc_QuestionMark"
+    r.wear = equip
+    local tex = icon or ns.ItemIcon(link) or "Interface\\Icons\\INV_Misc_QuestionMark"
     r.icon:SetTexture(tex)
     r.name:SetText(label or LinkText(link) or "")
     r.note:SetText(note or "")
     r:Show()
+end
+
+
+local function Clean(t) return (tostring(t):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")) end
+-- Professions tab: gear and consumables that raise a profession skill or speed it up
+local function DrawProf()
+    frame.empty:Hide()
+    frame.more:SetText("")
+    local groups, pending = ns.ProfGear()
+    if pending > 0 and not frame.retry and (frame.retries or 0) < 60 then
+        frame.retry = true
+        frame.retries = (frame.retries or 0) + 1
+        C_Timer.After(0.4, function() frame.retry = nil ns.RefreshUI() end)
+    end
+    stride = 34
+    wrapSub = true
+    local n = 0
+    for _, g in ipairs(groups) do
+        if n < 40 then
+            n = n + 1
+            local total = g.total > 0 and ("|cff40ff40worn +%d|r"):format(g.total) or "|cffaaaaaanone worn|r"
+            Fill(n, nil, total, #g.bag > 0 and ("%d in your bags"):format(#g.bag) or "nothing else in your bags", "|cffffd100" .. g.prof.name .. "|r", g.prof.icon)
+        end
+        for _, w in ipairs(g.worn) do
+            if n < 40 then
+                n = n + 1
+                Fill(n, w.link, "|cff40ff40worn|r", w.text, nil)
+            end
+        end
+        for _, b in ipairs(g.bag) do
+            if n < 40 then
+                n = n + 1
+                local note, sub = b.value > 0 and ("|cff40ff40+%d|r"):format(b.value) or "|cff40ff40faster|r", b.text
+                local equip
+                if b.use then
+                    note = "|cffffd100use it|r"
+                elseif b.swapSlot then
+                    local slotName = ns.SLOT_NAMES and ns.SLOT_NAMES[b.swapSlot] or "slot"
+                    local over = b.swapLink and (LinkText(b.swapLink) or "?") or "empty"
+                    sub = sub .. "\n|cffaaaaaaClick to wear in " .. slotName:lower() .. ", replacing " .. Clean(over)
+                    if b.swapValue > 0 then sub = sub .. " (+" .. b.swapValue .. ")" end
+                    if b.gain then
+                        sub = sub .. (b.gain >= 0 and "  |cff40ff40" or "  |cffff8040") .. ("%+d%% overall"):format(math.floor(b.gain + 0.5))
+                    end
+                    sub = sub .. "|r"
+                    equip = b
+                end
+                Fill(n, b.link, note, sub, nil, nil, equip)
+            end
+        end
+    end
+    if n == 0 then
+        if pending > 0 then
+            frame.empty:SetText("Loading item data from the game... one moment.")
+        else
+            frame.empty:SetText("Nothing you wear or carry changes a profession skill. Fishing hats and poles, mining and skinning gear and lures show up here as soon as you have them.")
+        end
+        frame.empty:Show()
+    end
+    Resize(math.max(n, 5))
+    frame:SetHeight(TOP + math.max(usedH, 5 * stride) + 36)
 end
 
 local combatDirty
@@ -129,6 +192,7 @@ function ns.RefreshUI()
     frame.specBtn.text:SetText(spec.name)
     frame.info:SetText(("%s |cffaaaaaa(%s)|r   level %d"):format(class:sub(1, 1) .. class:sub(2):lower(), spec.role, UnitLevel("player") or 0))
     for k, b in pairs(frame.tabs) do b:SetEnabled(k ~= tab) end
+    if tab == "prof" then DrawProf() return end
     if tab == "bags" then
         local ok, list = pcall(ns.FindUpgrades)
         if not ok then
@@ -332,11 +396,11 @@ local function Build()
     menu:SetScript("OnShow", menu.Populate)
     frame.tabs = {}
     local x = 14
-    for _, t in ipairs({ { "bags", "Inventory" }, { "worn", "Equipped" }, { "src", "What to get" }, { "ah", "Auction" } }) do
-        local b = Button(frame, t[2], 104, function() tab = t[1] ns.RefreshUI() end)
+    for _, t in ipairs({ { "bags", "Inventory" }, { "worn", "Equipped" }, { "src", "What to get" }, { "ah", "Auction" }, { "prof", "Professions" } }) do
+        local b = Button(frame, t[2], 94, function() tab = t[1] ns.RefreshUI() end)
         b:SetPoint("TOPLEFT", x, -58)
         frame.tabs[t[1]] = b
-        x = x + 108
+        x = x + 96
     end
     -- What to get: which kinds of source this character wants to see
     frame.srcFilter = CreateFrame("Frame", nil, frame)

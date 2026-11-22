@@ -23,5 +23,6 @@ QuestSources.lua
 Auction.lua
 Tooltip.lua
 Roll.lua
+Prof.lua
 UI.lua
 Minimap.lua
