@@ -1,6 +1,6 @@
 local _, ns = ...
 -- Profession gear: anything you wear or carry that raises a profession skill or speeds it up
--- (fishing hats and poles, mining and skinning gear, lures and other "Use:" boosts), what it gives,
+-- (fishing hats and poles, mining and skinning gear, and reusable "Use:" items), what it gives,
 -- and what you'd swap out to use it.
 
 local scan = CreateFrame("GameTooltip", "GearhawkProfScanTip", nil, "GameTooltipTemplate")
@@ -25,12 +25,25 @@ ns.PROFESSIONS = {
 
 local function Clean(t) return (t:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")) end
 
+-- Everyday consumables (lures and the like) are left out: they're used up and easy to get again.
+-- A consumable stays only if it is rare or better, so one that is hard to obtain still shows.
+local RARE_OR_BETTER = { ["0070dd"] = true, a335ee = true, ff8000 = true, e6cc80 = true }
+local function EverydayConsumable(link)
+    local f = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+    if not f then return false end
+    local ok, _, _, _, _, _, classID = pcall(f, link)
+    if not ok or classID ~= 0 then return false end
+    local color = type(link) == "string" and link:match("|cff(%x%x%x%x%x%x)")
+    return not (color and RARE_OR_BETTER[color])
+end
+
 -- the profession lines of one item: { { prof = <entry>, text = "...", value = number, use = bool }, ... }
 -- returns nil while the game hasn't loaded the item yet
 local cache = {}
 function ns.ProfLines(link)
     if not link then return {} end
     if cache[link] then return cache[link] end
+    if EverydayConsumable(link) then cache[link] = {} return cache[link] end
     scan:ClearLines()
     scan:SetOwner(UIParent, "ANCHOR_NONE")
     scan:SetHyperlink(link)

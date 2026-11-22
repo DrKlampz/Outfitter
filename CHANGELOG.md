@@ -2,7 +2,7 @@
 
 ## v0.11.8
 
-- New Professions tab: lists everything you wear or carry that raises a profession skill or speeds it up (fishing hats and poles, mining, herbalism and skinning gear, lures and other use-to-boost items). For gear in your bags it shows which slot it would take, what it replaces and the overall change to your stats, and clicking it wears it (out of combat)
+- New Professions tab: lists everything you wear or carry that raises a profession skill or speeds it up (fishing hats and poles, mining, herbalism and skinning gear, and reusable items). Everyday consumables such as lures are left out unless they are rare or better. For gear in your bags it shows which slot it would take, what it replaces and the overall change to your stats, and clicking it wears it (out of combat)
 - The window is a little wider to fit the fifth tab
 - New loot roll helper: when a group loot roll opens, a small panel says whether the item is an upgrade for your spec and which button to press (Need for upgrades and empty slots, greed for the rest). It only advises and never rolls for you. Turn it off, or have it also say it in chat, in the settings (Alt-click the minimap button); its window look can be changed there too
 

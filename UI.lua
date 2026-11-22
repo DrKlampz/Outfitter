@@ -164,7 +164,7 @@ local function DrawProf()
         if pending > 0 then
             frame.empty:SetText("Loading item data from the game... one moment.")
         else
-            frame.empty:SetText("Nothing you wear or carry changes a profession skill. Fishing hats and poles, mining and skinning gear and lures show up here as soon as you have them.")
+            frame.empty:SetText("Nothing you wear or carry changes a profession skill. Fishing hats and poles, mining and skinning gear show up here as soon as you have them.")
         end
         frame.empty:Show()
     end
