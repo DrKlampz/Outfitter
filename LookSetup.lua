@@ -11,6 +11,8 @@ local function Options()
             L.Kon("Alert me when a better item is in my bags", db, "alert"),
             L.Kon("Highlight the best upgrade when a quest offers a choice of rewards", db, "questPick"),
             L.Kon("Green arrow on the best upgrades in my bags", db, "bagArrow", function() if ns.RefreshBagArrows then ns.RefreshBagArrows() end end),
+            L.Kon("Loot roll helper: show whether a rolled item is an upgrade and which button to press", db, "rollHelper"),
+            L.Kon("Loot roll helper: also say it in chat", db, "rollChat"),
             L.Slider("Smallest improvement worth mentioning (%)", db, "minGain", 0, 30, 1),
             L.K("Show the minimap button", mmdb, "hide", function() if ns.UpdateMinimapButton then ns.UpdateMinimapButton() end end, true),
         } },
@@ -24,5 +26,6 @@ ns.WinLook.Setup({
     db = function() return GearhawkDB end,
     windows = {
         { id = "main", name = "Main window", global = "GearhawkFrame", strip = "template", defaultOn = true, title = function(f) return f.TitleText end },
+        { id = "roll", name = "Loot roll helper", global = "GearhawkRollFrame", strip = "backdrop" },
     },
 })

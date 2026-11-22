@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.8
+
+- New loot roll helper: when a group loot roll opens, a small panel says whether the item is an upgrade for your spec and which button to press (Need for upgrades and empty slots, greed for the rest). It only advises and never rolls for you. Turn it off, or have it also say it in chat, in the settings (Alt-click the minimap button); its window look can be changed there too
+
 ## v0.11.7
 
 - What to get: items with the same upgrade percentage (like several at +100%) now stay in one fixed order instead of swapping places each time the list refreshes

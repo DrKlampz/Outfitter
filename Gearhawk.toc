@@ -22,5 +22,6 @@ QuestData.lua
 QuestSources.lua
 Auction.lua
 Tooltip.lua
+Roll.lua
 UI.lua
 Minimap.lua

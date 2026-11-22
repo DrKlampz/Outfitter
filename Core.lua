@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 ns.VERSION = "dev"
-local DEFAULTS = { spec = {}, showTooltip = true, questPick = true, bagArrow = true, minGain = 3, alert = true, minimap = { hide = false, angle = 215 } }   -- spec[charKey] = index into Weights[class]
+local DEFAULTS = { spec = {}, showTooltip = true, questPick = true, bagArrow = true, minGain = 3, alert = true, rollHelper = true, rollChat = false, minimap = { hide = false, angle = 215 } }   -- spec[charKey] = index into Weights[class]
 
 local function FullPlayerName()
     local first, second = UnitName("player")
