@@ -335,7 +335,7 @@ function ns.RefreshUI()
 end
 
 local function Build()
-    frame = CreateFrame("Frame", "GearhawkFrame", UIParent, "BasicFrameTemplateWithInset")
+    frame = ns.WinLook.NewWindow("GearhawkFrame")
     frame:SetSize(WIDTH, 300)
     if ns.WinLook then ns.WinLook.Attach("main", frame) end
     frame:SetPoint("CENTER")

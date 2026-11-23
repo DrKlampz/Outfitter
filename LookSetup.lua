@@ -25,7 +25,7 @@ ns.WinLook.Setup({
     media = "Interface\\AddOns\\Gearhawk\\Media\\",
     db = function() return GearhawkDB end,
     windows = {
-        { id = "main", name = "Main window", global = "GearhawkFrame", strip = "template", defaultOn = true, title = function(f) return f.TitleText end },
+        { id = "main", name = "Main window", global = "GearhawkFrame", strip = "backdrop", hide = { "bar" }, defaultOn = true, title = function(f) return f.title end, close = function(f) return f.closeBtn end },
         { id = "roll", name = "Loot roll helper", global = "GearhawkRollFrame", strip = "backdrop" },
     },
 })
