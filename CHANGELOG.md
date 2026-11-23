@@ -1,5 +1,10 @@
 # Gearhawk
 
+## v0.11.9
+
+- Windows can be closed in combat
+
+
 ## v0.11.8
 
 - New Professions tab: lists everything you wear or carry that raises a profession skill or speeds it up (fishing hats and poles, mining, herbalism and skinning gear, and reusable items). Everyday consumables such as lures are left out unless they are rare or better. For gear in your bags it shows which slot it would take, what it replaces and the overall change to your stats, and clicking it wears it (out of combat)
