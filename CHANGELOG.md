@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.11
+
+- The loot roll advice panel is easier to read: bigger item icons, the item name on one line and the advice on the next, a colored bar at the side that matches the advice, and more room around everything
+
 ## v0.11.10
 
 - Weapons are now judged as whole loadouts instead of one weapon against one slot: one-hander and shield, two daggers, a staff on its own, a one-hander with a held off-hand, or a two-hander, whichever pair is best for you

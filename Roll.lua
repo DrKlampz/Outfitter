@@ -4,7 +4,8 @@ local ADDON_NAME, ns = ...
 local R = {}
 ns.Roll = R
 
-local ROWH, MAXROWS = 22, 4
+local ROWH, MAXROWS = 38, 4
+local PAD, TOPH, WIDTH = 14, 34, 360
 local rolls = {}     -- list of { id, link, name, tex, verdict, color, expires, tries }
 local frame
 
@@ -33,7 +34,7 @@ local function Build()
     if frame then return frame end
     frame = CreateFrame("Frame", "GearhawkRollFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
     frame:SetFrameStrata("HIGH")
-    frame:SetSize(330, 10)
+    frame:SetSize(WIDTH, 10)
     frame:SetPoint("TOP", UIParent, "TOP", 0, -140)
     frame:SetClampedToScreen(true)
     frame:SetMovable(true)
@@ -46,25 +47,38 @@ local function Build()
         frame:SetBackdropColor(0.05, 0.05, 0.08, 0.92)
         frame:SetBackdropBorderColor(0.2, 0.8, 1, 1)
     end
-    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    frame.title:SetPoint("TOPLEFT", 8, -6)
+    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.title:SetPoint("TOPLEFT", PAD, -10)
     frame.title:SetText("Gearhawk: loot roll advice")
+    frame.rule = frame:CreateTexture(nil, "ARTWORK")
+    frame.rule:SetColorTexture(1, 1, 1, 0.12)
+    frame.rule:SetHeight(1)
+    frame.rule:SetPoint("TOPLEFT", PAD, -TOPH + 6)
+    frame.rule:SetPoint("TOPRIGHT", -PAD, -TOPH + 6)
     frame.rows = {}
     for i = 1, MAXROWS do
         local row = CreateFrame("Frame", nil, frame)
-        row:SetSize(314, ROWH)
-        row:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, -22 - (i - 1) * ROWH)
+        row:SetHeight(ROWH - 4)
+        row:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -TOPH - (i - 1) * ROWH)
+        row:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -PAD, -TOPH - (i - 1) * ROWH)
+        row.accent = row:CreateTexture(nil, "ARTWORK")
+        row.accent:SetWidth(3)
+        row.accent:SetPoint("TOPLEFT", 0, 0)
+        row.accent:SetPoint("BOTTOMLEFT", 0, 0)
         row.icon = row:CreateTexture(nil, "ARTWORK")
-        row.icon:SetSize(18, 18)
-        row.icon:SetPoint("LEFT", 0, 0)
-        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        row.name:SetPoint("LEFT", row.icon, "RIGHT", 4, 4)
-        row.name:SetWidth(180)
+        row.icon:SetSize(30, 30)
+        row.icon:SetPoint("LEFT", 10, 0)
+        row.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        row.name:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", 10, -1)
+        row.name:SetPoint("RIGHT", row, "RIGHT", -4, 0)
         row.name:SetJustifyH("LEFT")
-        row.say = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        row.say:SetPoint("LEFT", row.icon, "RIGHT", 4, -7)
-        row.say:SetWidth(280)
+        row.name:SetWordWrap(false)
+        row.say = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        row.say:SetPoint("BOTTOMLEFT", row.icon, "BOTTOMRIGHT", 10, 1)
+        row.say:SetPoint("RIGHT", row, "RIGHT", -4, 0)
         row.say:SetJustifyH("LEFT")
+        row.say:SetWordWrap(false)
         row:EnableMouse(true)
         row:SetScript("OnEnter", function(self)
             if self.link then GameTooltip:SetOwner(self, "ANCHOR_RIGHT") GameTooltip:SetHyperlink(self.link) GameTooltip:Show() end
@@ -90,13 +104,15 @@ local function Draw()
             row.icon:SetTexture(e.tex or 134400)
             row.name:SetText(e.name or e.link or "?")
             row.say:SetText(e.verdict or "reading the item...")
-            if e.color then row.say:SetTextColor(e.color[1], e.color[2], e.color[3]) else row.say:SetTextColor(0.7, 0.7, 0.7) end
+            local c = e.color or { 0.7, 0.7, 0.7 }
+            row.say:SetTextColor(c[1], c[2], c[3])
+            row.accent:SetColorTexture(c[1], c[2], c[3], 0.9)
             row:Show()
         else
             row:Hide()
         end
     end
-    frame:SetHeight(28 + n * ROWH)
+    frame:SetHeight(TOPH + n * ROWH + 6)
     frame:Show()
 end
 
