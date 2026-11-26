@@ -451,6 +451,121 @@ end
 -- levels at which a class learns to dual wield (Shaman need a talent, so they are left out)
 local DUAL_WIELD_FROM = { ROGUE = 10, WARRIOR = 20, HUNTER = 20 }
 
+-- ---------------------------------------------------------------------------------------------------------------
+-- Weapon loadouts. Main hand, off hand and two-handers are not separate slots: what you carry is a pair (a sword and a
+-- shield, two daggers, a staff on its own...). So weapons are judged as whole loadouts, picking the best legal pair
+-- for your class, spec and level, instead of one weapon against one slot.
+-- ---------------------------------------------------------------------------------------------------------------
+local HAND = { INVTYPE_2HWEAPON = "two", INVTYPE_WEAPON = "either", INVTYPE_WEAPONMAINHAND = "mh",
+    INVTYPE_WEAPONOFFHAND = "oh", INVTYPE_SHIELD = "oh", INVTYPE_HOLDABLE = "oh" }
+local IS_WEAPON = { INVTYPE_2HWEAPON = true, INVTYPE_WEAPON = true, INVTYPE_WEAPONMAINHAND = true, INVTYPE_WEAPONOFFHAND = true }
+local DUAL_WIELD_SPELL = 674
+
+local function CanDualWield(spec, level)
+    if spec.role ~= "dps" then return false end
+    local class = ns.Class() or ""
+    local known
+    local f = _G.IsPlayerSpell or _G.IsSpellKnown
+    if f then
+        local ok, v = pcall(f, DUAL_WIELD_SPELL)
+        if ok and type(v) == "boolean" then known = v end
+    end
+    if known ~= nil then return known end
+    return (DUAL_WIELD_FROM[class] or 99) <= level          -- no spell API: go by the level the class learns it
+end
+
+-- what class and spec allow: shield roles (Protection warrior/paladin, shield healers) never use a two-hander;
+-- tanks never hold an off-hand "held" item; only some specs can dual wield
+local function LoadoutContext(spec, level)
+    local arm = ns.Armor and ns.Armor[ns.Class() or ""]
+    local shieldRole = (spec.role == "tank" or spec.role == "healer") and arm and arm.Shield and true or false
+    return { shieldRole = shieldRole, tank = spec.role == "tank" and shieldRole, dw = CanDualWield(spec, level) }
+end
+
+local function WeaponEntry(link, w, slot)
+    local loc = ns.EquipLoc(link)
+    local hand = loc and HAND[loc]
+    if not hand then return nil end
+    return { link = link, loc = loc, hand = hand, weapon = IS_WEAPON[loc] or false, score = ItemScore(link, w), slot = slot }
+end
+
+-- the weapons you wear, and what they are worth together (an illegal two-hander for a shield role counts as nothing:
+-- a one-hander and a shield are what is missing)
+local function WornWeapons(w, ctx)
+    local list, total = {}, 0
+    for _, s in ipairs({ 16, 17 }) do
+        local l = GetInventoryItemLink("player", s)
+        local e = l and WeaponEntry(l, w, s)
+        if e then
+            e.worn = true
+            list[#list + 1] = e
+            if not (e.hand == "two" and ctx.shieldRole) then total = total + e.score end
+        end
+    end
+    return list, total
+end
+
+-- weapons in the bags that you could wield now
+local bagCache = { t = -10 }
+local function BagWeapons(w, ctx, level)
+    local now = GetTime and GetTime() or 0
+    if bagCache.w == w and now - bagCache.t < 3 then return bagCache.list end
+    local list = {}
+    for _, it in ipairs(ns.BagItems()) do
+        local e = WeaponEntry(it.link, w, nil)
+        if e then
+            local info = ns.ReadItem(it.link)
+            if info and not info.unusable and not (info.reqLevel and info.reqLevel > level) then
+                e.bag, e.bagSlot = it.bag, it.slot
+                list[#list + 1] = e
+            end
+        end
+    end
+    bagCache.w, bagCache.t, bagCache.list = w, now, list
+    return list
+end
+
+function ns.ResetWeaponCache() bagCache.t = -10 bagCache.list = nil end
+do
+    local ev = CreateFrame("Frame")
+    ev:RegisterEvent("BAG_UPDATE_DELAYED")
+    ev:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+    ev:RegisterEvent("PLAYER_LEVEL_UP")
+    ev:SetScript("OnEvent", ns.ResetWeaponCache)
+end
+
+-- The best legal pair from a pool of weapon entries. `must` limits it to pairs that contain that entry.
+-- Returns { mh = entry, oh = entry } and its total score, or nil.
+local function BestLoadout(pool, ctx, must)
+    local best, bestScore
+    local function consider(mh, oh)
+        if must and mh ~= must and oh ~= must then return end
+        local s = (mh and mh.score or 0) + (oh and oh.score or 0)
+        if not best or s > bestScore then best, bestScore = { mh = mh, oh = oh }, s end
+    end
+    for _, a in ipairs(pool) do
+        if a.hand == "two" then
+            if not ctx.shieldRole then consider(a, nil) end
+        elseif a.hand == "mh" or a.hand == "either" then
+            consider(a, nil)
+            for _, b in ipairs(pool) do
+                if b ~= a then
+                    if b.hand == "oh" and not b.weapon then
+                        if not (ctx.tank and b.loc == "INVTYPE_HOLDABLE") then consider(a, b) end
+                    elseif (b.hand == "either" or b.hand == "oh") and ctx.dw then
+                        consider(a, b)                                -- a weapon in the off hand: needs dual wield
+                    end
+                end
+            end
+        elseif a.hand == "oh" and not a.weapon then
+            if not (ctx.tank and a.loc == "INVTYPE_HOLDABLE") then consider(nil, a) end   -- a shield or held item on its own
+        end
+    end
+    return best, bestScore or 0
+end
+
+local function InLoadout(l, e) return l and (l.mh == e or l.oh == e) end
+
 -- Compare one item to what is worn. Returns a result table or nil if it is not gear.
 -- A typical worn item's score, so a tiny difference between two near-empty items (3 armor against 7 armor on a
 -- cloak) is not shown as +133%. Percentages are measured against at least a third of this.
@@ -471,7 +586,7 @@ local function TypicalScore(w)
 end
 
 -- { gain = percent (positive = better), slot = id, worn = link, score, wornScore, unusable, reqLevel, tooHigh }
-function ns.Compare(link)
+function ns.Compare(link, opts)
     local spec = ns.Spec()
     if not spec or not link then return nil end
     local equipLoc = ns.EquipLoc(link)
@@ -485,23 +600,63 @@ function ns.Compare(link)
     local res = { score = score, unusable = info.unusable, reqLevel = info.reqLevel, equipLoc = equipLoc }
     if info.reqLevel and info.reqLevel > level then res.tooHigh = info.reqLevel end
 
-    -- what it would replace: an empty slot first, otherwise the worn item that scores lowest
+    -- what it would replace
     local worn, wornScore, wornSlot
-    if equipLoc == "INVTYPE_2HWEAPON" then
-        local a, b = GetInventoryItemLink("player", 16), GetInventoryItemLink("player", 17)
-        wornScore = (a and ItemScore(a, w) or 0) + (b and ItemScore(b, w) or 0)
-        worn, wornSlot = a or b, 16
+    local loadoutGain
+    if HAND[equipLoc] then
+        -- weapons: compare whole loadouts. With opts.bags, what you could already wield from your bags counts as
+        -- yours (used for items you do not own yet).
+        local ctx = LoadoutContext(spec, level)
+        local pool, cur = WornWeapons(w, ctx)
+        local baseLoad
+        if opts and opts.bags then
+            for _, e in ipairs(BagWeapons(w, ctx, level)) do pool[#pool + 1] = e end
+            local bl, bs = BestLoadout(pool, ctx)
+            baseLoad, cur = bl, bs
+            if not bl then baseLoad = {} end
+        else
+            baseLoad = {}
+            for _, e in ipairs(pool) do
+                if not (e.hand == "two" and ctx.shieldRole) then
+                    if e.slot == 16 then baseLoad.mh = e else baseLoad.oh = e end
+                end
+            end
+        end
+        local cand = WeaponEntry(link, w, nil)
+        cand.cand = true
+        local withCand = {}
+        for _, e in ipairs(pool) do withCand[#withCand + 1] = e end
+        withCand[#withCand + 1] = cand
+        local nl = BestLoadout(withCand, ctx, cand)
+        if not nl then
+            -- no legal way to wield it (an off-hand weapon without dual wield, a two-hander for a shield role)
+            res.unusable = res.unusable or (equipLoc == "INVTYPE_2HWEAPON" and ((ctx.tank and "tanks" or "healers") .. " use a one-hander and a shield"))
+                or (ctx.tank and equipLoc == "INVTYPE_HOLDABLE" and "tanks use a shield") or "can't be wielded with your class or spec"
+            nl = baseLoad
+            wornScore, worn, wornSlot = 0, nil, (HAND[equipLoc] == "oh") and 17 or 16
+            loadoutGain = 0
+        else
+            local newScore = (nl.mh and nl.mh.score or 0) + (nl.oh and nl.oh.score or 0)
+            local replacedScore, first, bySlot = 0, nil, nil
+            for _, e in ipairs({ baseLoad.mh or false, baseLoad.oh or false }) do
+                if e and not InLoadout(nl, e) then
+                    replacedScore = replacedScore + e.score
+                    first = first or e
+                    if e.slot == ((nl.mh == cand) and 16 or 17) then bySlot = e end
+                end
+            end
+            local shown = bySlot or first
+            worn, wornScore = shown and shown.link, replacedScore
+            wornSlot = (nl.mh == cand) and 16 or 17
+            loadoutGain = newScore - cur
+            local partner = (nl.mh == cand) and nl.oh or nl.mh
+            if partner and partner ~= cand then
+                res.combo, res.comboSlot = partner.link, (nl.mh == partner) and 16 or 17
+                res.comboOwned = partner.worn and "worn" or "bag"
+            end
+        end
     else
         local bestKey
-        if equipLoc == "INVTYPE_WEAPON" then
-            -- a one-hander only goes in the off hand if you already dual wield
-            local oh = GetInventoryItemLink("player", 17)
-            local ohLoc = oh and ns.EquipLoc(oh)
-            -- ...or you can dual wield and the off hand is still empty
-            local mhl = GetInventoryItemLink("player", 16)
-            local canDW = not oh and mhl and ns.EquipLoc(mhl) ~= "INVTYPE_2HWEAPON" and spec.role == "dps" and (DUAL_WIELD_FROM[ns.Class() or ""] or 99) <= level
-            if ohLoc ~= "INVTYPE_WEAPON" and ohLoc ~= "INVTYPE_WEAPONOFFHAND" and not canDW then slots = { 16 } end
-        end
         for _, s in ipairs(slots) do
             local l = GetInventoryItemLink("player", s)
             local key = l and ItemScore(l, w) or -1               -- -1: empty slot wins
@@ -512,21 +667,8 @@ function ns.Compare(link)
         end
     end
     wornScore = wornScore or 0
-    -- a tank fights with a one-hander and a shield: a two-hander is never the suggestion, and while one is
-    -- wielded the main hand and the shield slot both count as empty (a one-hander and a shield are what is missing)
-    -- only the shield classes (Protection warrior and paladin); a bear druid cannot use a shield and tanks with a two-hander
-    local arm = ns.Armor and ns.Armor[ns.Class() or ""]
-    local shieldRole = (spec.role == "tank" or spec.role == "healer") and arm and arm.Shield and true or false   -- paladin and shaman healers use a one-hander and a shield too
-    local tank = spec.role == "tank" and shieldRole
-    local mhNow = GetInventoryItemLink("player", 16)
-    local twoHandedNow = shieldRole and mhNow and ns.EquipLoc(mhNow) == "INVTYPE_2HWEAPON"
-    if shieldRole and equipLoc == "INVTYPE_2HWEAPON" then res.unusable = res.unusable or (tank and "tanks" or "healers") .. " use a one-hander and a shield" end
-    if tank and equipLoc == "INVTYPE_HOLDABLE" then res.unusable = res.unusable or "tanks use a shield" end
-    if twoHandedNow and (equipLoc == "INVTYPE_WEAPON" or equipLoc == "INVTYPE_WEAPONMAINHAND") then
-        worn, wornScore, wornSlot = nil, 0, 16
-    end
     -- swapping out a piece of a set that is active loses the bonus that needed that piece
-    if worn and equipLoc ~= "INVTYPE_2HWEAPON" then
+    if worn and equipLoc ~= "INVTYPE_2HWEAPON" and not HAND[equipLoc] then
         local wi = ns.ReadItem(worn)
         if wi and wi.setBonus and wi.setCount and wi.setName ~= info.setName then
             local lost = wi.setBonus[wi.setCount]
@@ -534,19 +676,15 @@ function ns.Compare(link)
         end
     end
     res.worn, res.wornScore, res.slot = worn, wornScore, wornSlot or slots[1]
-    if wornScore <= 0 then res.gain = score > 0 and 100 or 0
+    if loadoutGain then
+        -- a loadout's change is measured against the weapon(s) it takes out of use
+        if wornScore <= 0 then res.gain = loadoutGain > 0 and 100 or 0
+        else res.gain = loadoutGain / math.max(wornScore, TypicalScore(w) / 3) * 100 end
+    elseif wornScore <= 0 then res.gain = score > 0 and 100 or 0
     else res.gain = (score - wornScore) / math.max(wornScore, TypicalScore(w) / 3) * 100 end
     -- an empty slot only counts when the item would actually give you something
-    res.empty = (worn == nil) and score > 0
-    if worn == nil and score <= 0 then res.gain = 0 end
-    -- nothing goes in the off hand while a two-handed weapon is in the main hand
-    if (equipLoc == "INVTYPE_SHIELD" or equipLoc == "INVTYPE_HOLDABLE" or equipLoc == "INVTYPE_WEAPONOFFHAND") then
-        local mh = GetInventoryItemLink("player", 16)
-        if mh and ns.EquipLoc(mh) == "INVTYPE_2HWEAPON" then
-            if twoHandedNow and equipLoc == "INVTYPE_SHIELD" then worn, wornScore, res.worn, res.wornScore = nil, 0, nil, 0   -- tank: a shield is wanted
-            else res.unusable = res.unusable or "two-handed weapon equipped" end
-        end
-    end
+    res.empty = (worn == nil) and (loadoutGain and loadoutGain > 0 or (not loadoutGain and score > 0)) and true or false
+    if worn == nil and (loadoutGain and loadoutGain <= 0 or (not loadoutGain and score <= 0)) then res.gain = 0 end
     for sl = 1, 19 do
         if GetInventoryItemLink("player", sl) == link then res.isWorn = true end
     end
@@ -567,6 +705,59 @@ local function BestPerSlot(list)
     return out
 end
 
+-- Weapons in the bags judged together with what you wear: a sword that is worse than your two-hander and a shield
+-- that is worse than nothing can still be a better pair. Replaces the one-at-a-time weapon entries.
+local function JointWeapons(out)
+    local spec = ns.Spec()
+    if not spec then return out end
+    local w, level = spec.w, UnitLevel("player") or 1
+    local ctx = LoadoutContext(spec, level)
+    local pool, cur = WornWeapons(w, ctx)
+    local bags = BagWeapons(w, ctx, level)
+    if #bags == 0 then return out end
+    local baseLoad = {}
+    for _, e in ipairs(pool) do
+        if not (e.hand == "two" and ctx.shieldRole) then if e.slot == 16 then baseLoad.mh = e else baseLoad.oh = e end end
+    end
+    local all = {}
+    for _, e in ipairs(pool) do all[#all + 1] = e end
+    for _, e in ipairs(bags) do all[#all + 1] = e end
+    local best, total = BestLoadout(all, ctx)
+    if not best or total <= cur then return out end
+    local mine = {}
+    for _, e in ipairs({ best.mh or false, best.oh or false }) do if e and e.bag then mine[#mine + 1] = e end end
+    if #mine == 0 then return out end
+    local replacedScore, first = 0, nil
+    for _, e in ipairs({ baseLoad.mh or false, baseLoad.oh or false }) do
+        if e and not InLoadout(best, e) then replacedScore = replacedScore + e.score first = first or e end
+    end
+    local gain
+    if replacedScore <= 0 then gain = 100 else gain = (total - cur) / math.max(replacedScore, TypicalScore(w) / 3) * 100 end
+    if gain < (ns.db.minGain or 3) then return out end
+    local keep = {}
+    for _, r in ipairs(out) do
+        local isWeaponSlot = (r.slot == 16 or r.slot == 17) and HAND[r.equipLoc or ""] and not r.tooHigh
+        if not isWeaponSlot then keep[#keep + 1] = r end
+    end
+    for _, e in ipairs(mine) do
+        local r = ns.Compare(e.link)
+        if r then
+            local other = (best.mh == e) and best.oh or best.mh
+            r.link, r.bag, r.bagSlot = e.link, e.bag, e.bagSlot
+            r.slot = (best.mh == e) and 16 or 17
+            r.gain, r.wornScore = gain, replacedScore
+            r.worn = first and first.link or nil
+            r.empty = first == nil
+            r.combo = other and other.link or nil
+            r.comboSlot = other and ((best.mh == other) and 16 or 17) or nil
+            r.comboOwned = other and (other.worn and "worn" or "bag") or nil
+            r.unusable = nil
+            keep[#keep + 1] = r
+        end
+    end
+    return keep
+end
+
 -- Everything in the bags that is better than what you wear, best first.
 function ns.FindUpgrades()
     local out = {}
@@ -578,6 +769,7 @@ function ns.FindUpgrades()
             out[#out + 1] = r
         end
     end
+    out = JointWeapons(out)
     table.sort(out, function(a, b)
         local ah, bh = a.tooHigh and 1 or 0, b.tooHigh and 1 or 0
         if ah ~= bh then return ah < bh end
@@ -700,7 +892,7 @@ function ns.FindSources()
         if not have[id] and req <= level and (ns.srcTries[id] or 0) <= 5 and ns.SourceOn(ns.SourceKind({ id = id, how = how, where = where })) then
             checked = checked + 1
             local link = "item:" .. id
-            local r = ns.Compare(link)
+            local r = ns.Compare(link, { bags = true })
             if r == nil then
                 -- the game may never send data for an item it does not know: look a few times, then leave it out
                 -- (otherwise the list keeps rebuilding forever and the window flickers)

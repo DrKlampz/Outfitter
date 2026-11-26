@@ -209,6 +209,7 @@ function ns.RefreshUI()
         else
             frame.empty:Hide()
         end
+        for i = 1, math.min(#list, ROWS) do if list[i].combo then stride = 34 wrapSub = true break end end   -- pairs get a second line
         for i = 1, math.min(#list, ROWS) do
             local u = list[i]
             local slot = ns.SLOT_NAMES[u.slot] or "?"
@@ -217,7 +218,12 @@ function ns.RefreshUI()
             elseif u.gain > 300 then note = ("|cff40ff40big upgrade|r %s"):format(slot)
             else note = ("|cff40ff40+%d%%|r %s"):format(math.floor(u.gain + 0.5), slot) end
             if u.tooHigh then note = note .. (" |cffffaa00lvl %d|r"):format(u.tooHigh) end
-            Fill(i, u.link, note)
+            local sub
+            if u.combo and LinkText then
+                local pn = LinkText(u.combo)
+                if pn then sub = "|cffaaaaaaas a pair with " .. Clean(pn) .. (u.comboOwned == "bag" and " (also in your bags)" or " (worn)") .. "|r" end
+            end
+            Fill(i, u.link, note, sub)
         end
         Resize(math.min(#list, ROWS))
         frame.more:SetText(#list > ROWS and ("+%d more"):format(#list - ROWS) or "")

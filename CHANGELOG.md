@@ -1,5 +1,12 @@
 # Gearhawk
 
+## v0.11.10
+
+- Weapons are now judged as whole loadouts instead of one weapon against one slot: one-hander and shield, two daggers, a staff on its own, a one-hander with a held off-hand, or a two-hander, whichever pair is best for you
+- Class, spec and level decide what is allowed: dual wield only for specs that have learned it, no two-handers for shield roles (Protection warrior and paladin, shield healers), no held off-hands for tanks, and nothing you cannot wield
+- What to get / bags: if two weapons are only an upgrade together (a sword and a shield that beat your two-hander), both are listed with "as a pair with ..." and the combined gain
+- Weapons you could already wield from your bags count as yours when judging items you do not own yet, so the list does not suggest a weapon your bags already beat
+
 ## v0.11.9
 
 - Windows can be closed in combat
