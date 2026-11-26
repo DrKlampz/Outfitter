@@ -1,5 +1,10 @@
 # Gearhawk
 
+## v0.11.13
+
+- Set bonuses now count both ways: a piece that completes a set tier gets credit for the bonus it unlocks, and swapping out a piece loses the bonus it was giving you. What was read about items is refreshed when you change your gear, because set counts change with it
+- Fixed: swapping out a piece of a set you have bonuses from now counts the bonus you would lose. Bonuses you already have show in the game as plain "Set: ..." lines, which were being skipped, so an item could be called a big upgrade while it cost you a set bonus (for example +10 Intellect)
+
 ## v0.11.12
 
 - The loot roll advice panel now only appears for gear. Gems, trade goods, potions, bags and other non-gear items are left alone

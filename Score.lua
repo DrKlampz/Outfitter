@@ -258,8 +258,16 @@ function ns.ReadItem(link)
             elseif text == "Binds to account" or text == "Binds to Blizzard account" then res.bind = res.bind or "account"
             elseif text == "Binds when equipped" then res.bind = res.bind or "boe" end
             local setN, setBody = text:match("^%((%d+)%) Set: (.+)$")
-            local setHead, setHave = text:match("^(.-) %((%d+)/%d+%)$")
-            if setN then
+            local setHead, setHave, setOf = text:match("^(.-) %((%d+)/(%d+)%)$")
+            local activeBody = text:match("^Set: (.+)$")
+            if activeBody then
+                -- a bonus you already have shows as plain "Set: ..." with no number; they come in order, lowest first
+                res.setActive = res.setActive or {}
+                local at = {}
+                activeBody = activeBody:gsub("%.$", "")
+                ParseLine(at, activeBody:match("^[%+%d]") and activeBody or ("Equip: " .. activeBody))
+                res.setActive[#res.setActive + 1] = at
+            elseif setN then
                 -- set bonuses are kept apart: they only matter when this piece is swapped out
                 res.setBonus = res.setBonus or {}
                 local bt = {}
@@ -267,7 +275,7 @@ function ns.ReadItem(link)
                 ParseLine(bt, setBody:match("^[%+%d]") and setBody or ("Equip: " .. setBody))
                 res.setBonus[tonumber(setN)] = bt
             elseif setHead and not text:match("^%(") then
-                res.setName, res.setCount = setHead, tonumber(setHave)
+                res.setName, res.setCount, res.setTotal = setHead, tonumber(setHave), tonumber(setOf)
             elseif kind == "level" then
                 res.reqLevel = v
             elseif kind == "unusable" then
@@ -532,6 +540,10 @@ do
     ev:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
     ev:RegisterEvent("PLAYER_LEVEL_UP")
     ev:SetScript("OnEvent", ns.ResetWeaponCache)
+    -- set counts on an item's tooltip depend on what you wear, so what was read about items is stale after a swap
+    local ev2 = CreateFrame("Frame")
+    ev2:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+    ev2:SetScript("OnEvent", function() ns.cache = {} end)
 end
 
 -- The best legal pair from a pool of weapon entries. `must` limits it to pairs that contain that entry.
@@ -670,9 +682,35 @@ function ns.Compare(link, opts)
     -- swapping out a piece of a set that is active loses the bonus that needed that piece
     if worn and equipLoc ~= "INVTYPE_2HWEAPON" and not HAND[equipLoc] then
         local wi = ns.ReadItem(worn)
-        if wi and wi.setBonus and wi.setCount and wi.setName ~= info.setName then
-            local lost = wi.setBonus[wi.setCount]
+        if wi and (wi.setBonus or wi.setActive) and wi.setCount and wi.setName ~= info.setName then
+            local lost = wi.setBonus and wi.setBonus[wi.setCount]
+            if not lost and wi.setActive and #wi.setActive > 0 then
+                -- bonuses you have are listed without a number. The highest one needs as many pieces as you wear now
+                -- (the next one still to earn is numbered, or the set is complete), so taking a piece off loses that one
+                local firstOff
+                for n in pairs(wi.setBonus or {}) do if not firstOff or n < firstOff then firstOff = n end end
+                local topNeeds = (firstOff or ((wi.setTotal or wi.setCount) + 1)) - 1
+                if topNeeds == wi.setCount then lost = wi.setActive[#wi.setActive] end
+            end
             if lost then wornScore = wornScore + ns.Score(lost, w) end
+        end
+    end
+    -- a piece that completes a set tier adds that tier's bonus: the pieces you wear now, plus this one, minus the one it replaces
+    -- if that was from the same set. Tiers still to earn are listed with a number on this item's tooltip.
+    if info.setBonus and info.setCount and not HAND[equipLoc] then
+        local newCount = info.setCount + 1
+        if worn then
+            local wi2 = ns.ReadItem(worn)
+            if wi2 and wi2.setName and wi2.setName == info.setName then newCount = newCount - 1 end
+        end
+        local gained = 0
+        for n, bonus in pairs(info.setBonus) do
+            if n > info.setCount and n <= newCount then gained = gained + ns.Score(bonus, w) end
+        end
+        if gained > 0 then
+            score = score + gained
+            res.score = score
+            res.setGain = gained
         end
     end
     res.worn, res.wornScore, res.slot = worn, wornScore, wornSlot or slots[1]
