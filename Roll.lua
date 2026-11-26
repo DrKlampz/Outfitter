@@ -148,6 +148,9 @@ local function Start(rollID, rollTime)
     local tex, name
     if GetLootRollItemInfo then tex, name = GetLootRollItemInfo(rollID) end
     if not link then return end
+    -- only gear gets advice: gems, trade goods, potions, bags and the like are left alone
+    local loc = ns.EquipLoc and ns.EquipLoc(link)
+    if not loc or loc == "" or loc == "INVTYPE_BAG" or loc == "INVTYPE_QUIVER" or loc == "INVTYPE_NON_EQUIP" then return end
     local e = { id = rollID, link = link, tex = tex, name = link, live = true,
         expires = GetTime() + ((tonumber(rollTime) or 60000) / 1000) + 3 }
     rolls[#rolls + 1] = e

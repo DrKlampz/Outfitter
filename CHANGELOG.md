@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.12
+
+- The loot roll advice panel now only appears for gear. Gems, trade goods, potions, bags and other non-gear items are left alone
+
 ## v0.11.11
 
 - The loot roll advice panel is easier to read: bigger item icons, the item name on one line and the advice on the next, a colored bar at the side that matches the advice, and more room around everything
