@@ -2,7 +2,7 @@
 
 ## v0.11.15
 
-- Fixed: the Professions tab listed every Bronze Bar (and other crafting materials) as gear giving +65 Mining, because a tooltip line from another add-on ("Mining: learned at skill 65") looked like a skill bonus. Lines saying "learned at skill" are now ignored
+- Fixed: the Professions tab listed every Bronze Bar (and other crafting materials) as gear giving +65 Mining, because a tooltip line from another add-on ("Mining: learned at skill 65") looked like a skill bonus. Lines saying "learned at skill" are now ignored, and crafting materials, reagents, recipes and gems are never listed as profession gear
 
 ## v0.11.14
 

@@ -44,6 +44,12 @@ function ns.ProfLines(link)
     if not link then return {} end
     if cache[link] then return cache[link] end
     if EverydayConsumable(link) then cache[link] = {} return cache[link] end
+    -- crafting materials, reagents and recipes are not profession gear, whatever other add-ons write on their tooltips
+    do
+        local f = (C_Item and C_Item.GetItemInfoInstant) or GetItemInfoInstant
+        local ok, _, _, _, _, _, classID = pcall(f or function() end, link)
+        if ok and (classID == 7 or classID == 5 or classID == 9 or classID == 3) then cache[link] = {} return cache[link] end
+    end
     scan:ClearLines()
     scan:SetOwner(UIParent, "ANCHOR_NONE")
     scan:SetHyperlink(link)
