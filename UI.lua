@@ -71,6 +71,13 @@ local function LinkText(link)
         if ok and type(full) == "string" then return full end
         if ok and type(name) == "string" then return name end
     end
+    -- the game has not loaded this item yet (auction items you have never seen): ask for it and show a placeholder
+    -- until it arrives, instead of the raw item string
+    local id = tonumber(link:match("item:(%d+)"))
+    if id then
+        if C_Item and C_Item.RequestLoadItemDataByID then pcall(C_Item.RequestLoadItemDataByID, id) end
+        return "Item " .. id .. " (loading...)"
+    end
     return link
 end
 
@@ -461,7 +468,7 @@ local function Build()
             return
         end
         if event == "GET_ITEM_INFO_RECEIVED" then
-            if tab ~= "src" or not frame:IsShown() or frame.pend then return end
+            if (tab ~= "src" and tab ~= "ah") or not frame:IsShown() or frame.pend then return end
             frame.pend = true      -- one refresh for a burst of item data
             C_Timer.After(0.5, function() frame.pend = nil ns.RefreshUI() end)
             return

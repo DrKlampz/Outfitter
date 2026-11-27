@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.14
+
+- Fixed: the Auction tab showed the raw item string (item:11983:::::...) instead of a name for items the game had not loaded yet. It now asks the game for them, shows "Item 11983 (loading...)" and fills in the name as soon as it arrives
+
 ## v0.11.13
 
 - Set bonuses now count both ways: a piece that completes a set tier gets credit for the bonus it unlocks, and swapping out a piece loses the bonus it was giving you. What was read about items is refreshed when you change your gear, because set counts change with it
