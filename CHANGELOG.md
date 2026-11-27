@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.15
+
+- Fixed: the Professions tab listed every Bronze Bar (and other crafting materials) as gear giving +65 Mining, because a tooltip line from another add-on ("Mining: learned at skill 65") looked like a skill bonus. Lines saying "learned at skill" are now ignored
+
 ## v0.11.14
 
 - Fixed: the Auction tab showed the raw item string (item:11983:::::...) instead of a name for items the game had not loaded yet. It now asks the game for them, shows "Item 11983 (loading...)" and fills in the name as soon as it arrives

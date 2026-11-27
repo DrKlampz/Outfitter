@@ -55,7 +55,7 @@ function ns.ProfLines(link)
         if raw and raw ~= "" then
             local text = Clean(raw)
             local low = text:lower()
-            if not low:find("^requires") and not low:find("teaches") and not low:find("^classes:") then
+            if not low:find("^requires") and not low:find("teaches") and not low:find("^classes:") and not low:find("learned at skill", 1, true) then   -- the last is a line other add-ons put on tooltips, not a bonus
                 for _, p in ipairs(ns.PROFESSIONS) do
                     if low:find(p.key, 1, true) then
                         local num = tonumber(low:match("(%d+)")) or 0
