@@ -27,8 +27,9 @@ Gearhawk guesses your spec from your talents. Pick a different one from the drop
 | `/hawk minimap` | Minimap button show/hide |
 | `/hawk alert` | Chat alert for new bag upgrades on/off |
 | `/hawk gain N` | Only suggest items at least N% better |
+| `/hawk bis` | Best in slot for any class, spec and level |
 | `/hawk debug` | Print what the game reports about your bags |
 
-The item text is read in English. MIT licensed.
+The item text is read in English. MIT licensed, except `BisData.lua`, which is GPL-3.0 data from ForeverDB.net (https://foreverdb.net); see NOTICE.txt.
 
 What to get uses the quest database from Questie (QuestieDB) when it is installed, so every class gets quest, vendor and dungeon suggestions.

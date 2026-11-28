@@ -409,11 +409,14 @@ local function Build()
     menu:SetScript("OnShow", menu.Populate)
     frame.tabs = {}
     local x = 14
-    for _, t in ipairs({ { "bags", "Inventory" }, { "worn", "Equipped" }, { "src", "What to get" }, { "ah", "Auction" }, { "prof", "Professions" } }) do
-        local b = Button(frame, t[2], 94, function() tab = t[1] ns.RefreshUI() end)
+    for _, t in ipairs({ { "bags", "Inventory" }, { "worn", "Equipped" }, { "src", "What to get" }, { "ah", "Auction" }, { "prof", "Professions" }, { "bis", "Best in slot" } }) do
+        local b = Button(frame, t[2], 78, function()
+            if t[1] == "bis" then if ns.ToggleBis then ns.ToggleBis() end return end    -- opens its own window
+            tab = t[1] ns.RefreshUI()
+        end)
         b:SetPoint("TOPLEFT", x, -58)
         frame.tabs[t[1]] = b
-        x = x + 96
+        x = x + 80
     end
     -- What to get: which kinds of source this character wants to see
     frame.srcFilter = CreateFrame("Frame", nil, frame)

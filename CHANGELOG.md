@@ -1,5 +1,10 @@
 # Gearhawk
 
+## v0.12.0
+
+- New: Best in slot tab (also `/hawk bis`). Pick any class, spec and level from 10 to 60 (or "My character") and see the best item for every slot: head to trinkets, both rings and trinkets, and the weapon sets (two-handed, main hand plus off hand, ranged: bows, guns, crossbows, thrown, wands). Every item the class can use at that level is ranked with the same spec weights and real tooltips as the rest of Gearhawk, with where it comes from (drop, vendor, quest, crafted). Faction aware: Horde never sees Alliance-only gear and the reverse. Rows are marked when you already wear or carry the item
+- Data: item lists come from ForeverDB.net (https://foreverdb.net), see NOTICE.txt
+
 ## v0.11.18
 
 - Fixed: rogues can use one-handed axes, so Gearhawk no longer marks them unusable or leaves them out of rogue builds. Two-handed axes still count as unusable for rogues, and anything the game itself shows in red is still flagged

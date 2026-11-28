@@ -56,7 +56,12 @@ end
 
 function ns.Print(msg) print("|cff33ccffGearhawk:|r " .. tostring(msg)) end
 
-function ns.Class() local _, c = UnitClass("player") return c end
+-- ns.sim is set while the Best in slot tab ranks gear for another class or level: { class = "ROGUE", level = 40 }
+function ns.Class()
+    if ns.sim and ns.sim.class then return ns.sim.class end
+    local _, c = UnitClass("player")
+    return c
+end
 
 -- Guess the spec from where the talent points went (Classic: three trees in order).
 function ns.GuessSpec()
@@ -155,6 +160,8 @@ SlashCmdList.GEARHAWK = function(msg)
         local parts = {}
         for _, k in ipairs(keys) do parts[#parts + 1] = k .. "=" .. s.w[k] end
         ns.Print(s.name .. ": " .. table.concat(parts, " "))
+    elseif msg == "bis" or msg == "best" then
+        if ns.ToggleBis then ns.ToggleBis() end
     elseif msg == "tip" then
         ns.db.showTooltip = not ns.db.showTooltip
         ns.Print("tooltip line " .. (ns.db.showTooltip and "on" or "off"))

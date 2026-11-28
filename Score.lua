@@ -423,6 +423,7 @@ local function WeaponFactor(link)
     if not ok or type(sub) ~= "string" then return 1 end
     local rank = WeaponSkills()[SKILL_OF[sub] or sub]
     if type(rank) ~= "number" then return 1 end
+    if ns.sim then return 1 end                       -- ranking for another character: weapon skill is not theirs to judge
     local cap = math.max(5, 5 * (UnitLevel("player") or 1))
     return 0.5 + 0.5 * math.min(1, rank / cap)
 end
@@ -432,7 +433,7 @@ end
 local tuned = setmetatable({}, { __mode = "k" })
 local function WeightsFor(link, w)
     local base = WeightsBase(link, w)
-    local lv = UnitLevel("player") or 60
+    local lv = (ns.sim and ns.sim.level) or UnitLevel("player") or 60
     local armorK = 1
     if base.DODGE and base.ARMOR and lv < 60 then armorK = math.min(4, 5500 / (85 * lv + 400)) end
     local dpsK = 1
@@ -453,6 +454,7 @@ local function WeightsFor(link, w)
     return c
 end
 
+ns.WeightsForItem = WeightsFor          -- the Best in slot tab ranks other classes with the same weights
 local function ItemScore(link, w)
     local r = ns.ReadItem(link)
     return r and ns.Score(r.stats, WeightsFor(link, w)) or 0

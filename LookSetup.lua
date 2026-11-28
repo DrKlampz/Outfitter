@@ -26,6 +26,7 @@ ns.WinLook.Setup({
     db = function() return GearhawkDB end,
     windows = {
         { id = "main", name = "Main window", global = "GearhawkFrame", strip = "backdrop", hide = { "bar" }, defaultOn = true, title = function(f) return f.title end, close = function(f) return f.closeBtn end },
+        { id = "bis", name = "Best in slot window", global = "GearhawkBisFrame", strip = "backdrop", hide = { "bar" }, title = function(f) return f.title end, close = function(f) return f.closeBtn end },
         { id = "roll", name = "Loot roll helper", global = "GearhawkRollFrame", strip = "backdrop" },
     },
 })
