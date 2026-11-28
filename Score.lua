@@ -64,6 +64,8 @@ local function ParseLine(t, text)
     -- the game already adds enchants and gems into the item's stat lines (the "Enchanted: ..." line
     -- only describes them), so counting them again would double the value
     if text:match("^Enchanted: ") or text:match("^Socket Bonus: ") then return end
+    -- the game writes big numbers with a thousands comma ("1,548 Armor"); without this the armor line was missed
+    text = text:gsub("(%d),(%d%d%d)", "%1%2")
     -- plain suffix/enchant forms
     do
         local n3, sch = text:match("^%+(%d+) (%a+) Spell Damage$")

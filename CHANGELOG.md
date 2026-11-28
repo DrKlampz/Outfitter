@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.16
+
+- Fixed: items with 1,000 or more armor (like Aegis of the Scarlet Commander, 1,548 Armor) were scored as having no armor, so they were wrongly called worse than lower-armor gear. Numbers written with a thousands comma are now read correctly
+
 ## v0.11.15
 
 - Fixed: the Professions tab listed every Bronze Bar (and other crafting materials) as gear giving +65 Mining, because a tooltip line from another add-on ("Mining: learned at skill 65") looked like a skill bonus. Lines saying "learned at skill" are now ignored, and crafting materials, reagents, recipes and gems are never listed as profession gear
