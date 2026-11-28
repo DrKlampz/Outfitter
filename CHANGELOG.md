@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.17
+
+- New: crests for the window watermark. Pick one from the watermark/emblem list in the Look options: the Horde and Alliance crests, the Alliance lion, Kirin Tor, a Horde symbol, and a crest for every race (Human, Dwarf, Night Elf, Gnome, Draenei, Worgen, Orc, Troll, Tauren, Forsaken, Blood Elf, Goblin, Pandaren). The race and faction crests always show in their own colors
+
 ## v0.11.16
 
 - Fixed: items with 1,000 or more armor (like Aegis of the Scarlet Commander, 1,548 Armor) were scored as having no armor, so they were wrongly called worse than lower-armor gear. Numbers written with a thousands comma are now read correctly
