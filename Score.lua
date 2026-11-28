@@ -123,9 +123,9 @@ local function ParseLine(t, text)
     if v then Add(t, "SP", tonumber(v)) Add(t, "HEAL", tonumber(v)) return end
     v = body:match("Restores (%d+) [Mm]ana per 5 sec")
     if v then Add(t, "MP5", tonumber(v)) return end
-    v = body:match("Improves your chance to get a critical strike by (%d+)%%")
+    v = body:match("I%a+ your chance to get a critical strike by (%d+)%%")
     if v then Add(t, "CRIT", tonumber(v)) return end
-    v = body:match("Improves your chance to hit by (%d+)%%")
+    v = body:match("I%a+ your chance to hit by (%d+)%%")
     if v then Add(t, "HIT", tonumber(v)) return end
     v = body:match("Improves your chance to hit with spells by (%d+)%%")
     if v then Add(t, "SPHIT", tonumber(v)) return end
@@ -133,11 +133,11 @@ local function ParseLine(t, text)
     if v then Add(t, "SPCRIT", tonumber(v)) return end
     v = body:match("Increased Defense %+(%d+)")
     if v then Add(t, "DEF", tonumber(v)) return end
-    v = body:match("Improves your chance to dodge an attack by (%d+)%%")
+    v = body:match("I%a+ your chance to dodge an attack by (%d+)%%")
     if v then Add(t, "DODGE", tonumber(v)) return end
-    v = body:match("Improves your chance to parry an attack by (%d+)%%")
+    v = body:match("I%a+ your chance to parry an attack by (%d+)%%")
     if v then Add(t, "PARRY", tonumber(v)) return end
-    v = body:match("Improves your chance to block attacks with a shield by (%d+)%%")
+    v = body:match("I%a+ your chance to block attacks with a shield by (%d+)%%")
     if v then Add(t, "BLOCK", tonumber(v)) return end
     v = body:match("Increases the block value of your shield by (%d+)")
     if v then Add(t, "BLOCKVAL", tonumber(v)) return end

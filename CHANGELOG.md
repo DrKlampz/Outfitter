@@ -3,6 +3,7 @@
 ## v0.11.18
 
 - Fixed: rogues can use one-handed axes, so Gearhawk no longer marks them unusable or leaves them out of rogue builds. Two-handed axes still count as unusable for rogues, and anything the game itself shows in red is still flagged
+- Fixed: dodge, parry, block, hit and crit lines worded "Increases your chance to..." (instead of "Improves") are now counted, so tanks and melee no longer lose those stats on gear that words them that way
 
 ## v0.11.17
 
