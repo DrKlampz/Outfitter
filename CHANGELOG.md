@@ -1,5 +1,9 @@
 # Gearhawk
 
+## v0.11.18
+
+- Fixed: rogues can use one-handed axes, so Gearhawk no longer marks them unusable or leaves them out of rogue builds. Two-handed axes still count as unusable for rogues, and anything the game itself shows in red is still flagged
+
 ## v0.11.17
 
 - New: crests for the window watermark. Pick one from the watermark/emblem list in the Look options: the Horde and Alliance crests, the Alliance lion, Kirin Tor, a Horde symbol, and a crest for every race (Human, Dwarf, Night Elf, Gnome, Draenei, Worgen, Orc, Troll, Tauren, Forsaken, Blood Elf, Goblin, Pandaren). The race and faction crests always show in their own colors
