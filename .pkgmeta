@@ -3,3 +3,4 @@ package-as: Gearhawk
 ignore:
   - README.md
   - docs
+  - tools
